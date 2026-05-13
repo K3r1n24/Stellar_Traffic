@@ -22,7 +22,7 @@
 
         <form @submit.prevent="submitForm">
           <div class="form-group">
-            <label for="username">Correo electrónico o Usuario</label>
+            <label for="email">Correo electrónico</label>
             <div class="input-wrapper">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -39,14 +39,15 @@
                 <polyline points="22,6 12,13 2,6"></polyline>
               </svg>
               <input
-                type="text"
-                id="username"
-                v-model="form.username"
+                type="email"
+                id="email"
+                v-model="form.email"
                 placeholder="usuario@ejemplo.com"
                 required
               />
             </div>
           </div>
+
 
           <div class="form-group">
             <label for="password">Contraseña</label>
@@ -121,22 +122,31 @@
 import { ref, reactive } from 'vue';
 
 const form = reactive({
-  username: '',
+  email: '',
   password: '',
   remember: false,
 });
 
 const showPassword = ref(false);
 const isLoading = ref(false);
+const errorMessage = ref('');
 
-const submitForm = () => {
+const submitForm = async () => {
   isLoading.value = true;
-  console.log('Login attempt:', form);
-  // Add API call here
-  setTimeout(() => {
+  errorMessage.value = '';
+  
+  try {
+    const response = await axios.post('/login', form);
+    if (response.data.redirect) {
+      window.location.href = response.data.redirect;
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    errorMessage.value = error.response?.data?.message || 'Credenciales incorrectas o error de servidor.';
+    alert(errorMessage.value);
+  } finally {
     isLoading.value = false;
-    alert('Sesión iniciada (simulado)');
-  }, 1500);
+  }
 };
 </script>
 
