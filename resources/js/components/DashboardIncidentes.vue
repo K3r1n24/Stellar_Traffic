@@ -198,14 +198,14 @@
 
 
 <script setup>
-// import { useRouter } from 'vue-router'
-// const router = useRouter()
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const quickActions = [
   {
     title: 'Registrar Incidente',
     color: 'from-blue-500 to-blue-700',
     icon: '+',
-    action: () => console.log('Navegación desactivada temporalmente (sin internet)')
+    action: () => router.push({ name: 'registro.incidente' })
   },
   {
     title: 'Ver mapa',

@@ -1,10 +1,8 @@
 <template>
-  <!-- Cargamos el Dashboard directamente mientras arreglas el internet -->
-  <DashboardIncidentes />
+  <router-view />
 </template>
 
 <script setup>
-import DashboardIncidentes from './DashboardIncidentes.vue';
 </script>
 
 <style>
