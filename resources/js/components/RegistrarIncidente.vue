@@ -97,10 +97,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useIncidenteStore } from '../composables/useIncidenteStore'
 
 const router = useRouter()
+const { state, reset } = useIncidenteStore()
 
 const options = [
   {
@@ -119,10 +121,17 @@ const options = [
 
 const selectedId = ref('victimas')
 
+onMounted(() => {
+  reset() // Reset the form if they start over
+  selectedId.value = state.tipo_accidente
+})
+
 function cancelar() {
   router.push({ name: 'dashboard' })
 }
+
 function continuar() {
+  state.tipo_accidente = selectedId.value
   router.push({ name: 'registro.incidente.detalle', params: { tipo: selectedId.value } })
 }
 </script>

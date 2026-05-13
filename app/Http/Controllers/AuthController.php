@@ -17,14 +17,15 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:usuarios,correo',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'nombre_completo' => $request->name,
+            'correo' => $request->email,
+            'contrasena' => Hash::make($request->password),
+            'id_rol' => 1,
         ]);
 
         Auth::login($user);
@@ -45,7 +46,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials, $request->remember)) {
+        if (Auth::attempt(['correo' => $credentials['email'], 'password' => $credentials['password']], $request->remember)) {
             $request->session()->regenerate();
 
             return response()->json([
