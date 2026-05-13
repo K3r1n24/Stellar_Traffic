@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class VehiculoInvolucrado extends Model
 {
     protected $table = 'vehiculos_involucrados';
+
     protected $primaryKey = 'id_vehiculo';
+
     public $timestamps = false;
 
     protected $fillable = [

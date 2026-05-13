@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\PersonaInvolucrada;
 
 class PersonaController extends Controller
 {
-    //
+    public function index()
+    {
+        $personas = PersonaInvolucrada::all();
+
+        return view('personas.index', compact('personas'));
+    }
 }

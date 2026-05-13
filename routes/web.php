@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('login');
@@ -21,8 +20,12 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Ruta protegida de ejemplo
 Route::get('/dashboard', function () {
     return view('welcome');
 })->middleware('auth')->name('dashboard');
 
+Route::get('/dashboard/{any}', function () {
+    return view('welcome');
+})->middleware('auth')->where('any', '.*');
+
+Route::get('/accidentes', [App\Http\Controllers\AccidenteController::class, 'index']);
