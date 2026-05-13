@@ -29,3 +29,4 @@ Route::get('/dashboard/{any}', function () {
 })->middleware('auth')->where('any', '.*');
 
 Route::get('/accidentes', [App\Http\Controllers\AccidenteController::class, 'index']);
+Route::post('/accidentes', [App\Http\Controllers\AccidenteController::class, 'store']);
