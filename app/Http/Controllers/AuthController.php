@@ -31,7 +31,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Usuario registrado con éxito',
-            'redirect' => '/dashboard'
+            'redirect' => '/dashboard',
         ]);
     }
 
@@ -50,7 +50,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Sesión iniciada correctamente',
-                'redirect' => '/dashboard'
+                'redirect' => '/dashboard',
             ]);
         }
 
