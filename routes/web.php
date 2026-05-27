@@ -24,9 +24,10 @@ Route::get('/dashboard', function () {
     return view('welcome');
 })->middleware('auth')->name('dashboard');
 
-Route::get('/dashboard/{any}', function () {
+// Catch-all para todas las rutas manejadas por Vue Router
+Route::get('/{any}', function () {
     return view('welcome');
-})->middleware('auth')->where('any', '.*');
+})->middleware('auth')->where('any', '^(?!api|login|register|logout|accidentes).*$');
 
 Route::get('/accidentes', [App\Http\Controllers\AccidenteController::class, 'index']);
 Route::post('/accidentes', [App\Http\Controllers\AccidenteController::class, 'store']);
