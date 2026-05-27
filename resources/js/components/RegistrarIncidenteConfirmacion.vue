@@ -1,62 +1,11 @@
 <template>
     <div class="dashboard">
         
-        <aside class="sidebar">
-            <div class="user-profile">
-                <div class="avatar">LZ</div>
-                <div class="user-info">
-                    <h4>Luis Zelaya</h4>
-                    <span>PANEL DE CONTROL PNC</span>
-                </div>
-                <i class="ph ph-list menu-icon"></i>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">PRINCIPAL</p>
-                <ul class="nav-list" id="main-nav">
-                    <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
-                    <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
-                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
-                    <li class="nav-item"><i class="ph ph-map-pin"></i> Ver mapa</li>
-                </ul>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">SISTEMA</p>
-                <ul class="nav-list">
-                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
-                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
-                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
-                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
-                </ul>
-            </div>
-
-            <div class="logout" @click="handleLogout">
-                <i class="ph ph-sign-out"></i> Salir de la cuenta
-            </div>
-        </aside>
+        <Sidebar />
 
         <main class="main-content">
             
-            <header class="header">
-                <div class="header-titles">
-                    <h1>Registro de Incidente</h1>
-                    <p>Gestión rápida de incidentes y monitoreo vial</p>
-                </div>
-                <div class="header-actions">
-                    <div class="datetime-pill">
-                        <i class="ph ph-calendar-blank"></i>
-                        <div class="dt-text">
-                            <span class="date">12 Mayo 2026</span>
-                            <span class="time">09:23 PM</span>
-                        </div>
-                    </div>
-                    <div class="notification">
-                        <i class="ph ph-bell"></i>
-                        <span class="badge">2</span>
-                    </div>
-                </div>
-            </header>
+            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
 
             <div class="form-view">
                 
@@ -70,7 +19,6 @@
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
-                    <div class="step-dot active"></div> 
                 </div>
 
                 <div class="section-header">
@@ -88,15 +36,15 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Información básica</span>
-                                <span class="value" id="val-fecha">Fecha: 12/05/2026</span>
+                                <span class="value">Fecha: {{ incidenteState.fecha_incidente || 'No especificada' }}</span>
                             </div>
                             <div class="data-group">
                                 <span class="label">Tipo de incidente:</span>
-                                <span class="value" id="val-tipo">Vehicular</span>
+                                <span class="value">{{ incidenteState.tipo_accidente === 'victimas' ? 'Con víctimas' : 'Daños materiales' }}</span>
                             </div>
                             <div class="data-group">
                                 <span class="label">Gravedad:</span>
-                                <span class="value" id="val-gravedad">Leve</span>
+                                <span class="value">{{ incidenteState.gravedad || 'No especificada' }}</span>
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-detalle')">Editar</button>
@@ -107,7 +55,11 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Ubicación</span>
-                                <span class="value" id="val-direccion">Dirección: Av. Central, San José</span>
+                                <span class="value">Dirección: {{ incidenteState.direccion || 'No especificada' }}</span>
+                            </div>
+                            <div class="data-group">
+                                <span class="label">Distrito:</span>
+                                <span class="value">{{ incidenteState.municipio || 'No especificado' }}</span>
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-ubicacion')">Editar</button>
@@ -118,11 +70,11 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Involucrados</span>
-                                <span class="value" id="val-vehiculos">Vehículos: 2 Registrados</span>
+                                <span class="value">Vehículos: {{ vehiculosCount }} Registrados</span>
                             </div>
                             <div class="data-group">
                                 <span class="label">Personas:</span>
-                                <span class="value" id="val-personas">2 Registradas</span>
+                                <span class="value">{{ personasCount }} Registradas</span>
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-involucrados')">Editar</button>
@@ -133,7 +85,7 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Evidencia</span>
-                                <span class="value" id="val-archivos">Archivos: 5 Adjuntos</span>
+                                <span class="value">Archivos: {{ incidenteState.archivosCount || 0 }} Adjuntos</span>
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-evidencia')">Editar</button>
@@ -152,10 +104,23 @@
 </template>
 
 <script setup>
+import Sidebar from './Sidebar.vue';
+import TopHeader from './TopHeader.vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { useDatetime } from '../composables/useDatetime.js';
+import { useIncidenteStore } from '../composables/useIncidenteStore.js';
+
+const { currentDate, currentTime } = useDatetime();
+const { state: incidenteState, reset: resetStore } = useIncidenteStore();
 
 const router = useRouter();
+const isSubmitting = ref(false);
+
+// Contadores calculados
+const vehiculosCount = computed(() => incidenteState.vehiculos.filter(v => v.trim() !== '').length);
+const personasCount = computed(() => incidenteState.personas.filter(p => p.trim() !== '').length);
 
 // --- NAVEGACIÓN ---
 const handleBack = () => {
@@ -167,15 +132,47 @@ const handleEdit = (routeName) => {
 };
 
 const handleSubmit = async () => {
-    // Aquí iría el fetch/axios POST a tu API para guardar toda la información.
-    console.log("¡Registro finalizado! Procesando envío a la base de datos (Laravel)...");
-    
-    // Generar un ID de caso falso para demostración
-    const newCaseId = 'ACC-2026-' + Math.floor(Math.random() * 10000);
-    localStorage.setItem('currentCaseId', newCaseId);
+    if (isSubmitting.value) return;
+    isSubmitting.value = true;
 
-    // Redirigir a la pantalla de éxito
-    router.push({ name: 'registrar-incidente-exito' });
+    // Preparar payload para el backend
+    const payload = {
+        id_caso: incidenteState.id_caso,
+        tipo_accidente: incidenteState.tipo_accidente,
+        fecha_incidente: incidenteState.fecha_incidente,
+        hora_aproximada: incidenteState.hora_aproximada,
+        gravedad: incidenteState.gravedad,
+        direccion: incidenteState.direccion,
+        municipio: incidenteState.municipio,
+        descripcion: incidenteState.declaracion,
+        condicion_climatica: incidenteState.condicion_climatica,
+        tipo_via: incidenteState.tipo_via,
+        estado_pavimento: incidenteState.estado_pavimento,
+        vehiculos: incidenteState.vehiculos.filter(v => v.trim() !== ''),
+        personas: incidenteState.personas.filter(p => p.trim() !== ''),
+    };
+
+    try {
+        const response = await axios.post('/accidentes', payload);
+        console.log('Incidente registrado exitosamente:', response.data);
+        
+        localStorage.setItem('currentCaseId', incidenteState.id_caso);
+        router.push({ name: 'registrar-incidente-exito' });
+    } catch (error) {
+        console.error('Error al registrar el incidente:', error);
+        
+        // Fallback: si el backend no está disponible, continuar de todas formas (demo)
+        if (error.response) {
+            alert(`Error del servidor: ${error.response.data.message || 'Error desconocido'}`);
+        } else {
+            // Sin conexión al backend, modo demo
+            console.warn('Backend no disponible. Continuando en modo demo...');
+            localStorage.setItem('currentCaseId', incidenteState.id_caso);
+            router.push({ name: 'registrar-incidente-exito' });
+        }
+    } finally {
+        isSubmitting.value = false;
+    }
 };
 
 const goTo = (path) => {

@@ -1,62 +1,11 @@
 <template>
     <div class="dashboard">
         
-        <aside class="sidebar">
-            <div class="user-profile">
-                <div class="avatar">LZ</div>
-                <div class="user-info">
-                    <h4>Luis Zelaya</h4>
-                    <span>PANEL DE CONTROL PNC</span>
-                </div>
-                <i class="ph ph-list menu-icon"></i>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">PRINCIPAL</p>
-                <ul class="nav-list" id="main-nav">
-                    <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
-                    <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
-                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
-                    <li class="nav-item"><i class="ph ph-map-pin"></i> Ver mapa</li>
-                </ul>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">SISTEMA</p>
-                <ul class="nav-list">
-                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
-                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
-                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
-                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
-                </ul>
-            </div>
-
-            <div class="logout" @click="handleLogout">
-                <i class="ph ph-sign-out"></i> Salir de la cuenta
-            </div>
-        </aside>
+        <Sidebar />
 
         <main class="main-content">
             
-            <header class="header">
-                <div class="header-titles">
-                    <h1>Registro de Incidente</h1>
-                    <p>Gestión rápida de incidentes y monitoreo vial</p>
-                </div>
-                <div class="header-actions">
-                    <div class="datetime-pill">
-                        <i class="ph ph-calendar-blank"></i>
-                        <div class="dt-text">
-                            <span class="date">12 Mayo 2026</span>
-                            <span class="time">09:23 PM</span>
-                        </div>
-                    </div>
-                    <div class="notification">
-                        <i class="ph ph-bell"></i>
-                        <span class="badge">2</span>
-                    </div>
-                </div>
-            </header>
+            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
 
             <div class="form-view">
                 
@@ -70,7 +19,6 @@
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
-                    <div class="step-dot"></div> 
                 </div>
 
                 <div class="evidence-grid">
@@ -208,9 +156,16 @@
 </template>
 
 <script setup>
+import Sidebar from './Sidebar.vue';
+import TopHeader from './TopHeader.vue';
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { useDatetime } from '../composables/useDatetime.js';
+import { useIncidenteStore } from '../composables/useIncidenteStore.js';
+
+const { currentDate, currentTime } = useDatetime();
+const { state: incidenteState } = useIncidenteStore();
 
 const router = useRouter();
 
@@ -418,6 +373,7 @@ const handleBack = () => {
 };
 
 const handleNext = () => {
+    incidenteState.archivosCount = uploadedFiles.value.length;
     router.push({ name: 'registrar-incidente-confirmacion' });
 };
 
@@ -508,8 +464,8 @@ const handleLogout = async () => {
     .stepper-container { position: relative; margin: 30px 0 50px 0; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 10px; }
     .stepper-background-line { position: absolute; top: 50%; left: 0; width: 100%; height: 6px; background-color: #ffffff; transform: translateY(-50%); border-radius: 3px; z-index: 1; }
     
-    /* Línea activa conectando casi todos los puntos */
-    .stepper-active-line { position: absolute; top: 50%; left: 0; width: 83%; height: 6px; background-color: var(--accent-blue); transform: translateY(-50%); border-radius: 3px; z-index: 2; transition: width 0.4s ease; }
+    /* Línea activa cubriendo todos los puntos (100%) */
+    .stepper-active-line { position: absolute; top: 50%; left: 0; width: 100%; height: 6px; background-color: var(--accent-blue); transform: translateY(-50%); border-radius: 3px; z-index: 2; transition: width 0.4s ease; }
     
     .step-dot { width: 24px; height: 24px; border-radius: 50%; background-color: #ffffff; z-index: 3; position: relative; transition: 0.4s ease; }
     .step-dot.active { background-color: var(--accent-blue); box-shadow: 0 0 12px var(--accent-blue); }
