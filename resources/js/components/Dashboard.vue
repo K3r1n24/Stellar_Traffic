@@ -15,7 +15,7 @@
                 <p class="nav-title">PRINCIPAL</p>
                 <ul class="nav-list" id="main-nav">
                     <li class="nav-item" :class="{ active: activeNav === 'Inicio' }" @click="activeNav = 'Inicio'"><i class="ph ph-house"></i> Inicio</li>
-                    <li class="nav-item" :class="{ active: activeNav === 'Registrar incidente' }" @click="activeNav = 'Registrar incidente'"><i class="ph ph-plus-square"></i> Registrar incidente</li>
+                    <li class="nav-item" @click="goTo('/registrar-incidente')"><i class="ph ph-plus-square"></i> Registrar incidente</li>
                     <li class="nav-item" :class="{ active: activeNav === 'Buscar casos' }" @click="activeNav = 'Buscar casos'"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
                     <li class="nav-item" :class="{ active: activeNav === 'Ver mapa' }" @click="activeNav = 'Ver mapa'"><i class="ph ph-map-pin"></i> Ver mapa</li>
                 </ul>
@@ -61,7 +61,7 @@
             <section class="content-section">
                 <h3 class="section-title">ACCESO RÁPIDO</h3>
                 <div class="quick-access-grid">
-                    <div class="card card-action" :class="{ 'active-card': activeCard === 'Registrar incidente' }" @click="activeCard = 'Registrar incidente'">
+                    <div class="card card-action" @click="goTo('/registrar-incidente')">
                         <div class="icon-box icon-blue"><i class="ph ph-plus"></i></div>
                         <div class="card-text">
                             <h4>Registrar incidente</h4>
@@ -144,13 +144,20 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 
-// Estado para el elemento activo de navegación (inicia en 'Registrar incidente')
-const activeNav = ref('Registrar incidente');
+const router = useRouter();
+
+// Estado para el elemento activo de navegación (inicia en 'Inicio')
+const activeNav = ref('Inicio');
 
 // Estado para la tarjeta activa de acceso rápido
-const activeCard = ref('Registrar incidente');
+const activeCard = ref('');
+
+const goTo = (path) => {
+    router.push(path);
+};
 
 // Función de logout
 const handleLogout = async () => {
