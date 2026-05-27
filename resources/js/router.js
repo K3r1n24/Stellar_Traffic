@@ -4,6 +4,7 @@ import RegistrarIncidente from './components/RegistrarIncidente.vue';
 import RegistrarIncidenteDetalle from './components/RegistrarIncidenteDetalle.vue';
 import RegistrarIncidenteUbicacion from './components/RegistrarIncidenteUbicacion.vue';
 import RegistrarIncidenteMapa from './components/RegistrarIncidenteMapa.vue';
+import RegistrarIncidenteDeclaracion from './components/RegistrarIncidenteDeclaracion.vue';
 
 const routes = [
     {
@@ -30,6 +31,11 @@ const routes = [
         path: '/registrar-incidente-mapa',
         name: 'registrar-incidente-mapa',
         component: RegistrarIncidenteMapa
+    },
+    {
+        path: '/registrar-incidente-declaracion',
+        name: 'registrar-incidente-declaracion',
+        component: RegistrarIncidenteDeclaracion
     }
 ];
 

@@ -157,8 +157,7 @@ const triggerSubmit = () => {
 
 const handleSubmit = () => {
     console.log("Formulario válido. Avanzando al Paso 3...", formData);
-    // Cuando la siguiente vista esté lista, aquí irá:
-    // router.push({ name: 'registrar-incidente-paso-3' });
+    router.push({ name: 'registrar-incidente-declaracion' });
 };
 
 // Volver al paso anterior
