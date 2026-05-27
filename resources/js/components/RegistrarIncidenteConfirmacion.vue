@@ -169,10 +169,13 @@ const handleEdit = (routeName) => {
 const handleSubmit = async () => {
     // Aquí iría el fetch/axios POST a tu API para guardar toda la información.
     console.log("¡Registro finalizado! Procesando envío a la base de datos (Laravel)...");
-    alert("¡Incidente registrado exitosamente! Redirigiendo al dashboard...");
     
-    // Redirigir al dashboard después de finalizar exitosamente
-    router.push({ name: 'dashboard' });
+    // Generar un ID de caso falso para demostración
+    const newCaseId = 'ACC-2026-' + Math.floor(Math.random() * 10000);
+    localStorage.setItem('currentCaseId', newCaseId);
+
+    // Redirigir a la pantalla de éxito
+    router.push({ name: 'registrar-incidente-exito' });
 };
 
 const goTo = (path) => {
