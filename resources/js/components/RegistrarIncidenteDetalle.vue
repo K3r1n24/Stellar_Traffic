@@ -184,7 +184,7 @@ const triggerSubmit = () => {
 const handleSubmit = () => {
     console.log("Formulario listo para enviarse al siguiente paso.", formData);
     // Cuando exista la siguiente vista (ej. Ubicación):
-    // router.push({ name: 'registrar-incidente-ubicacion' });
+    router.push({ name: 'registrar-incidente-ubicacion' });
 };
 
 // Volver atrás
