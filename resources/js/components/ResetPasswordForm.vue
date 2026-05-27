@@ -16,41 +16,13 @@
     <section class="right-section">
       <div class="login-card">
         <div class="card-header">
-          <h2>Iniciar sesión</h2>
-          <p>Ingresa tus credenciales para continuar</p>
+          <h2>Restablecer contraseña</h2>
+          <p>Coloca tu nueva contraseña para recuperar el acceso a tu cuenta</p>
         </div>
 
         <form @submit.prevent="submitForm">
           <div class="form-group">
-            <label for="email">Correo electrónico</label>
-            <div class="input-wrapper">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
-              </svg>
-              <input
-                type="email"
-                id="email"
-                v-model="form.email"
-                placeholder="usuario@ejemplo.com"
-                required
-              />
-            </div>
-          </div>
-
-
-          <div class="form-group">
-            <label for="password">Contraseña</label>
+            <label for="password">Contraseña nueva</label>
             <div class="input-wrapper">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -72,6 +44,7 @@
                 v-model="form.password"
                 placeholder="••••••••••••••••"
                 required
+                autofocus
               />
               <svg
                 class="eye-icon"
@@ -93,12 +66,48 @@
             </div>
           </div>
 
-          <div class="form-options">
-            <label class="remember-me">
-              <input type="checkbox" v-model="form.remember" />
-              <span>Recuérdame</span>
-            </label>
-            <a href="/password/forgot" class="forgot-password">¿Olvidaste tu contraseña?</a>
+          <div class="form-group">
+            <label for="password_confirmation">Confirmar contraseña</label>
+            <div class="input-wrapper">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input
+                :type="showPasswordConfirmation ? 'text' : 'password'"
+                id="password_confirmation"
+                v-model="form.password_confirmation"
+                placeholder="••••••••••••••••"
+                required
+              />
+              <svg
+                class="eye-icon"
+                @click="showPasswordConfirmation = !showPasswordConfirmation"
+                :style="{ opacity: showPasswordConfirmation ? '0.5' : '1' }"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
           </div>
 
           <div v-if="errorMessage" class="error-message">
@@ -107,18 +116,22 @@
             </ul>
           </div>
 
-          <button type="submit" class="submit-btn" :disabled="isLoading">
-            {{ isLoading ? 'Iniciando sesión...' : 'Iniciar sesión' }}
-          </button>
-
-          <div class="divider">
-            <span>o</span>
+          <div v-if="successMessage" class="success-message">
+            {{ successMessage }}
           </div>
 
-          <p class="footer-text">
-            ¿No tienes una cuenta? <a href="/register">Regístrate</a>
-          </p>
+          <button type="submit" class="submit-btn" :disabled="isLoading">
+            {{ isLoading ? 'Restableciendo...' : 'Guardar nueva contraseña' }}
+          </button>
         </form>
+
+        <div class="divider">
+          <span>o</span>
+        </div>
+
+        <p class="footer-text">
+          ¿Ya recordaste tu cuenta? <a href="/login">Volver al login</a>
+        </p>
       </div>
     </section>
   </div>
@@ -127,29 +140,56 @@
 <script setup>
 import { ref, reactive } from 'vue';
 
+const props = defineProps({
+  token: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    default: '',
+  },
+});
+
 const form = reactive({
-  email: '',
+  token: props.token,
+  email: props.email,
   password: '',
-  remember: false,
+  password_confirmation: '',
 });
 
 const showPassword = ref(false);
+const showPasswordConfirmation = ref(false);
 const isLoading = ref(false);
 const errorMessage = ref('');
+const successMessage = ref('');
 
 const submitForm = async () => {
+  if (form.password !== form.password_confirmation) {
+    errorMessage.value = 'Las contraseñas no coinciden.';
+    return;
+  }
+
   isLoading.value = true;
   errorMessage.value = '';
+  successMessage.value = '';
 
   try {
-    const response = await axios.post('/login', form);
-    if (response.data.redirect) {
-      window.location.href = response.data.redirect;
-    }
+    const response = await axios.post('/password/reset', form);
+    successMessage.value = response.data.message || 'Contraseña restablecida con éxito.';
+    
+    // Redirect to login after a short delay
+    setTimeout(() => {
+      if (response.data.redirect) {
+        window.location.href = response.data.redirect;
+      } else {
+        window.location.href = '/login';
+      }
+    }, 2000);
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Password reset submit error:', error);
     const responseData = error.response?.data;
-    errorMessage.value = responseData?.message || responseData?.errors?.email?.[0] || responseData?.errors?.password?.[0] || 'Credenciales incorrectas o error de servidor.';
+    errorMessage.value = responseData?.message || responseData?.errors?.email?.[0] || responseData?.errors?.password?.[0] || 'Ocurrió un error al restablecer la contraseña.';
   } finally {
     isLoading.value = false;
   }
@@ -335,14 +375,6 @@ const submitForm = async () => {
   pointer-events: all !important;
 }
 
-.form-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-  font-size: 0.85rem;
-}
-
 .error-message {
   margin-bottom: 24px;
   color: #f87171;
@@ -353,28 +385,15 @@ const submitForm = async () => {
   padding: 14px 18px;
 }
 
-.remember-me {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  color: white;
-}
-
-.remember-me input {
-  accent-color: #2563eb;
-  width: 16px;
-  height: 16px;
-}
-
-.forgot-password {
-  color: #2563eb;
-  text-decoration: none;
-  transition: opacity 0.2s;
-}
-
-.forgot-password:hover {
-  opacity: 0.8;
+.success-message {
+  margin-bottom: 24px;
+  color: #34d399;
+  font-size: 0.95rem;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  border-radius: 14px;
+  padding: 14px 18px;
+  text-align: center;
 }
 
 .submit-btn {
@@ -395,26 +414,6 @@ const submitForm = async () => {
   transform: translateY(-2px);
   box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.5);
   background-color: #1d4ed8;
-}
-
-.secondary-btn {
-  display: block;
-  width: 100%;
-  margin: 18px 0 0;
-  text-align: center;
-  padding: 14px 0;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.04);
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.secondary-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
 }
 
 .submit-btn:disabled {

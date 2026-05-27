@@ -20,6 +20,12 @@
           <p>Regístrate para acceder al sistema inteligencia vial</p>
         </div>
 
+        <div v-if="errorMessage" class="error-message">
+          <ul style="list-style-type: disc; padding-left: 20px; margin: 0;">
+            <li>{{ errorMessage }}</li>
+          </ul>
+        </div>
+
         <form @submit.prevent="submitForm">
           <div class="form-group">
             <label for="name">Nombre Completo</label>
@@ -207,7 +213,7 @@ const errorMessage = ref('');
 
 const submitForm = async () => {
   if (!form.terms) {
-    alert('Debes aceptar los términos y condiciones.');
+    errorMessage.value = 'Debes aceptar los términos y condiciones.';
     return;
   }
 
@@ -221,8 +227,15 @@ const submitForm = async () => {
     }
   } catch (error) {
     console.error('Registration error:', error);
-    errorMessage.value = error.response?.data?.message || 'Ocurrió un error al crear la cuenta.';
-    alert(errorMessage.value);
+    const responseData = error.response?.data;
+    
+    // Si hay errores de validación específicos, sacamos el primero
+    if (responseData?.errors) {
+        const firstErrorKey = Object.keys(responseData.errors)[0];
+        errorMessage.value = responseData.errors[firstErrorKey][0];
+    } else {
+        errorMessage.value = responseData?.message || 'Ocurrió un error al crear la cuenta.';
+    }
   } finally {
     isLoading.value = false;
   }
@@ -430,6 +443,16 @@ const submitForm = async () => {
   left: auto !important;
   cursor: pointer;
   pointer-events: all !important;
+}
+
+.error-message {
+  margin-bottom: 24px;
+  color: #f87171;
+  font-size: 0.95rem;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  border-radius: 14px;
+  padding: 14px 18px;
 }
 
 .terms-checkbox {
