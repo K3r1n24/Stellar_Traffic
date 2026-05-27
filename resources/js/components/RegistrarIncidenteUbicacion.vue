@@ -117,7 +117,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -127,6 +127,19 @@ const router = useRouter();
 const formData = reactive({
     direccion: '',
     distrito: ''
+});
+
+onMounted(() => {
+    // Si hay una dirección y distrito seleccionados en el mapa, los cargamos
+    const direccionGuardada = localStorage.getItem('incidente_direccion');
+    const distritoGuardado = localStorage.getItem('incidente_distrito');
+    
+    if (direccionGuardada) {
+        formData.direccion = direccionGuardada;
+    }
+    if (distritoGuardado) {
+        formData.distrito = distritoGuardado;
+    }
 });
 
 // Simulación de apertura de mapa

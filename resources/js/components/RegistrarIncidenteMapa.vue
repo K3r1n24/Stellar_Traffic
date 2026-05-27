@@ -90,7 +90,20 @@
                     </div>
 
                     <div class="leaflet-container-wrapper">
+                        <div v-if="mapError" class="map-error-overlay">
+                            <i class="ph ph-warning-octagon"></i>
+                            <p>{{ mapError }}</p>
+                        </div>
+                        <div v-else-if="isLoadingMap" class="map-loading-overlay">
+                            <div class="spinner"></div>
+                            <p>Cargando mapa vial...</p>
+                        </div>
                         <div id="incident-map"></div>
+                    </div>
+
+                    <div class="selected-address-bar" v-if="selectedAddress">
+                        <i class="ph ph-map-pin-line"></i>
+                        <span><strong>Ubicación seleccionada:</strong> {{ selectedAddress }}</span>
                     </div>
 
                 </div>
@@ -114,24 +127,99 @@ const router = useRouter();
 
 // Variables de estado
 const searchQuery = ref('');
+const isLoadingMap = ref(true);
+const mapError = ref(null);
+const selectedAddress = ref('');
+const selectedDistrict = ref('');
 let map = null;
 let currentMarker = null;
 
-onMounted(() => {
-    // Verificar si Leaflet cargó correctamente globalmente a través de window
-    if (window.L) {
-        // 1. Inicializar el mapa
-        const initialCoords = [9.9281, -84.0907];
-        map = window.L.map('incident-map').setView(initialCoords, 14);
+// Obtener dirección a partir de las coordenadas (Reverse Geocoding)
+const fetchAddressFromCoords = (lat, lng) => {
+    isLoadingMap.value = true;
+    axios.get(`https://nominatim.openstreetmap.org/reverse`, {
+        params: {
+            lat: lat,
+            lon: lng,
+            format: 'json',
+            addressdetails: 1
+        }
+    })
+    .then(response => {
+        if (response.data) {
+            const addr = response.data.address || {};
+            selectedAddress.value = response.data.display_name;
+            
+            // Intentar extraer el distrito o barrio
+            selectedDistrict.value = addr.neighbourhood || addr.suburb || addr.quarter || addr.city_district || addr.town || addr.city || '';
+            console.log("Dirección resuelta:", selectedAddress.value, "Distrito:", selectedDistrict.value);
+        }
+    })
+    .catch(err => {
+        console.error("Error en reverse geocoding:", err);
+    })
+    .finally(() => {
+        isLoadingMap.value = false;
+    });
+};
 
-        // 2. Cargar Capa Oscura (Dark Theme para coincidir con la UI)
+// Función para inicializar el mapa
+const initMap = () => {
+    if (!window.L) {
+        mapError.value = "Leaflet no está cargado. Reintentando...";
+        return;
+    }
+
+    try {
+        // Cargar coordenadas previamente guardadas si existen
+        const savedLat = localStorage.getItem('incidente_mapa_lat');
+        const savedLng = localStorage.getItem('incidente_mapa_lng');
+        const savedAddress = localStorage.getItem('incidente_direccion');
+        const savedDistrict = localStorage.getItem('incidente_distrito');
+
+        let initialCoords = [9.9281, -84.0907];
+        let hasSavedLocation = false;
+
+        if (savedLat && savedLng) {
+            initialCoords = [parseFloat(savedLat), parseFloat(savedLng)];
+            hasSavedLocation = true;
+        }
+
+        // Si ya hay un mapa inicializado, no lo duplicamos
+        if (map) {
+            isLoadingMap.value = false;
+            return;
+        }
+
+        // Crear mapa
+        map = window.L.map('incident-map').setView(initialCoords, hasSavedLocation ? 16 : 14);
+
+        // Capa oscura (Dark Theme para coincidir con la UI)
         window.L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             subdomains: 'abcd',
             maxZoom: 20
         }).addTo(map);
 
-        // 3. Funcionalidad de Marcador
+        // Configurar iconos por defecto usando URLs absolutas de CDN
+        const defaultIcon = window.L.icon({
+            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+            iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        // Si hay una ubicación guardada previa, colocar marcador e inicializar textos
+        if (hasSavedLocation) {
+            currentMarker = window.L.marker(initialCoords, { icon: defaultIcon }).addTo(map);
+            selectedAddress.value = savedAddress || '';
+            selectedDistrict.value = savedDistrict || '';
+        }
+
+        // Configurar marcador si ya se hace click
         map.on('click', function(e) {
             const lat = e.latlng.lat;
             const lng = e.latlng.lng;
@@ -140,40 +228,156 @@ onMounted(() => {
                 map.removeLayer(currentMarker);
             }
 
-            currentMarker = window.L.marker([lat, lng]).addTo(map);
-            console.log(`Ubicación seleccionada: Lat ${lat}, Lng ${lng}`);
+            currentMarker = window.L.marker([lat, lng], { icon: defaultIcon }).addTo(map);
+            fetchAddressFromCoords(lat, lng);
         });
-    } else {
-        console.error("Leaflet.js no está cargado. Asegúrate de tener los CDN en welcome.blade.php");
+
+        // Forzar actualización del layout del mapa en el siguiente frame
+        setTimeout(() => {
+            if (map) {
+                map.invalidateSize();
+            }
+            isLoadingMap.value = false;
+        }, 150);
+
+    } catch (err) {
+        console.error("Error al inicializar el mapa Leaflet:", err);
+        mapError.value = "Ocurrió un error al cargar el mapa. Por favor, recarga la página.";
+        isLoadingMap.value = false;
+    }
+};
+
+// Función para cargar dinámicamente los recursos si no están presentes
+const loadLeafletResources = () => {
+    return new Promise((resolve, reject) => {
+        // Si ya está cargado en window, resolver de inmediato
+        if (window.L) {
+            resolve();
+            return;
+        }
+
+        // Si ya se está cargando el script en la página, esperar a que termine
+        const existingScript = document.querySelector('script[src*="leaflet.js"]');
+        if (existingScript) {
+            existingScript.addEventListener('load', () => resolve());
+            existingScript.addEventListener('error', (e) => reject(e));
+            return;
+        }
+
+        // Si no existen las etiquetas en el DOM, cargarlas dinámicamente
+        // 1. Cargar CSS
+        if (!document.querySelector('link[href*="leaflet.css"]')) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+            document.head.appendChild(link);
+        }
+
+        // 2. Cargar JS
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = (e) => reject(e);
+        document.head.appendChild(script);
+    });
+};
+
+onMounted(async () => {
+    try {
+        await loadLeafletResources();
+        // Un pequeño retraso para asegurar que el DOM esté completamente pintado
+        setTimeout(() => {
+            initMap();
+        }, 100);
+    } catch (err) {
+        console.error("No se pudo cargar Leaflet desde CDN:", err);
+        mapError.value = "Error al descargar recursos del mapa. Verifica tu conexión a internet.";
+        isLoadingMap.value = false;
     }
 });
 
 onUnmounted(() => {
-    // Limpiar instancia del mapa cuando el componente sea destruido para evitar fugas de memoria
     if (map) {
         map.remove();
     }
 });
 
-// 4. Lógica Básica del Buscador
+// Lógica del Buscador con geocodificación gratuita usando OpenStreetMap Nominatim
 const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.value) {
-        alert(`Buscando: ${searchQuery.value}. \n(Requiere integrar servicio de Geocoding para resultados reales)`);
+    if (searchQuery.value && map) {
+        isLoadingMap.value = true;
+        axios.get(`https://nominatim.openstreetmap.org/search`, {
+            params: {
+                q: searchQuery.value,
+                format: 'json',
+                addressdetails: 1,
+                limit: 1
+            }
+        })
+        .then(response => {
+            if (response.data && response.data.length > 0) {
+                const result = response.data[0];
+                const lat = parseFloat(result.lat);
+                const lon = parseFloat(result.lon);
+                
+                // Mover mapa a la ubicación encontrada
+                map.setView([lat, lon], 16);
+                
+                // Colocar marcador automático
+                const defaultIcon = window.L.icon({
+                    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+                    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                });
+
+                if (currentMarker) {
+                    map.removeLayer(currentMarker);
+                }
+                currentMarker = window.L.marker([lat, lon], { icon: defaultIcon }).addTo(map);
+                
+                // Actualizar dirección y distrito a partir del resultado
+                selectedAddress.value = result.display_name;
+                const addr = result.address || {};
+                selectedDistrict.value = addr.neighbourhood || addr.suburb || addr.quarter || addr.city_district || addr.town || addr.city || '';
+                console.log(`Búsqueda exitosa. Marcador colocado en: Lat ${lat}, Lng ${lon}`);
+            } else {
+                alert("No se encontró la dirección. Intenta con otros términos.");
+            }
+        })
+        .catch(err => {
+            console.error("Error buscando dirección:", err);
+            alert("Error al conectar con el servicio de búsqueda.");
+        })
+        .finally(() => {
+            isLoadingMap.value = false;
+        });
     }
 };
 
 // Navegación
 const handleBack = () => {
-    // Volver al formulario de la calle/distrito
     router.push({ name: 'registrar-incidente-ubicacion' });
 };
 
 const handleNext = () => {
-    if(currentMarker) {
-        console.log("Coordenadas guardadas. Avanzando al siguiente paso...");
-        // Cuando la vista del paso 3 esté lista, se activará esta redirección:
-        // router.push({ name: 'registrar-incidente-paso-3' });
+    if (currentMarker) {
+        const position = currentMarker.getLatLng();
+        console.log("Coordenadas guardadas:", position);
+        
+        // Guardar la ubicación en localStorage
+        localStorage.setItem('incidente_mapa_lat', position.lat);
+        localStorage.setItem('incidente_mapa_lng', position.lng);
+        localStorage.setItem('incidente_direccion', selectedAddress.value);
+        localStorage.setItem('incidente_distrito', selectedDistrict.value);
+        
+        // Redirigir de vuelta al formulario de ubicación, que ahora tendrá cargados los datos
+        router.push({ name: 'registrar-incidente-ubicacion' });
     } else {
         alert("Por favor, selecciona una ubicación en el mapa haciendo clic.");
     }
@@ -298,6 +502,63 @@ const handleLogout = async () => {
     .btn-outline:hover { background-color: rgba(255, 255, 255, 0.05); }
     .btn-primary { background-color: var(--primary-blue); border: 1px solid var(--primary-blue); color: white; }
     .btn-primary:hover { background-color: var(--accent-blue); }
+
+    /* Overlays de carga y error */
+    .map-loading-overlay, .map-error-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-card);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        z-index: 10;
+    }
+    .map-error-overlay i {
+        font-size: 40px;
+        color: var(--critical);
+    }
+    .map-error-overlay p {
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-top-color: var(--accent-blue);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Barra de dirección seleccionada */
+    .selected-address-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background-color: rgba(37, 99, 235, 0.08);
+        border: 1px solid var(--accent-blue);
+        border-radius: 10px;
+        padding: 12px 18px;
+        font-size: 13px;
+        color: var(--text-main);
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    .selected-address-bar i {
+        font-size: 18px;
+        color: var(--accent-blue);
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
     /* Responsividad */
     @media (max-width: 900px) {
