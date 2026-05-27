@@ -1,6 +1,7 @@
 <template>
     <div class="dashboard">
         
+<<<<<<< HEAD
         <aside class="sidebar">
             <div class="user-profile">
                 <div class="avatar">LZ</div>
@@ -57,6 +58,13 @@
                     </div>
                 </div>
             </header>
+=======
+        <Sidebar />
+
+        <main class="main-content">
+            
+            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
+>>>>>>> origin/main
 
             <div class="map-view">
                 
@@ -119,9 +127,20 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+=======
+import Sidebar from './Sidebar.vue';
+import TopHeader from './TopHeader.vue';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { useDatetime } from '../composables/useDatetime.js';
+
+const { currentDate, currentTime } = useDatetime();
+>>>>>>> origin/main
 
 const router = useRouter();
 

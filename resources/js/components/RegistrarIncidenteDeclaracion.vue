@@ -1,5 +1,6 @@
 <template>
     <div class="dashboard">
+<<<<<<< HEAD
         <aside class="sidebar">
             <div class="user-profile">
                 <div class="avatar">LZ</div>
@@ -71,6 +72,12 @@
                     </div>
                 </div>
             </header>
+=======
+        <Sidebar />
+
+        <main class="main-content">
+            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
+>>>>>>> origin/main
 
             <div class="form-view">
                 <div class="stepper-container">
@@ -243,6 +250,7 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { reactive, computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -255,6 +263,27 @@ const formData = reactive({
     clima: "",
     via: "",
     pavimento: "",
+=======
+import Sidebar from './Sidebar.vue';
+import TopHeader from './TopHeader.vue';
+import { reactive, computed, ref } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import { useDatetime } from '../composables/useDatetime.js';
+import { useIncidenteStore } from '../composables/useIncidenteStore.js';
+
+const { currentDate, currentTime } = useDatetime();
+const { state: incidenteState } = useIncidenteStore();
+
+const router = useRouter();
+
+// Estado reactivo para el formulario, inicializado desde el store
+const formData = reactive({
+    declaracion: incidenteState.declaracion || "",
+    clima: incidenteState.condicion_climatica || "",
+    via: incidenteState.tipo_via || "",
+    pavimento: incidenteState.estado_pavimento || "",
+>>>>>>> origin/main
 });
 
 const declaracionError = ref(false);
@@ -272,9 +301,24 @@ const selectOption = (group, value) => {
 
 // Navegación
 const handleBack = () => {
+<<<<<<< HEAD
     router.push({ name: "registrar-incidente-ubicacion" });
 };
 
+=======
+    // Guardar datos al retroceder también
+    saveToStore();
+    router.push({ name: "registrar-incidente-ubicacion" });
+};
+
+const saveToStore = () => {
+    incidenteState.declaracion = formData.declaracion;
+    incidenteState.condicion_climatica = formData.clima;
+    incidenteState.tipo_via = formData.via;
+    incidenteState.estado_pavimento = formData.pavimento;
+};
+
+>>>>>>> origin/main
 const handleNext = () => {
     if (formData.declaracion.trim() === "") {
         alert("Por favor, describe lo ocurrido en la declaración.");
@@ -285,6 +329,10 @@ const handleNext = () => {
     }
 
     declaracionError.value = false;
+<<<<<<< HEAD
+=======
+    saveToStore();
+>>>>>>> origin/main
 
     console.log("Avanzando al siguiente paso con los datos:", formData);
     router.push({ name: "registrar-incidente-involucrados" });

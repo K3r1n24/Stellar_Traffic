@@ -1,6 +1,7 @@
 <template>
     <div class="dashboard">
         
+<<<<<<< HEAD
         <aside class="sidebar">
             <div class="user-profile">
                 <div class="avatar">LZ</div>
@@ -112,11 +113,74 @@
                 </div>
 
             </div>
+=======
+        <Sidebar />
+
+        <main class="main-content">
+            
+            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
+
+            <div class="selection-view">
+                
+                <div class="center-header">
+                    <div class="icon-circle">
+                        <i class="ph ph-car"></i>
+                    </div>
+                    <h2>Seleccionar tipo de incidente</h2>
+                    <p>Selecciona la categoría que mejor describa el incidente</p>
+                </div>
+
+                <div class="cards-grid">
+                    <div 
+                        class="option-card selectable-card" 
+                        :class="{ 'selected': selectedType === 'victimas' }"
+                        @click="selectType('victimas')"
+                    >
+                        <div class="card-icon-box">
+                            <i class="ph ph-users-three"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Incidente con<br>victimas o fallecimiento</h3>
+                            <div class="short-divider"></div>
+                            <p>Incidentes que involucran<br>personas lesionadas o<br>fallecidas.</p>
+                        </div>
+                    </div>
+
+                    <div 
+                        class="option-card selectable-card" 
+                        :class="{ 'selected': selectedType === 'materiales' }"
+                        @click="selectType('materiales')"
+                    >
+                        <div class="card-icon-box">
+                            <i class="ph ph-car-profile"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Incidente con<br>daños materiales</h3>
+                            <div class="short-divider"></div>
+                            <p>Incidentes que solo causan<br>daños materiales entre<br>vehículos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-action-bar">
+                    <div class="help-link">
+                        <i class="ph ph-question"></i>
+                        <span>¿No estás seguro?</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-outline" @click="handleCancel">Cancelar</button>
+                        <button class="btn btn-primary" :disabled="!selectedType" @click="handleContinue">Continuar</button>
+                    </div>
+                </div>
+
+            </div>
+>>>>>>> origin/main
         </main>
     </div>
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -134,6 +198,33 @@ const selectType = (type) => {
 // Función para el botón Continuar
 const handleContinue = () => {
     if (selectedType.value) {
+=======
+import Sidebar from './Sidebar.vue';
+import TopHeader from './TopHeader.vue';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { useDatetime } from '../composables/useDatetime.js';
+import { useIncidenteStore } from '../composables/useIncidenteStore.js';
+
+const { currentDate, currentTime } = useDatetime();
+const { state: incidenteState } = useIncidenteStore();
+
+const router = useRouter();
+
+// Estado reactivo para almacenar el tipo de incidente seleccionado
+const selectedType = ref(incidenteState.tipo_accidente || null);
+
+// Función para actualizar el tipo seleccionado
+const selectType = (type) => {
+    selectedType.value = type;
+};
+
+// Función para el botón Continuar
+const handleContinue = () => {
+    if (selectedType.value) {
+        incidenteState.tipo_accidente = selectedType.value;
+>>>>>>> origin/main
         console.log(`Procesando incidente de tipo: ${selectedType.value}`);
         router.push({ name: 'registrar-incidente-detalle', query: { tipo: selectedType.value } });
     }

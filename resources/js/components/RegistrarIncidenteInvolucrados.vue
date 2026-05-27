@@ -1,6 +1,7 @@
 <template>
     <div class="dashboard">
         
+<<<<<<< HEAD
         <aside class="sidebar">
             <div class="user-profile">
                 <div class="avatar">LZ</div>
@@ -57,6 +58,13 @@
                     </div>
                 </div>
             </header>
+=======
+        <Sidebar />
+
+        <main class="main-content">
+            
+            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
+>>>>>>> origin/main
 
             <div class="form-view">
                 
@@ -133,6 +141,7 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -142,6 +151,24 @@ const router = useRouter();
 // Arrays reactivos para las listas dinámicas, inicializados con 2 elementos vacíos como en el HTML original
 const vehiculos = ref(['', '']);
 const personas = ref(['', '']);
+=======
+import Sidebar from './Sidebar.vue';
+import TopHeader from './TopHeader.vue';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { useDatetime } from '../composables/useDatetime.js';
+import { useIncidenteStore } from '../composables/useIncidenteStore.js';
+
+const { currentDate, currentTime } = useDatetime();
+const { state: incidenteState } = useIncidenteStore();
+
+const router = useRouter();
+
+// Arrays reactivos inicializados desde el store
+const vehiculos = ref([...incidenteState.vehiculos]);
+const personas = ref([...incidenteState.personas]);
+>>>>>>> origin/main
 
 // Funciones para agregar campos dinámicamente
 const addVehicle = () => {
@@ -152,19 +179,39 @@ const addPerson = () => {
     personas.value.push('');
 };
 
+<<<<<<< HEAD
 // Navegación
 const handleBack = () => {
+=======
+const saveToStore = () => {
+    incidenteState.vehiculos = [...vehiculos.value];
+    incidenteState.personas = [...personas.value];
+};
+
+// Navegación
+const handleBack = () => {
+    saveToStore();
+>>>>>>> origin/main
     router.push({ name: 'registrar-incidente-declaracion' });
 };
 
 const handleNext = () => {
+<<<<<<< HEAD
+=======
+    saveToStore();
+    
+>>>>>>> origin/main
     // Recolectar datos limpiando campos vacíos
     const data = {
         vehiculos: vehiculos.value.filter(v => v.trim() !== ''),
         personas: personas.value.filter(p => p.trim() !== '')
     };
     
+<<<<<<< HEAD
     console.log("Datos de involucrados recolectados:", data);
+=======
+    console.log("Datos de involucrados guardados en store:", data);
+>>>>>>> origin/main
     
     router.push({ name: 'registrar-incidente-evidencia' });
 };

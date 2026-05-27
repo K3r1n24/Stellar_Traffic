@@ -1,6 +1,7 @@
 <template>
     <div class="dashboard">
         
+<<<<<<< HEAD
         <aside class="sidebar">
             <div class="user-profile">
                 <div class="avatar">LZ</div>
@@ -57,6 +58,13 @@
                     </div>
                 </div>
             </header>
+=======
+        <Sidebar />
+
+        <main class="main-content">
+            
+            <TopHeader title="¡Registro Exitoso!" subtitle="El caso ha sido procesado" />
+>>>>>>> origin/main
 
             <div class="success-view">
                 
@@ -93,9 +101,22 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+=======
+import Sidebar from './Sidebar.vue';
+import TopHeader from './TopHeader.vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { useDatetime } from '../composables/useDatetime.js';
+import { useIncidenteStore } from '../composables/useIncidenteStore.js';
+
+const { currentDate, currentTime } = useDatetime();
+const { reset: resetStore } = useIncidenteStore();
+>>>>>>> origin/main
 
 const router = useRouter();
 
@@ -103,7 +124,11 @@ const router = useRouter();
 const reportId = ref('ACC-2026-4045');
 
 onMounted(() => {
+<<<<<<< HEAD
     // Rescatar el ID generado en pasos anteriores (desde LocalStorage, Pinia/Vuex, o Backend)
+=======
+    // Rescatar el ID generado en pasos anteriores
+>>>>>>> origin/main
     const storedCaseId = localStorage.getItem('currentCaseId');
     if (storedCaseId) {
         reportId.value = storedCaseId;
@@ -113,22 +138,35 @@ onMounted(() => {
 // --- Lógica de Botones ---
 const viewReport = () => {
     console.log(`Abriendo vista de detalles para el reporte: ${reportId.value}`);
+<<<<<<< HEAD
     // Aquí redirigirías a la vista del reporte específico
     // router.push(`/reportes/${reportId.value}`);
+=======
+>>>>>>> origin/main
     alert(`Redirigiendo al detalle del reporte ${reportId.value}`);
 };
 
 const goHome = () => {
     console.log("Navegando al Dashboard principal...");
+<<<<<<< HEAD
     // Limpiar caché temporal de registro si existiera
     localStorage.removeItem('currentCaseId');
+=======
+    localStorage.removeItem('currentCaseId');
+    resetStore();
+>>>>>>> origin/main
     router.push({ name: 'dashboard' });
 };
 
 const newIncident = () => {
     console.log("Reiniciando el flujo de registro...");
+<<<<<<< HEAD
     // Limpiar caché y redirigir al Paso inicial (o selección de tipo)
     localStorage.removeItem('currentCaseId');
+=======
+    localStorage.removeItem('currentCaseId');
+    resetStore();
+>>>>>>> origin/main
     router.push({ name: 'registrar-incidente' });
 };
 

@@ -1,6 +1,7 @@
 <template>
     <div class="dashboard">
         
+<<<<<<< HEAD
         <aside class="sidebar">
             <div class="user-profile">
                 <div class="avatar">LZ</div>
@@ -57,6 +58,13 @@
                     </div>
                 </div>
             </header>
+=======
+        <Sidebar />
+
+        <main class="main-content">
+            
+            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
+>>>>>>> origin/main
 
             <div class="form-view">
                 
@@ -128,6 +136,7 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { reactive, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -152,6 +161,27 @@ const generateCaseID = () => {
 // Generar el ID al montar el componente
 onMounted(() => {
     formData.casoId = generateCaseID();
+=======
+import Sidebar from './Sidebar.vue';
+import TopHeader from './TopHeader.vue';
+import { reactive, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { useDatetime } from '../composables/useDatetime.js';
+import { useIncidenteStore } from '../composables/useIncidenteStore.js';
+
+const { currentDate, currentTime } = useDatetime();
+const { state: incidenteState } = useIncidenteStore();
+
+const router = useRouter();
+
+// Usar el estado compartido directamente como formData
+const formData = reactive({
+    fecha: incidenteState.fecha_incidente,
+    hora: incidenteState.hora_aproximada,
+    casoId: incidenteState.id_caso,
+    gravedad: incidenteState.gravedad
+>>>>>>> origin/main
 });
 
 // Computed property para el color del punto de gravedad
@@ -182,8 +212,18 @@ const triggerSubmit = () => {
 };
 
 const handleSubmit = () => {
+<<<<<<< HEAD
     console.log("Formulario listo para enviarse al siguiente paso.", formData);
     // Cuando exista la siguiente vista (ej. Ubicación):
+=======
+    // Guardar datos en el store compartido
+    incidenteState.fecha_incidente = formData.fecha;
+    incidenteState.hora_aproximada = formData.hora;
+    incidenteState.id_caso = formData.casoId;
+    incidenteState.gravedad = formData.gravedad;
+    
+    console.log("Formulario guardado en store. Avanzando...", formData);
+>>>>>>> origin/main
     router.push({ name: 'registrar-incidente-ubicacion' });
 };
 
