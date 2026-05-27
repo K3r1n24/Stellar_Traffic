@@ -135,8 +135,7 @@ const selectType = (type) => {
 const handleContinue = () => {
     if (selectedType.value) {
         console.log(`Procesando incidente de tipo: ${selectedType.value}`);
-        // Cuando tengas la siguiente vista, puedes usar:
-        // router.push({ name: 'ruta-siguiente', query: { tipo: selectedType.value } });
+        router.push({ name: 'registrar-incidente-detalle', query: { tipo: selectedType.value } });
     }
 };
 
