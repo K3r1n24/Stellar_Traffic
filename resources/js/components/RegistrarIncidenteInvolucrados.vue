@@ -67,9 +67,8 @@
                     
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
-                    <div class="step-dot active"></div> 
-                    <div class="step-dot"></div>
-                    <div class="step-dot"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div> <div class="step-dot"></div>
                 </div>
 
                 <div class="details-card">
@@ -82,97 +81,41 @@
                         </div>
                     </div>
 
-                    <form id="details-form" style="display: flex; flex-direction: column; gap: 25px;">
+                    <form id="involved-form" style="display: flex; flex-direction: column; gap: 35px;" @submit.prevent>
                         
-                        <div class="form-group">
-                            <label>Declaración</label>
-                            <div class="textarea-wrapper" :class="{ 'error': declaracionError }">
-                                <textarea 
-                                    id="declaracion-input" 
-                                    class="textarea-control" 
-                                    placeholder="Describe lo ocurrido..." 
-                                    maxlength="500"
-                                    v-model="formData.declaracion"
-                                ></textarea>
-                                <span 
-                                    class="char-counter" 
-                                    :style="{ color: charCountColor }"
-                                >{{ charCount }}/500</span>
+                        <div class="dynamic-list-container">
+                            <div class="list-header-row">
+                                <span class="list-title">Vehículos</span>
+                                <span class="add-btn" @click="addVehicle">Agregar vehículo +</span>
+                            </div>
+                            <div class="list-inputs" id="vehicles-list">
+                                <input 
+                                    v-for="(vehiculo, index) in vehiculos" 
+                                    :key="'vehiculo-' + index"
+                                    type="text" 
+                                    class="outline-input" 
+                                    :class="{ 'new-input': index >= 2 }"
+                                    placeholder="Marca/Año/Matricula"
+                                    v-model="vehiculos[index]"
+                                >
                             </div>
                         </div>
 
-                        <div class="selection-row">
-                            <div class="row-label-box">Condición climática</div>
-                            <div 
-                                class="option-btn" 
-                                :class="{ 'selected': formData.clima === 'soleado' }"
-                                @click="selectOption('clima', 'soleado')"
-                            >
-                                <i class="ph ph-sun"></i><span>Soleado</span>
+                        <div class="dynamic-list-container">
+                            <div class="list-header-row">
+                                <span class="list-title">Personas</span>
+                                <span class="add-btn" @click="addPerson">Agregar persona +</span>
                             </div>
-                            <div 
-                                class="option-btn" 
-                                :class="{ 'selected': formData.clima === 'lluvioso' }"
-                                @click="selectOption('clima', 'lluvioso')"
-                            >
-                                <i class="ph ph-cloud-rain"></i><span>Lluvioso</span>
-                            </div>
-                            <div 
-                                class="option-btn" 
-                                :class="{ 'selected': formData.clima === 'nublado' }"
-                                @click="selectOption('clima', 'nublado')"
-                            >
-                                <i class="ph ph-cloud"></i><span>Nublado</span>
-                            </div>
-                        </div>
-
-                        <div class="selection-row">
-                            <div class="row-label-box">Tipo de vía</div>
-                            <div 
-                                class="option-btn" 
-                                :class="{ 'selected': formData.via === 'urbana' }"
-                                @click="selectOption('via', 'urbana')"
-                            >
-                                <i class="ph ph-buildings"></i><span>Urbana</span>
-                            </div>
-                            <div 
-                                class="option-btn" 
-                                :class="{ 'selected': formData.via === 'carretera' }"
-                                @click="selectOption('via', 'carretera')"
-                            >
-                                <i class="ph ph-road-horizon"></i><span>Carretera</span>
-                            </div>
-                            <div 
-                                class="option-btn" 
-                                :class="{ 'selected': formData.via === 'rural' }"
-                                @click="selectOption('via', 'rural')"
-                            >
-                                <i class="ph ph-tree"></i><span>Rural</span>
-                            </div>
-                        </div>
-
-                        <div class="selection-row">
-                            <div class="row-label-box">Estado del pavimento</div>
-                            <div 
-                                class="option-btn" 
-                                :class="{ 'selected': formData.pavimento === 'asfalto' }"
-                                @click="selectOption('pavimento', 'asfalto')"
-                            >
-                                <i class="ph ph-road"></i><span>Asfalto</span>
-                            </div>
-                            <div 
-                                class="option-btn" 
-                                :class="{ 'selected': formData.pavimento === 'polvo' }"
-                                @click="selectOption('pavimento', 'polvo')"
-                            >
-                                <i class="ph ph-wind"></i><span>Polvo</span>
-                            </div>
-                            <div 
-                                class="option-btn" 
-                                :class="{ 'selected': formData.pavimento === 'piedra' }"
-                                @click="selectOption('pavimento', 'piedra')"
-                            >
-                                <i class="ph ph-dots-nine"></i><span>Piedra</span>
+                            <div class="list-inputs" id="persons-list">
+                                <input 
+                                    v-for="(persona, index) in personas" 
+                                    :key="'persona-' + index"
+                                    type="text" 
+                                    class="outline-input" 
+                                    :class="{ 'new-input': index >= 2 }"
+                                    placeholder="Nombre/Licencia/Condición"
+                                    v-model="personas[index]"
+                                >
                             </div>
                         </div>
 
@@ -190,51 +133,42 @@
 </template>
 
 <script setup>
-import { reactive, computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
 
-// Estado reactivo para el formulario
-const formData = reactive({
-    declaracion: '',
-    clima: '',
-    via: '',
-    pavimento: ''
-});
+// Arrays reactivos para las listas dinámicas, inicializados con 2 elementos vacíos como en el HTML original
+const vehiculos = ref(['', '']);
+const personas = ref(['', '']);
 
-const declaracionError = ref(false);
+// Funciones para agregar campos dinámicamente
+const addVehicle = () => {
+    vehiculos.value.push('');
+};
 
-// Contador de caracteres
-const charCount = computed(() => formData.declaracion.length);
-const charCountColor = computed(() => {
-    return charCount.value >= 500 ? 'var(--critical)' : 'var(--text-muted)';
-});
-
-// Función genérica para selección exclusiva por fila
-const selectOption = (group, value) => {
-    formData[group] = value;
+const addPerson = () => {
+    personas.value.push('');
 };
 
 // Navegación
 const handleBack = () => {
-    router.push({ name: 'registrar-incidente-ubicacion' });
+    router.push({ name: 'registrar-incidente-declaracion' });
 };
 
 const handleNext = () => {
-    if (formData.declaracion.trim() === '') {
-        alert("Por favor, describe lo ocurrido en la declaración.");
-        declaracionError.value = true;
-        const input = document.getElementById('declaracion-input');
-        if (input) input.focus();
-        return;
-    }
+    // Recolectar datos limpiando campos vacíos
+    const data = {
+        vehiculos: vehiculos.value.filter(v => v.trim() !== ''),
+        personas: personas.value.filter(p => p.trim() !== '')
+    };
     
-    declaracionError.value = false;
+    console.log("Datos de involucrados recolectados:", data);
     
-    console.log("Avanzando al siguiente paso con los datos:", formData);
-    router.push({ name: 'registrar-incidente-involucrados' });
+    // Redirigir a la siguiente pantalla (Paso 5) cuando esté lista
+    // router.push({ name: 'registrar-incidente-paso-5' });
+    alert("Datos de involucrados guardados. ¡Listo para avanzar al último paso!");
 };
 
 const goTo = (path) => {
@@ -318,12 +252,12 @@ const handleLogout = async () => {
     /* --- VISTA DEL FORMULARIO --- */
     .form-view { flex: 1; display: flex; flex-direction: column; max-width: 900px; margin: 0 auto; width: 100%; }
 
-    /* Stepper - Paso 3 */
+    /* Stepper - Paso 4 */
     .stepper-container { position: relative; margin: 30px 0 50px 0; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 10px; }
     .stepper-background-line { position: absolute; top: 50%; left: 0; width: 100%; height: 6px; background-color: #ffffff; transform: translateY(-50%); border-radius: 3px; z-index: 1; }
     
-    /* Línea activa cubriendo hasta el tercer punto (50%) */
-    .stepper-active-line { position: absolute; top: 50%; left: 0; width: 50%; height: 6px; background-color: var(--accent-blue); transform: translateY(-50%); border-radius: 3px; z-index: 2; transition: width 0.4s ease; }
+    /* Línea activa cubriendo hasta el cuarto punto (aprox 75%) */
+    .stepper-active-line { position: absolute; top: 50%; left: 0; width: 75%; height: 6px; background-color: var(--accent-blue); transform: translateY(-50%); border-radius: 3px; z-index: 2; transition: width 0.4s ease; }
     
     .step-dot { width: 24px; height: 24px; border-radius: 50%; background-color: #ffffff; z-index: 3; position: relative; transition: 0.4s ease; }
     .step-dot.active { background-color: var(--accent-blue); box-shadow: 0 0 12px var(--accent-blue); }
@@ -337,33 +271,38 @@ const handleLogout = async () => {
     .section-header-text h3 { font-size: 16px; font-weight: 500; margin: 0; }
     .section-header-text p { font-size: 12px; color: var(--text-muted); margin: 0; }
 
-    /* Área de Texto (Declaración) */
-    .form-group { display: flex; flex-direction: column; gap: 10px; }
-    .form-group label { font-size: 14px; color: var(--text-main); margin-bottom: 5px; }
+    /* Listas Dinámicas (Vehículos y Personas) */
+    .dynamic-list-container { display: flex; flex-direction: column; gap: 15px; }
     
-    .textarea-wrapper { background-color: transparent; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; position: relative; transition: 0.3s; display: flex; flex-direction: column; }
-    .textarea-wrapper:focus-within { border-color: var(--accent-blue); background-color: rgba(37, 99, 235, 0.05); }
-    .textarea-wrapper.error { border-color: var(--critical); }
-    
-    .textarea-control { background: transparent; border: none; color: var(--text-main); font-size: 14px; width: 100%; min-height: 100px; resize: none; outline: none; }
-    .textarea-control::placeholder { color: var(--text-muted); }
-    
-    .char-counter { align-self: flex-end; font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+    .list-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .list-title { font-size: 14px; color: var(--text-main); }
+    .add-btn { font-size: 13px; color: var(--accent-blue); cursor: pointer; font-weight: 500; transition: color 0.2s; }
+    .add-btn:hover { color: #60a5fa; text-decoration: underline; }
 
-    /* Cuadrículas de Selección */
-    .selection-row { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 20px; align-items: stretch; }
+    /* Inputs de lista */
+    .list-inputs { display: flex; flex-direction: column; gap: 15px; }
     
-    .row-label-box { background-color: transparent; border: 1px solid var(--border-color); border-radius: 12px; display: flex; align-items: center; padding: 0 20px; font-size: 14px; color: var(--text-main); }
-    
-    .option-btn { background-color: transparent; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.3s ease; }
-    .option-btn i { font-size: 24px; color: var(--text-main); transition: 0.3s; }
-    .option-btn span { font-size: 13px; color: var(--text-main); text-align: center; }
-    
-    .option-btn:hover { border-color: var(--accent-blue); background-color: rgba(255, 255, 255, 0.02); }
-    
-    /* Estado Activo de las Opciones */
-    .option-btn.selected { border-color: var(--accent-blue); background-color: rgba(37, 99, 235, 0.1); }
-    .option-btn.selected i { color: var(--accent-blue); }
+    .outline-input { 
+        background-color: rgba(255, 255, 255, 0.02); 
+        border: 1px solid var(--border-color); 
+        border-radius: 12px; 
+        padding: 0 20px; 
+        height: 55px; 
+        width: 100%;
+        color: var(--text-main);
+        font-size: 14px;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+    .outline-input::placeholder { color: var(--text-muted); }
+    .outline-input:focus { border-color: var(--accent-blue); background-color: rgba(37, 99, 235, 0.05); }
+
+    /* Animación para nuevos inputs */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .new-input { animation: fadeIn 0.3s ease-out; }
 
     /* Barra de Acciones Inferior */
     .bottom-action-bar { margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; }
@@ -376,8 +315,6 @@ const handleLogout = async () => {
     /* Responsividad */
     @media (max-width: 900px) {
         .stepper-container { display: none; }
-        .selection-row { grid-template-columns: 1fr; gap: 10px; }
-        .row-label-box { padding: 15px; justify-content: center; background-color: rgba(255,255,255,0.02); }
         .details-card { padding: 30px 20px; }
     }
 </style>
