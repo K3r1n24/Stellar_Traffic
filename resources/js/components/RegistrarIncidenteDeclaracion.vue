@@ -22,7 +22,7 @@
                     <li class="nav-item">
                         <i class="ph ph-magnifying-glass"></i> Buscar casos
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" @click="goTo('/ver-mapa')">
                         <i class="ph ph-map-pin"></i> Ver mapa
                     </li>
                 </ul>

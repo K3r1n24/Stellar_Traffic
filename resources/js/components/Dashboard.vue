@@ -17,7 +17,7 @@
                     <li class="nav-item" :class="{ active: activeNav === 'Inicio' }" @click="activeNav = 'Inicio'"><i class="ph ph-house"></i> Inicio</li>
                     <li class="nav-item" @click="goTo('/registrar-incidente')"><i class="ph ph-plus-square"></i> Registrar incidente</li>
                     <li class="nav-item" :class="{ active: activeNav === 'Buscar casos' }" @click="activeNav = 'Buscar casos'"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
-                    <li class="nav-item" :class="{ active: activeNav === 'Ver mapa' }" @click="activeNav = 'Ver mapa'"><i class="ph ph-map-pin"></i> Ver mapa</li>
+                    <li class="nav-item" :class="{ active: activeNav === 'Ver mapa' }" @click="goTo('/ver-mapa')"><i class="ph ph-map-pin"></i> Ver mapa</li>
                 </ul>
             </div>
 
@@ -69,7 +69,7 @@
                         </div>
                         <i class="ph ph-caret-right arrow"></i>
                     </div>
-                    <div class="card card-action" :class="{ 'active-card': activeCard === 'Ver mapa' }" @click="activeCard = 'Ver mapa'">
+                    <div class="card card-action" :class="{ 'active-card': activeCard === 'Ver mapa' }" @click="goTo('/ver-mapa')">
                         <div class="icon-box icon-blue"><i class="ph ph-map-pin"></i></div>
                         <div class="card-text">
                             <h4>Ver mapa</h4>

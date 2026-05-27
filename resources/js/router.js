@@ -9,12 +9,18 @@ import RegistrarIncidenteInvolucrados from './components/RegistrarIncidenteInvol
 import RegistrarIncidenteEvidencia from './components/RegistrarIncidenteEvidencia.vue';
 import RegistrarIncidenteConfirmacion from './components/RegistrarIncidenteConfirmacion.vue';
 import RegistrarIncidenteExito from './components/RegistrarIncidenteExito.vue';
+import VerMapa from './components/VerMapa.vue';
 
 const routes = [
     {
         path: '/dashboard',
         name: 'dashboard',
         component: Dashboard
+    },
+    {
+        path: '/ver-mapa',
+        name: 'ver-mapa',
+        component: VerMapa
     },
     {
         path: '/registrar-incidente',

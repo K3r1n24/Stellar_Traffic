@@ -17,7 +17,7 @@
                     <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
                     <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
                     <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
-                    <li class="nav-item"><i class="ph ph-map-pin"></i> Ver mapa</li>
+                    <li class="nav-item" @click="goTo('/ver-mapa')"><i class="ph ph-map-pin"></i> Ver mapa</li>
                 </ul>
             </div>
 
