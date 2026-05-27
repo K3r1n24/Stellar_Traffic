@@ -1,62 +1,11 @@
 <template>
     <div class="dashboard">
         
-        <aside class="sidebar">
-            <div class="user-profile">
-                <div class="avatar">LZ</div>
-                <div class="user-info">
-                    <h4>Luis Zelaya</h4>
-                    <span>PANEL DE CONTROL PNC</span>
-                </div>
-                <i class="ph ph-list menu-icon"></i>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">PRINCIPAL</p>
-                <ul class="nav-list" id="main-nav">
-                    <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
-                    <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
-                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
-                    <li class="nav-item" @click="goTo('/ver-mapa')"><i class="ph ph-map-pin"></i> Ver mapa</li>
-                </ul>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">SISTEMA</p>
-                <ul class="nav-list">
-                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
-                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
-                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
-                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
-                </ul>
-            </div>
-
-            <div class="logout" @click="handleLogout">
-                <i class="ph ph-sign-out"></i> Salir de la cuenta
-            </div>
-        </aside>
+        <Sidebar />
 
         <main class="main-content">
             
-            <header class="header">
-                <div class="header-titles">
-                    <h1>Registro de Incidente</h1>
-                    <p>Gestión rápida de incidentes y monitoreo vial</p>
-                </div>
-                <div class="header-actions">
-                    <div class="datetime-pill">
-                        <i class="ph ph-calendar-blank"></i>
-                        <div class="dt-text">
-                            <span class="date">12 Mayo 2026</span>
-                            <span class="time">09:23 PM</span>
-                        </div>
-                    </div>
-                    <div class="notification">
-                        <i class="ph ph-bell"></i>
-                        <span class="badge">2</span>
-                    </div>
-                </div>
-            </header>
+            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
 
             <div class="form-view">
                 
@@ -133,15 +82,22 @@
 </template>
 
 <script setup>
+import Sidebar from './Sidebar.vue';
+import TopHeader from './TopHeader.vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { useDatetime } from '../composables/useDatetime.js';
+import { useIncidenteStore } from '../composables/useIncidenteStore.js';
+
+const { currentDate, currentTime } = useDatetime();
+const { state: incidenteState } = useIncidenteStore();
 
 const router = useRouter();
 
-// Arrays reactivos para las listas dinámicas, inicializados con 2 elementos vacíos como en el HTML original
-const vehiculos = ref(['', '']);
-const personas = ref(['', '']);
+// Arrays reactivos inicializados desde el store
+const vehiculos = ref([...incidenteState.vehiculos]);
+const personas = ref([...incidenteState.personas]);
 
 // Funciones para agregar campos dinámicamente
 const addVehicle = () => {
@@ -152,19 +108,27 @@ const addPerson = () => {
     personas.value.push('');
 };
 
+const saveToStore = () => {
+    incidenteState.vehiculos = [...vehiculos.value];
+    incidenteState.personas = [...personas.value];
+};
+
 // Navegación
 const handleBack = () => {
+    saveToStore();
     router.push({ name: 'registrar-incidente-declaracion' });
 };
 
 const handleNext = () => {
+    saveToStore();
+    
     // Recolectar datos limpiando campos vacíos
     const data = {
         vehiculos: vehiculos.value.filter(v => v.trim() !== ''),
         personas: personas.value.filter(p => p.trim() !== '')
     };
     
-    console.log("Datos de involucrados recolectados:", data);
+    console.log("Datos de involucrados guardados en store:", data);
     
     router.push({ name: 'registrar-incidente-evidencia' });
 };
