@@ -135,11 +135,24 @@
                                 <div class="file-icon-box">
                                     <i class="ph" :class="getIconClass(file)"></i>
                                 </div>
-                                <div class="file-info">
+                                <div class="file-info" @click="isImage(file) ? previewImage(file) : null" :style="isImage(file) ? 'cursor: pointer;' : ''">
                                     <h4>{{ file.name }}</h4>
                                     <p>{{ file.size }} - {{ file.date }}</p>
                                 </div>
-                                <i class="ph ph-dots-three-vertical file-options"></i>
+                                <div class="options-container">
+                                    <i class="ph ph-dots-three-vertical file-options" @click.stop="toggleMenu(index, $event)"></i>
+                                    <div v-if="activeMenuIndex === index" class="options-dropdown">
+                                        <button v-if="isImage(file)" @click.stop="previewImage(file)" class="dropdown-item">
+                                            <i class="ph ph-eye"></i> Previsualizar
+                                        </button>
+                                        <button @click.stop="openRenameModal(file, index)" class="dropdown-item">
+                                            <i class="ph ph-pencil-simple"></i> Renombrar
+                                        </button>
+                                        <button @click.stop="deleteFile(index)" class="dropdown-item text-danger">
+                                            <i class="ph ph-trash"></i> Eliminar
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -151,13 +164,51 @@
                     <button class="btn btn-primary" type="button" @click="handleNext">Continuar</button>
                 </div>
 
+                <!-- Modal de Previsualización de Imagen -->
+                <div v-if="showPreview" class="modal-overlay" @click="closePreview">
+                    <div class="modal-content preview-modal" @click.stop>
+                        <div class="modal-header">
+                            <h3>{{ previewFile?.name }}</h3>
+                            <button class="btn-close" @click="closePreview"><i class="ph ph-x"></i></button>
+                        </div>
+                        <div class="modal-body img-preview-container">
+                            <img :src="previewFile?.url" :alt="previewFile?.name" class="preview-img">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de Renombrado -->
+                <div v-if="showRenameModal" class="modal-overlay" @click="closeRenameModal">
+                    <div class="modal-content rename-modal" @click.stop>
+                        <div class="modal-header">
+                            <h3>Renombrar archivo</h3>
+                            <button class="btn-close" @click="closeRenameModal"><i class="ph ph-x"></i></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="modal-label">Nuevo nombre del archivo</p>
+                            <input 
+                                type="text" 
+                                v-model="renameValue" 
+                                class="modal-input" 
+                                @keyup.enter="confirmRename"
+                                ref="renameInput"
+                                placeholder="Nombre del archivo..."
+                            >
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-outline btn-sm" @click="closeRenameModal">Cancelar</button>
+                            <button class="btn btn-primary btn-sm" @click="confirmRename">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -165,16 +216,25 @@ const router = useRouter();
 
 // --- ESTADO REACTIVO ---
 const uploadedFiles = ref([
-    { name: "Foto_escena_01.jpg", size: "2.4MB", date: "15 abr 2026, 10:30 AM", type: "image" },
-    { name: "Foto_escena_02.jpg", size: "2.4MB", date: "15 abr 2026, 10:30 AM", type: "image" },
-    { name: "Croquis_accidente.pdf", size: "2.7MB", date: "15 abr 2026, 10:30 AM", type: "pdf" },
-    { name: "Notas_adicionales.docx", size: "2.8MB", date: "15 abr 2026, 10:30 AM", type: "doc" },
-    { name: "Observaciones_importantes.pdf", size: "2.9MB", date: "15 abr 2026, 10:30 AM", type: "pdf" }
+    { name: "Foto_escena_01.jpg", size: "2.4MB", date: "15 abr 2026, 10:30 AM", type: "image", url: "https://images.unsplash.com/photo-1588614959060-4d144f28b207?q=80&w=800&auto=format&fit=crop" },
+    { name: "Foto_escena_02.jpg", size: "2.4MB", date: "15 abr 2026, 10:30 AM", type: "image", url: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?q=80&w=800&auto=format&fit=crop" },
+    { name: "Croquis_accidente.pdf", size: "2.7MB", date: "15 abr 2026, 10:30 AM", type: "pdf", url: null },
+    { name: "Notas_adicionales.docx", size: "2.8MB", date: "15 abr 2026, 10:30 AM", type: "doc", url: null },
+    { name: "Observaciones_importantes.pdf", size: "2.9MB", date: "15 abr 2026, 10:30 AM", type: "pdf", url: null }
 ]);
 
 const searchQuery = ref('');
 const isDragover = ref(false);
 const fileInput = ref(null);
+
+// --- ESTADO DE OPCIONES Y MODALES ---
+const activeMenuIndex = ref(null);
+const showPreview = ref(false);
+const previewFile = ref(null);
+const showRenameModal = ref(false);
+const renameIndex = ref(null);
+const renameValue = ref('');
+const renameInput = ref(null);
 
 // --- PROPIEDAD COMPUTADA PARA FILTRADO ---
 const filteredFiles = computed(() => {
@@ -183,12 +243,99 @@ const filteredFiles = computed(() => {
     return uploadedFiles.value.filter(file => file.name.toLowerCase().includes(lowerQuery));
 });
 
+// --- COMPROBACIÓN DE TIPOS ---
+const isImage = (file) => {
+    return file.type.includes('image') || file.name.endsWith('.jpg') || file.name.endsWith('.png') || file.name.endsWith('.jpeg');
+};
+
 // --- LÓGICA DE UI (Iconos) ---
 const getIconClass = (file) => {
-    if (file.type.includes('image') || file.name.endsWith('.jpg') || file.name.endsWith('.png')) return 'ph-image';
+    if (isImage(file)) return 'ph-image';
     if (file.type.includes('pdf') || file.name.endsWith('.pdf')) return 'ph-file-pdf';
     if (file.type.includes('video') || file.name.endsWith('.mp4')) return 'ph-video';
     return 'ph-file-text';
+};
+
+// --- MÉTODOS DE MENÚ CONTEXTUAL ---
+const toggleMenu = (index, event) => {
+    if (activeMenuIndex.value === index) {
+        activeMenuIndex.value = null;
+    } else {
+        activeMenuIndex.value = index;
+    }
+};
+
+const closeAllMenus = () => {
+    activeMenuIndex.value = null;
+};
+
+// --- OPERACIONES CON ARCHIVOS ---
+const deleteFile = (index) => {
+    // Al usar filteredFiles, necesitamos mapear el índice filtrado al índice real en uploadedFiles
+    const fileToDelete = filteredFiles.value[index];
+    const realIndex = uploadedFiles.value.findIndex(f => f === fileToDelete);
+    if (realIndex !== -1) {
+        // Si el archivo tiene un Object URL local, revocarlo para no causar fugas de memoria
+        if (uploadedFiles.value[realIndex].url && uploadedFiles.value[realIndex].url.startsWith('blob:')) {
+            URL.revokeObjectURL(uploadedFiles.value[realIndex].url);
+        }
+        uploadedFiles.value.splice(realIndex, 1);
+    }
+    closeAllMenus();
+};
+
+const openRenameModal = (file, index) => {
+    const fileToRename = filteredFiles.value[index];
+    const realIndex = uploadedFiles.value.findIndex(f => f === fileToRename);
+    renameIndex.value = realIndex;
+    
+    // Obtener el nombre sin la extensión
+    const lastDotIndex = file.name.lastIndexOf('.');
+    if (lastDotIndex !== -1) {
+        renameValue.value = file.name.substring(0, lastDotIndex);
+    } else {
+        renameValue.value = file.name;
+    }
+    
+    showRenameModal.value = true;
+    closeAllMenus();
+    
+    nextTick(() => {
+        if (renameInput.value) {
+            renameInput.value.focus();
+            renameInput.value.select();
+        }
+    });
+};
+
+const closeRenameModal = () => {
+    showRenameModal.value = false;
+    renameIndex.value = null;
+    renameValue.value = '';
+};
+
+const confirmRename = () => {
+    if (!renameValue.value.trim() || renameIndex.value === null) return;
+    
+    const file = uploadedFiles.value[renameIndex.value];
+    const lastDotIndex = file.name.lastIndexOf('.');
+    const extension = lastDotIndex !== -1 ? file.name.substring(lastDotIndex) : '';
+    
+    // Conservar la extensión original
+    file.name = renameValue.value.trim() + extension;
+    
+    closeRenameModal();
+};
+
+const previewImage = (file) => {
+    previewFile.value = file;
+    showPreview.value = true;
+    closeAllMenus();
+};
+
+const closePreview = () => {
+    showPreview.value = false;
+    previewFile.value = null;
 };
 
 // --- DRAG & DROP Y UPLOAD DE ARCHIVOS ---
@@ -226,12 +373,16 @@ const handleFiles = (files) => {
         const options = { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
         const dateStr = now.toLocaleDateString('es-ES', options).replace(',', '');
 
+        // Generar URL temporal si es imagen
+        const urlStr = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+
         // Crear objeto de archivo
         const newFileObj = {
             name: file.name,
             size: sizeStr,
             date: dateStr,
-            type: file.type || "file"
+            type: file.type || "file",
+            url: urlStr
         };
 
         // Insertar al inicio de la lista
@@ -241,6 +392,25 @@ const handleFiles = (files) => {
     // Limpiar búsqueda si el usuario sube un archivo nuevo mientras buscaba
     searchQuery.value = '';
 };
+
+// --- MANEJADORES DE TECLADO / EVENTOS GLOBALES ---
+const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+        closePreview();
+        closeRenameModal();
+        closeAllMenus();
+    }
+};
+
+onMounted(() => {
+    window.addEventListener('click', closeAllMenus);
+    window.addEventListener('keydown', handleKeyDown);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('click', closeAllMenus);
+    window.removeEventListener('keydown', handleKeyDown);
+});
 
 // --- NAVEGACIÓN ---
 const handleBack = () => {
@@ -473,6 +643,203 @@ const handleLogout = async () => {
         transition: 0.2s;
     }
     .file-options:hover { color: var(--accent-blue); }
+
+    /* Dropdown de Opciones */
+    .options-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    
+    .options-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        z-index: 100;
+        min-width: 140px;
+        display: flex;
+        flex-direction: column;
+        padding: 6px 0;
+        margin-top: 5px;
+        animation: fadeInDropdown 0.15s ease-out;
+    }
+
+    @keyframes fadeInDropdown {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dropdown-item {
+        background: transparent;
+        border: none;
+        color: var(--text-main);
+        padding: 10px 16px;
+        font-size: 12px;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        transition: background-color 0.2s;
+    }
+
+    .dropdown-item:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .dropdown-item i {
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+
+    .dropdown-item.text-danger {
+        color: var(--critical);
+    }
+
+    .dropdown-item.text-danger i {
+        color: var(--critical);
+    }
+
+    /* Modales */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+        animation: fadeInModal 0.2s ease-out;
+    }
+
+    @keyframes fadeInModal {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .modal-content {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        animation: slideInModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideInModal {
+        from { transform: scale(0.95) translateY(10px); }
+        to { transform: scale(1) translateY(0); }
+    }
+
+    .preview-modal {
+        width: 90%;
+        max-width: 800px;
+        max-height: 85vh;
+    }
+
+    .rename-modal {
+        width: 90%;
+        max-width: 420px;
+        padding: 20px;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    .btn-close {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 18px;
+        cursor: pointer;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+    }
+
+    .btn-close:hover {
+        color: var(--text-main);
+    }
+
+    .modal-body {
+        padding: 20px;
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .img-preview-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.2);
+        max-height: 60vh;
+        padding: 0;
+    }
+
+    .preview-img {
+        max-width: 100%;
+        max-height: 60vh;
+        object-fit: contain;
+    }
+
+    .modal-label {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+
+    .modal-input {
+        width: 100%;
+        background-color: var(--bg-dark);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px;
+        color: var(--text-main);
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .modal-input:focus {
+        border-color: var(--accent-blue);
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 10px 0 0 0;
+    }
+
+    .btn-sm {
+        padding: 10px 20px;
+        font-size: 12px;
+        border-radius: 8px;
+    }
 
     /* Barra de Acciones Inferior */
     .bottom-action-bar { margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; }
