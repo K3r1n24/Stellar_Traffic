@@ -166,9 +166,7 @@ const handleNext = () => {
     
     console.log("Datos de involucrados recolectados:", data);
     
-    // Redirigir a la siguiente pantalla (Paso 5) cuando esté lista
-    // router.push({ name: 'registrar-incidente-paso-5' });
-    alert("Datos de involucrados guardados. ¡Listo para avanzar al último paso!");
+    router.push({ name: 'registrar-incidente-evidencia' });
 };
 
 const goTo = (path) => {
