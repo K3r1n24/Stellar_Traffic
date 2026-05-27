@@ -418,11 +418,7 @@ const handleBack = () => {
 };
 
 const handleNext = () => {
-    console.log(`Finalizando. Total de evidencias subidas: ${uploadedFiles.value.length}`);
-    alert('¡Registro de incidente completado con éxito!');
-    // Aquí podrías enviar todo el payload al backend (PostgreSQL) usando Axios
-    // y luego redirigir:
-    // router.push({ name: 'dashboard' });
+    router.push({ name: 'registrar-incidente-confirmacion' });
 };
 
 const goTo = (path) => {
