@@ -1,7 +1,6 @@
 <template>
     <div class="dashboard">
         
-<<<<<<< HEAD
         <aside class="sidebar">
             <div class="user-profile">
                 <div class="avatar">LZ</div>
@@ -58,13 +57,6 @@
                     </div>
                 </div>
             </header>
-=======
-        <Sidebar />
-
-        <main class="main-content">
-            
-            <TopHeader title="Panel Principal" subtitle="Resumen de actividad y estado vial actual" />
->>>>>>> origin/main
 
             <section class="content-section">
                 <h3 class="section-title">ACCESO RÁPIDO</h3>
@@ -77,11 +69,7 @@
                         </div>
                         <i class="ph ph-caret-right arrow"></i>
                     </div>
-<<<<<<< HEAD
                     <div class="card card-action" :class="{ 'active-card': activeCard === 'Ver mapa' }" @click="goTo('/ver-mapa')">
-=======
-                    <div class="card card-action" :class="{ 'active-card': activeCard === 'Ver mapa' }" @click="activeCard = 'Ver mapa'">
->>>>>>> origin/main
                         <div class="icon-box icon-blue"><i class="ph ph-map-pin"></i></div>
                         <div class="card-text">
                             <h4>Ver mapa</h4>
@@ -155,20 +143,9 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-=======
-import Sidebar from './Sidebar.vue';
-import TopHeader from './TopHeader.vue';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-import { useDatetime } from '../composables/useDatetime.js';
-
-const { currentDate, currentTime } = useDatetime();
->>>>>>> origin/main
 
 const router = useRouter();
 

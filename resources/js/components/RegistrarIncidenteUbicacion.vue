@@ -1,70 +1,11 @@
 <template>
     <div class="dashboard">
         
-<<<<<<< HEAD
-        <aside class="sidebar">
-            <div class="user-profile">
-                <div class="avatar">LZ</div>
-                <div class="user-info">
-                    <h4>Luis Zelaya</h4>
-                    <span>PANEL DE CONTROL PNC</span>
-                </div>
-                <i class="ph ph-list menu-icon"></i>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">PRINCIPAL</p>
-                <ul class="nav-list" id="main-nav">
-                    <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
-                    <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
-                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
-                    <li class="nav-item" @click="goTo('/ver-mapa')"><i class="ph ph-map-pin"></i> Ver mapa</li>
-                </ul>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">SISTEMA</p>
-                <ul class="nav-list">
-                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
-                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
-                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
-                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
-                </ul>
-            </div>
-
-            <div class="logout" @click="handleLogout">
-                <i class="ph ph-sign-out"></i> Salir de la cuenta
-            </div>
-        </aside>
-
-        <main class="main-content">
-            
-            <header class="header">
-                <div class="header-titles">
-                    <h1>Registro de Incidente</h1>
-                    <p>Gestión rápida de incidentes y monitoreo vial</p>
-                </div>
-                <div class="header-actions">
-                    <div class="datetime-pill">
-                        <i class="ph ph-calendar-blank"></i>
-                        <div class="dt-text">
-                            <span class="date">12 Mayo 2026</span>
-                            <span class="time">09:23 PM</span>
-                        </div>
-                    </div>
-                    <div class="notification">
-                        <i class="ph ph-bell"></i>
-                        <span class="badge">2</span>
-                    </div>
-                </div>
-            </header>
-=======
         <Sidebar />
 
         <main class="main-content">
             
             <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
->>>>>>> origin/main
 
             <div class="form-view">
                 
@@ -125,11 +66,6 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
-import { reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-=======
 import Sidebar from './Sidebar.vue';
 import TopHeader from './TopHeader.vue';
 import { reactive, onMounted } from 'vue';
@@ -140,19 +76,13 @@ import { useIncidenteStore } from '../composables/useIncidenteStore.js';
 
 const { currentDate, currentTime } = useDatetime();
 const { state: incidenteState } = useIncidenteStore();
->>>>>>> origin/main
 
 const router = useRouter();
 
 // Estado reactivo para los datos del formulario de ubicación
 const formData = reactive({
-<<<<<<< HEAD
-    direccion: '',
-    distrito: ''
-=======
     direccion: incidenteState.direccion || '',
     distrito: incidenteState.municipio || ''
->>>>>>> origin/main
 });
 
 onMounted(() => {
@@ -170,12 +100,9 @@ onMounted(() => {
 
 // Simulación de apertura de mapa
 const openMap = () => {
-<<<<<<< HEAD
-=======
     // Guardar los datos actuales al store antes de navegar
     incidenteState.direccion = formData.direccion;
     incidenteState.municipio = formData.distrito;
->>>>>>> origin/main
     router.push({ name: 'registrar-incidente-mapa' });
 };
 
@@ -188,15 +115,11 @@ const triggerSubmit = () => {
 };
 
 const handleSubmit = () => {
-<<<<<<< HEAD
-    console.log("Formulario válido. Avanzando al Paso 3...", formData);
-=======
     // Guardar en el store compartido
     incidenteState.direccion = formData.direccion;
     incidenteState.municipio = formData.distrito;
     
     console.log("Ubicación guardada en store. Avanzando al Paso 3...", formData);
->>>>>>> origin/main
     router.push({ name: 'registrar-incidente-declaracion' });
 };
 

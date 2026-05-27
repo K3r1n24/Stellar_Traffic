@@ -9,14 +9,10 @@ import RegistrarIncidenteInvolucrados from './components/RegistrarIncidenteInvol
 import RegistrarIncidenteEvidencia from './components/RegistrarIncidenteEvidencia.vue';
 import RegistrarIncidenteConfirmacion from './components/RegistrarIncidenteConfirmacion.vue';
 import RegistrarIncidenteExito from './components/RegistrarIncidenteExito.vue';
-<<<<<<< HEAD
-import VerMapa from './components/VerMapa.vue';
-=======
 import BuscarCasos from './components/BuscarCasos.vue';
 import VerMapa from './components/VerMapa.vue';
 import Reportes from './components/Reportes.vue';
 import Historial from './components/Historial.vue';
->>>>>>> origin/main
 
 const routes = [
     {
@@ -25,14 +21,6 @@ const routes = [
         component: Dashboard
     },
     {
-<<<<<<< HEAD
-        path: '/ver-mapa',
-        name: 'ver-mapa',
-        component: VerMapa
-    },
-    {
-=======
->>>>>>> origin/main
         path: '/registrar-incidente',
         name: 'registrar-incidente',
         component: RegistrarIncidente
@@ -76,9 +64,6 @@ const routes = [
         path: '/registrar-incidente-exito',
         name: 'registrar-incidente-exito',
         component: RegistrarIncidenteExito
-<<<<<<< HEAD
-    }
-=======
     },
     { path: '/buscar', name: 'buscar', component: BuscarCasos },
     { path: '/mapa', name: 'mapa', component: VerMapa },
@@ -86,7 +71,6 @@ const routes = [
     { path: '/historial', name: 'historial', component: Historial },
     { path: '/configuracion', name: 'configuracion', component: BuscarCasos }, // Reutilizando para evitar crear más
     { path: '/ayuda', name: 'ayuda', component: BuscarCasos }
->>>>>>> origin/main
 ];
 
 const router = createRouter({

@@ -1,70 +1,11 @@
 <template>
     <div class="dashboard">
         
-<<<<<<< HEAD
-        <aside class="sidebar">
-            <div class="user-profile">
-                <div class="avatar">LZ</div>
-                <div class="user-info">
-                    <h4>Luis Zelaya</h4>
-                    <span>PANEL DE CONTROL PNC</span>
-                </div>
-                <i class="ph ph-list menu-icon"></i>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">PRINCIPAL</p>
-                <ul class="nav-list" id="main-nav">
-                    <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
-                    <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
-                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
-                    <li class="nav-item" @click="goTo('/ver-mapa')"><i class="ph ph-map-pin"></i> Ver mapa</li>
-                </ul>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">SISTEMA</p>
-                <ul class="nav-list">
-                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
-                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
-                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
-                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
-                </ul>
-            </div>
-
-            <div class="logout" @click="handleLogout">
-                <i class="ph ph-sign-out"></i> Salir de la cuenta
-            </div>
-        </aside>
-
-        <main class="main-content">
-            
-            <header class="header">
-                <div class="header-titles">
-                    <h1>Registro de Incidente</h1>
-                    <p>Gestión rápida de incidentes y monitoreo vial</p>
-                </div>
-                <div class="header-actions">
-                    <div class="datetime-pill">
-                        <i class="ph ph-calendar-blank"></i>
-                        <div class="dt-text">
-                            <span class="date">12 Mayo 2026</span>
-                            <span class="time">09:23 PM</span>
-                        </div>
-                    </div>
-                    <div class="notification">
-                        <i class="ph ph-bell"></i>
-                        <span class="badge">2</span>
-                    </div>
-                </div>
-            </header>
-=======
         <Sidebar />
 
         <main class="main-content">
             
             <TopHeader title="¡Registro Exitoso!" subtitle="El caso ha sido procesado" />
->>>>>>> origin/main
 
             <div class="success-view">
                 
@@ -101,11 +42,6 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-=======
 import Sidebar from './Sidebar.vue';
 import TopHeader from './TopHeader.vue';
 import { ref, onMounted } from 'vue';
@@ -116,7 +52,6 @@ import { useIncidenteStore } from '../composables/useIncidenteStore.js';
 
 const { currentDate, currentTime } = useDatetime();
 const { reset: resetStore } = useIncidenteStore();
->>>>>>> origin/main
 
 const router = useRouter();
 
@@ -124,11 +59,7 @@ const router = useRouter();
 const reportId = ref('ACC-2026-4045');
 
 onMounted(() => {
-<<<<<<< HEAD
-    // Rescatar el ID generado en pasos anteriores (desde LocalStorage, Pinia/Vuex, o Backend)
-=======
     // Rescatar el ID generado en pasos anteriores
->>>>>>> origin/main
     const storedCaseId = localStorage.getItem('currentCaseId');
     if (storedCaseId) {
         reportId.value = storedCaseId;
@@ -138,35 +69,20 @@ onMounted(() => {
 // --- Lógica de Botones ---
 const viewReport = () => {
     console.log(`Abriendo vista de detalles para el reporte: ${reportId.value}`);
-<<<<<<< HEAD
-    // Aquí redirigirías a la vista del reporte específico
-    // router.push(`/reportes/${reportId.value}`);
-=======
->>>>>>> origin/main
     alert(`Redirigiendo al detalle del reporte ${reportId.value}`);
 };
 
 const goHome = () => {
     console.log("Navegando al Dashboard principal...");
-<<<<<<< HEAD
-    // Limpiar caché temporal de registro si existiera
-    localStorage.removeItem('currentCaseId');
-=======
     localStorage.removeItem('currentCaseId');
     resetStore();
->>>>>>> origin/main
     router.push({ name: 'dashboard' });
 };
 
 const newIncident = () => {
     console.log("Reiniciando el flujo de registro...");
-<<<<<<< HEAD
-    // Limpiar caché y redirigir al Paso inicial (o selección de tipo)
-    localStorage.removeItem('currentCaseId');
-=======
     localStorage.removeItem('currentCaseId');
     resetStore();
->>>>>>> origin/main
     router.push({ name: 'registrar-incidente' });
 };
 

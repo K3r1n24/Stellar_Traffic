@@ -1,70 +1,11 @@
 <template>
     <div class="dashboard">
         
-<<<<<<< HEAD
-        <aside class="sidebar">
-            <div class="user-profile">
-                <div class="avatar">LZ</div>
-                <div class="user-info">
-                    <h4>Luis Zelaya</h4>
-                    <span>PANEL DE CONTROL PNC</span>
-                </div>
-                <i class="ph ph-list menu-icon"></i>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">PRINCIPAL</p>
-                <ul class="nav-list" id="main-nav">
-                    <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
-                    <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
-                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
-                    <li class="nav-item" @click="goTo('/ver-mapa')"><i class="ph ph-map-pin"></i> Ver mapa</li>
-                </ul>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">SISTEMA</p>
-                <ul class="nav-list">
-                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
-                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
-                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
-                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
-                </ul>
-            </div>
-
-            <div class="logout" @click="handleLogout">
-                <i class="ph ph-sign-out"></i> Salir de la cuenta
-            </div>
-        </aside>
-
-        <main class="main-content">
-            
-            <header class="header">
-                <div class="header-titles">
-                    <h1>Registro de Incidente</h1>
-                    <p>Gestión rápida de incidentes y monitoreo vial</p>
-                </div>
-                <div class="header-actions">
-                    <div class="datetime-pill">
-                        <i class="ph ph-calendar-blank"></i>
-                        <div class="dt-text">
-                            <span class="date">12 Mayo 2026</span>
-                            <span class="time">09:23 PM</span>
-                        </div>
-                    </div>
-                    <div class="notification">
-                        <i class="ph ph-bell"></i>
-                        <span class="badge">2</span>
-                    </div>
-                </div>
-            </header>
-=======
         <Sidebar />
 
         <main class="main-content">
             
             <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
->>>>>>> origin/main
 
             <div class="form-view">
                 
@@ -78,10 +19,6 @@
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
-<<<<<<< HEAD
-                    <div class="step-dot active"></div> 
-=======
->>>>>>> origin/main
                 </div>
 
                 <div class="section-header">
@@ -99,17 +36,6 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Información básica</span>
-<<<<<<< HEAD
-                                <span class="value" id="val-fecha">Fecha: 12/05/2026</span>
-                            </div>
-                            <div class="data-group">
-                                <span class="label">Tipo de incidente:</span>
-                                <span class="value" id="val-tipo">Vehicular</span>
-                            </div>
-                            <div class="data-group">
-                                <span class="label">Gravedad:</span>
-                                <span class="value" id="val-gravedad">Leve</span>
-=======
                                 <span class="value">Fecha: {{ incidenteState.fecha_incidente || 'No especificada' }}</span>
                             </div>
                             <div class="data-group">
@@ -119,7 +45,6 @@
                             <div class="data-group">
                                 <span class="label">Gravedad:</span>
                                 <span class="value">{{ incidenteState.gravedad || 'No especificada' }}</span>
->>>>>>> origin/main
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-detalle')">Editar</button>
@@ -130,15 +55,11 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Ubicación</span>
-<<<<<<< HEAD
-                                <span class="value" id="val-direccion">Dirección: Av. Central, San José</span>
-=======
                                 <span class="value">Dirección: {{ incidenteState.direccion || 'No especificada' }}</span>
                             </div>
                             <div class="data-group">
                                 <span class="label">Distrito:</span>
                                 <span class="value">{{ incidenteState.municipio || 'No especificado' }}</span>
->>>>>>> origin/main
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-ubicacion')">Editar</button>
@@ -149,19 +70,11 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Involucrados</span>
-<<<<<<< HEAD
-                                <span class="value" id="val-vehiculos">Vehículos: 2 Registrados</span>
-                            </div>
-                            <div class="data-group">
-                                <span class="label">Personas:</span>
-                                <span class="value" id="val-personas">2 Registradas</span>
-=======
                                 <span class="value">Vehículos: {{ vehiculosCount }} Registrados</span>
                             </div>
                             <div class="data-group">
                                 <span class="label">Personas:</span>
                                 <span class="value">{{ personasCount }} Registradas</span>
->>>>>>> origin/main
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-involucrados')">Editar</button>
@@ -172,11 +85,7 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Evidencia</span>
-<<<<<<< HEAD
-                                <span class="value" id="val-archivos">Archivos: 5 Adjuntos</span>
-=======
                                 <span class="value">Archivos: {{ incidenteState.archivosCount || 0 }} Adjuntos</span>
->>>>>>> origin/main
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-evidencia')">Editar</button>
@@ -195,12 +104,6 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-
-const router = useRouter();
-=======
 import Sidebar from './Sidebar.vue';
 import TopHeader from './TopHeader.vue';
 import { computed, ref } from 'vue';
@@ -218,7 +121,6 @@ const isSubmitting = ref(false);
 // Contadores calculados
 const vehiculosCount = computed(() => incidenteState.vehiculos.filter(v => v.trim() !== '').length);
 const personasCount = computed(() => incidenteState.personas.filter(p => p.trim() !== '').length);
->>>>>>> origin/main
 
 // --- NAVEGACIÓN ---
 const handleBack = () => {
@@ -230,17 +132,6 @@ const handleEdit = (routeName) => {
 };
 
 const handleSubmit = async () => {
-<<<<<<< HEAD
-    // Aquí iría el fetch/axios POST a tu API para guardar toda la información.
-    console.log("¡Registro finalizado! Procesando envío a la base de datos (Laravel)...");
-    
-    // Generar un ID de caso falso para demostración
-    const newCaseId = 'ACC-2026-' + Math.floor(Math.random() * 10000);
-    localStorage.setItem('currentCaseId', newCaseId);
-
-    // Redirigir a la pantalla de éxito
-    router.push({ name: 'registrar-incidente-exito' });
-=======
     if (isSubmitting.value) return;
     isSubmitting.value = true;
 
@@ -282,7 +173,6 @@ const handleSubmit = async () => {
     } finally {
         isSubmitting.value = false;
     }
->>>>>>> origin/main
 };
 
 const goTo = (path) => {
