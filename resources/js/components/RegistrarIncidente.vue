@@ -1,6 +1,119 @@
 <template>
     <div class="dashboard">
         
+<<<<<<< HEAD
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar">LZ</div>
+                <div class="user-info">
+                    <h4>Luis Zelaya</h4>
+                    <span>PANEL DE CONTROL PNC</span>
+                </div>
+                <i class="ph ph-list menu-icon"></i>
+            </div>
+
+            <div class="nav-section">
+                <p class="nav-title">PRINCIPAL</p>
+                <ul class="nav-list" id="main-nav">
+                    <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
+                    <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
+                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
+                    <li class="nav-item" @click="goTo('/ver-mapa')"><i class="ph ph-map-pin"></i> Ver mapa</li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <p class="nav-title">SISTEMA</p>
+                <ul class="nav-list">
+                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
+                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
+                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
+                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
+                </ul>
+            </div>
+
+            <div class="logout" @click="handleLogout">
+                <i class="ph ph-sign-out"></i> Salir de la cuenta
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <header class="header">
+                <div class="header-titles">
+                    <h1>Registro de Incidente</h1>
+                    <p>Gestión rápida de incidentes y monitoreo vial</p>
+                </div>
+                <div class="header-actions">
+                    <div class="datetime-pill">
+                        <i class="ph ph-calendar-blank"></i>
+                        <div class="dt-text">
+                            <span class="date">12 Mayo 2026</span>
+                            <span class="time">09:23 PM</span>
+                        </div>
+                    </div>
+                    <div class="notification">
+                        <i class="ph ph-bell"></i>
+                        <span class="badge">2</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="selection-view">
+                
+                <div class="center-header">
+                    <div class="icon-circle">
+                        <i class="ph ph-car"></i>
+                    </div>
+                    <h2>Seleccionar tipo de incidente</h2>
+                    <p>Selecciona la categoría que mejor describa el incidente</p>
+                </div>
+
+                <div class="cards-grid">
+                    <div 
+                        class="option-card selectable-card" 
+                        :class="{ 'selected': selectedType === 'victimas' }"
+                        @click="selectType('victimas')"
+                    >
+                        <div class="card-icon-box">
+                            <i class="ph ph-users-three"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Incidente con<br>victimas o fallecimiento</h3>
+                            <div class="short-divider"></div>
+                            <p>Incidentes que involucran<br>personas lesionadas o<br>fallecidas.</p>
+                        </div>
+                    </div>
+
+                    <div 
+                        class="option-card selectable-card" 
+                        :class="{ 'selected': selectedType === 'materiales' }"
+                        @click="selectType('materiales')"
+                    >
+                        <div class="card-icon-box">
+                            <i class="ph ph-car-profile"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Incidente con<br>daños materiales</h3>
+                            <div class="short-divider"></div>
+                            <p>Incidentes que solo causan<br>daños materiales entre<br>vehículos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-action-bar">
+                    <div class="help-link">
+                        <i class="ph ph-question"></i>
+                        <span>¿No estás seguro?</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-outline" @click="handleCancel">Cancelar</button>
+                        <button class="btn btn-primary" :disabled="!selectedType" @click="handleContinue">Continuar</button>
+                    </div>
+                </div>
+
+            </div>
+=======
         <Sidebar />
 
         <main class="main-content">
@@ -61,11 +174,31 @@
                 </div>
 
             </div>
+>>>>>>> origin/main
         </main>
     </div>
 </template>
 
 <script setup>
+<<<<<<< HEAD
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+
+const router = useRouter();
+
+// Estado reactivo para almacenar el tipo de incidente seleccionado
+const selectedType = ref(null);
+
+// Función para actualizar el tipo seleccionado
+const selectType = (type) => {
+    selectedType.value = type;
+};
+
+// Función para el botón Continuar
+const handleContinue = () => {
+    if (selectedType.value) {
+=======
 import Sidebar from './Sidebar.vue';
 import TopHeader from './TopHeader.vue';
 import { ref } from 'vue';
@@ -91,6 +224,7 @@ const selectType = (type) => {
 const handleContinue = () => {
     if (selectedType.value) {
         incidenteState.tipo_accidente = selectedType.value;
+>>>>>>> origin/main
         console.log(`Procesando incidente de tipo: ${selectedType.value}`);
         router.push({ name: 'registrar-incidente-detalle', query: { tipo: selectedType.value } });
     }

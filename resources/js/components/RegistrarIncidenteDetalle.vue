@@ -1,11 +1,70 @@
 <template>
     <div class="dashboard">
         
+<<<<<<< HEAD
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar">LZ</div>
+                <div class="user-info">
+                    <h4>Luis Zelaya</h4>
+                    <span>PANEL DE CONTROL PNC</span>
+                </div>
+                <i class="ph ph-list menu-icon"></i>
+            </div>
+
+            <div class="nav-section">
+                <p class="nav-title">PRINCIPAL</p>
+                <ul class="nav-list" id="main-nav">
+                    <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
+                    <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
+                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
+                    <li class="nav-item" @click="goTo('/ver-mapa')"><i class="ph ph-map-pin"></i> Ver mapa</li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <p class="nav-title">SISTEMA</p>
+                <ul class="nav-list">
+                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
+                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
+                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
+                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
+                </ul>
+            </div>
+
+            <div class="logout" @click="handleLogout">
+                <i class="ph ph-sign-out"></i> Salir de la cuenta
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <header class="header">
+                <div class="header-titles">
+                    <h1>Registro de Incidente</h1>
+                    <p>Gestión rápida de incidentes y monitoreo vial</p>
+                </div>
+                <div class="header-actions">
+                    <div class="datetime-pill">
+                        <i class="ph ph-calendar-blank"></i>
+                        <div class="dt-text">
+                            <span class="date">12 Mayo 2026</span>
+                            <span class="time">09:23 PM</span>
+                        </div>
+                    </div>
+                    <div class="notification">
+                        <i class="ph ph-bell"></i>
+                        <span class="badge">2</span>
+                    </div>
+                </div>
+            </header>
+=======
         <Sidebar />
 
         <main class="main-content">
             
             <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
+>>>>>>> origin/main
 
             <div class="form-view">
                 
@@ -77,6 +136,32 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
+import { reactive, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+
+const router = useRouter();
+
+// Estado reactivo para los datos del formulario
+const formData = reactive({
+    fecha: '',
+    hora: '',
+    casoId: '',
+    gravedad: ''
+});
+
+// Función para generar un ID de caso automático
+const generateCaseID = () => {
+    const year = new Date().getFullYear();
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    return `AUTO-${year}-${randomNum}`;
+};
+
+// Generar el ID al montar el componente
+onMounted(() => {
+    formData.casoId = generateCaseID();
+=======
 import Sidebar from './Sidebar.vue';
 import TopHeader from './TopHeader.vue';
 import { reactive, computed, onMounted } from 'vue';
@@ -96,6 +181,7 @@ const formData = reactive({
     hora: incidenteState.hora_aproximada,
     casoId: incidenteState.id_caso,
     gravedad: incidenteState.gravedad
+>>>>>>> origin/main
 });
 
 // Computed property para el color del punto de gravedad
@@ -126,6 +212,10 @@ const triggerSubmit = () => {
 };
 
 const handleSubmit = () => {
+<<<<<<< HEAD
+    console.log("Formulario listo para enviarse al siguiente paso.", formData);
+    // Cuando exista la siguiente vista (ej. Ubicación):
+=======
     // Guardar datos en el store compartido
     incidenteState.fecha_incidente = formData.fecha;
     incidenteState.hora_aproximada = formData.hora;
@@ -133,6 +223,7 @@ const handleSubmit = () => {
     incidenteState.gravedad = formData.gravedad;
     
     console.log("Formulario guardado en store. Avanzando...", formData);
+>>>>>>> origin/main
     router.push({ name: 'registrar-incidente-ubicacion' });
 };
 
