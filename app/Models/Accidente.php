@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Accidente extends Model
 {
+    // Nombre de la tabla en la base de datos
+    protected $table = 'accidentes';
+
     // La PK real de la tabla es id_accidente
     protected $primaryKey = 'id_accidente';
 
@@ -27,4 +30,28 @@ class Accidente extends Model
         'declaracion_involucrados',
         'id_usuario',
     ];
+
+    // Relación con el usuario que registró el accidente
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'id_usuario');
+    }
+
+    // Relación con las evidencias asociadas
+    public function evidencias()
+    {
+        return $this->hasMany(Evidencia::class, 'id_accidente');
+    }
+
+    // Relación con las personas involucradas en el accidente
+    public function personasInvolucradas()
+    {
+        return $this->hasMany(PersonaInvolucrada::class, 'id_accidente');
+    }
+
+    // Relación con los vehículos involucrados en el accidente
+    public function vehiculosInvolucrados()
+    {
+        return $this->hasMany(VehiculoInvolucrado::class, 'id_accidente');
+    }
 }
