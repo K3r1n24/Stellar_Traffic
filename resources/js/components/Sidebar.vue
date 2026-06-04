@@ -36,7 +36,7 @@
             <ul class="nav-list">
                 <li :class="['nav-item', { active: currentRoute === '/reportes' }]" @click="goTo('/reportes')">
                     <i class="ph ph-file-text"></i>
-                    <span class="nav-text">Reportes</span>
+                    <span class="nav-text">Estadísticas de reportes</span>
                 </li>
                 <li :class="['nav-item', { active: currentRoute === '/historial' }]" @click="goTo('/historial')">
                     <i class="ph ph-clock-counter-clockwise"></i>

@@ -57,8 +57,8 @@
                                 <i class="ph ph-file-text"></i>
                             </div>
                             <div class="card-text">
-                                <h4>Reportes</h4>
-                                <p>Visualiza reportes</p>
+                                <h4>Estadísticas de reportes</h4>
+                                <p>Visualiza estadísticas</p>
                             </div>
                             <i class="ph ph-caret-right arrow"></i>
                         </div>
