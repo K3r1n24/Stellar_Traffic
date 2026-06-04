@@ -1,6 +1,6 @@
 <template>
     <div class="dashboard">
-<<<<<<< HEAD
+
         
         <!-- BARRA LATERAL (SIDEBAR) -->
         <aside class="sidebar">
@@ -165,22 +165,14 @@
                         <p>Selecciona un incidente en el mapa para ver sus detalles</p>
                     </div>
                 </div>
-=======
-        <Sidebar />
-        <main class="main-content">
-            <TopHeader title="Ver Mapa" subtitle="Geolocalización de incidentes" />
-            <div class="content-wrapper" style="margin-top: 30px; text-align: center; color: var(--text-muted);">
-                <i class="ph ph-map-pin" style="font-size: 64px; margin-bottom: 20px;"></i>
-                <h2>Mapa Global</h2>
-                <p>Mapa interactivo en construcción...</p>
->>>>>>> origin/main
+
             </div>
         </main>
     </div>
 </template>
 
 <script setup>
-<<<<<<< HEAD
+
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -638,8 +630,4 @@ const handleLogout = async () => {
         .search-wrapper { width: 200px; }
     }
 </style>
-=======
-import Sidebar from './Sidebar.vue';
-import TopHeader from './TopHeader.vue';
-</script>
->>>>>>> origin/main
+

@@ -1,7 +1,6 @@
 <template>
     <div class="dashboard">
         
-<<<<<<< HEAD
         <aside class="sidebar">
             <div class="user-profile">
                 <div class="avatar">LZ</div>
@@ -58,13 +57,6 @@
                     </div>
                 </div>
             </header>
-=======
-        <Sidebar />
-
-        <main class="main-content">
-            
-            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
->>>>>>> origin/main
 
             <div class="form-view">
                 
@@ -78,10 +70,7 @@
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
-<<<<<<< HEAD
                     <div class="step-dot"></div> 
-=======
->>>>>>> origin/main
                 </div>
 
                 <div class="evidence-grid">
@@ -219,22 +208,9 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-=======
-import Sidebar from './Sidebar.vue';
-import TopHeader from './TopHeader.vue';
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-import { useDatetime } from '../composables/useDatetime.js';
-import { useIncidenteStore } from '../composables/useIncidenteStore.js';
-
-const { currentDate, currentTime } = useDatetime();
-const { state: incidenteState } = useIncidenteStore();
->>>>>>> origin/main
 
 const router = useRouter();
 
@@ -442,10 +418,6 @@ const handleBack = () => {
 };
 
 const handleNext = () => {
-<<<<<<< HEAD
-=======
-    incidenteState.archivosCount = uploadedFiles.value.length;
->>>>>>> origin/main
     router.push({ name: 'registrar-incidente-confirmacion' });
 };
 
@@ -536,13 +508,8 @@ const handleLogout = async () => {
     .stepper-container { position: relative; margin: 30px 0 50px 0; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 10px; }
     .stepper-background-line { position: absolute; top: 50%; left: 0; width: 100%; height: 6px; background-color: #ffffff; transform: translateY(-50%); border-radius: 3px; z-index: 1; }
     
-<<<<<<< HEAD
     /* Línea activa conectando casi todos los puntos */
     .stepper-active-line { position: absolute; top: 50%; left: 0; width: 83%; height: 6px; background-color: var(--accent-blue); transform: translateY(-50%); border-radius: 3px; z-index: 2; transition: width 0.4s ease; }
-=======
-    /* Línea activa cubriendo todos los puntos (100%) */
-    .stepper-active-line { position: absolute; top: 50%; left: 0; width: 100%; height: 6px; background-color: var(--accent-blue); transform: translateY(-50%); border-radius: 3px; z-index: 2; transition: width 0.4s ease; }
->>>>>>> origin/main
     
     .step-dot { width: 24px; height: 24px; border-radius: 50%; background-color: #ffffff; z-index: 3; position: relative; transition: 0.4s ease; }
     .step-dot.active { background-color: var(--accent-blue); box-shadow: 0 0 12px var(--accent-blue); }
