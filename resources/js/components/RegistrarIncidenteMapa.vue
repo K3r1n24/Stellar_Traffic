@@ -87,6 +87,7 @@ const selectedAddress = ref('');
 const selectedDistrict = ref('');
 let map = null;
 let currentMarker = null;
+let resizeObserver = null;
 
 // Obtener dirección a partir de las coordenadas (Reverse Geocoding)
 const fetchAddressFromCoords = (lat, lng) => {
@@ -186,6 +187,17 @@ const initMap = () => {
             fetchAddressFromCoords(lat, lng);
         });
 
+        // Configurar ResizeObserver para actualizar el mapa cuando su contenedor cambie de tamaño (ej. colapso de sidebar)
+        const mapElement = document.getElementById('incident-map');
+        if (mapElement && 'ResizeObserver' in window) {
+            resizeObserver = new ResizeObserver(() => {
+                if (map) {
+                    map.invalidateSize();
+                }
+            });
+            resizeObserver.observe(mapElement);
+        }
+
         // Forzar actualización del layout del mapa en el siguiente frame
         setTimeout(() => {
             if (map) {
@@ -252,6 +264,9 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
+    if (resizeObserver) {
+        resizeObserver.disconnect();
+    }
     if (map) {
         map.remove();
     }
@@ -375,24 +390,7 @@ const handleLogout = async () => {
         box-sizing: border-box;
     }
 
-    .dashboard * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    /* --- BARRA LATERAL --- */
-    .sidebar { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
-    .user-profile { display: flex; align-items: center; padding: 0 20px 20px; border-bottom: 1px solid var(--border-color); gap: 12px; }
-    .avatar { width: 40px; height: 40px; background-color: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; color: white; }
-    .user-info h4 { font-size: 14px; font-weight: 600; }
-    .user-info span { font-size: 10px; color: var(--text-muted); }
-    .menu-icon { margin-left: auto; cursor: pointer; color: var(--text-muted); font-size: 20px;}
-
-    .nav-section { margin-top: 25px; }
-    .nav-title { font-size: 11px; color: var(--text-muted); padding: 0 20px; margin-bottom: 10px; letter-spacing: 1px; }
-    .nav-list { list-style: none; }
-    .nav-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: var(--text-muted); font-size: 14px; cursor: pointer; transition: 0.2s; }
-    .nav-item i { font-size: 18px; }
-    .nav-item:hover { color: var(--text-main); }
-    .nav-item.active { background-color: rgba(37, 99, 235, 0.1); color: var(--text-main); border: 1px solid var(--primary-blue); border-radius: 8px; margin: 0 10px; padding: 12px 10px; }
-    .logout { margin-top: auto; padding: 20px; color: var(--critical); display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; }
+    .dashboard * { box-sizing: border-box; }
 
     /* --- CONTENIDO PRINCIPAL --- */
     .main-content { flex: 1; padding: 30px 40px; display: flex; flex-direction: column; overflow-y: auto; }

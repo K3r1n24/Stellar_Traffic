@@ -96,32 +96,14 @@ import Sidebar from './Sidebar.vue';
 import TopHeader from './TopHeader.vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
-import { useDatetime } from '../composables/useDatetime.js';
-
-const { currentDate, currentTime } = useDatetime();
 
 const router = useRouter();
-
-// Estado para el elemento activo de navegación (inicia en 'Inicio')
-const activeNav = ref('Inicio');
 
 // Estado para la tarjeta activa de acceso rápido
 const activeCard = ref('');
 
 const goTo = (path) => {
     router.push(path);
-};
-
-// Función de logout
-const handleLogout = async () => {
-    try {
-        await axios.post('/logout');
-        window.location.href = '/login';
-    } catch (error) {
-        console.error('Error al cerrar sesión:', error);
-        window.location.href = '/login';
-    }
 };
 </script>
 
@@ -155,80 +137,6 @@ const handleLogout = async () => {
 
     .dashboard * {
         box-sizing: border-box;
-    }
-
-    /* --- BARRA LATERAL (SIDEBAR) --- */
-    .sidebar {
-        width: 260px;
-        background-color: var(--bg-sidebar);
-        border-right: 1px solid var(--border-color);
-        display: flex;
-        flex-direction: column;
-        padding: 20px 0;
-    }
-
-    .user-profile {
-        display: flex;
-        align-items: center;
-        padding: 0 20px 20px;
-        border-bottom: 1px solid var(--border-color);
-        gap: 12px;
-    }
-
-    .avatar {
-        width: 40px;
-        height: 40px;
-        background-color: var(--primary-blue);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 14px;
-    }
-
-    .user-info h4 { font-size: 14px; font-weight: 600; margin: 0;}
-    .user-info span { font-size: 10px; color: var(--text-muted); }
-    .menu-icon { margin-left: auto; cursor: pointer; color: var(--text-muted); font-size: 20px;}
-
-    .nav-section { margin-top: 25px; }
-    .nav-title {
-        font-size: 11px;
-        color: var(--text-muted);
-        padding: 0 20px;
-        margin-bottom: 10px;
-        letter-spacing: 1px;
-    }
-
-    .nav-list { list-style: none; margin: 0; padding: 0;}
-    .nav-item {
-        padding: 12px 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--text-muted);
-        font-size: 14px;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .nav-item i { font-size: 18px; }
-    .nav-item:hover { color: var(--text-main); }
-    .nav-item.active {
-        background-color: #1e293b;
-        color: var(--text-main);
-        border-left: 3px solid var(--primary-blue);
-    }
-
-    .logout {
-        margin-top: auto;
-        padding: 20px;
-        color: var(--high);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-        font-size: 14px;
     }
 
     /* --- CONTENIDO PRINCIPAL --- */
