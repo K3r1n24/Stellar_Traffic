@@ -1,7 +1,6 @@
 <template>
     <div class="dashboard">
         
-<<<<<<< HEAD
         <aside class="sidebar">
             <div class="user-profile">
                 <div class="avatar">LZ</div>
@@ -58,13 +57,6 @@
                     </div>
                 </div>
             </header>
-=======
-        <Sidebar />
-
-        <main class="main-content">
-            
-            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
->>>>>>> origin/main
 
             <div class="form-view">
                 
@@ -125,34 +117,16 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
 import { reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-=======
-import Sidebar from './Sidebar.vue';
-import TopHeader from './TopHeader.vue';
-import { reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-import { useDatetime } from '../composables/useDatetime.js';
-import { useIncidenteStore } from '../composables/useIncidenteStore.js';
-
-const { currentDate, currentTime } = useDatetime();
-const { state: incidenteState } = useIncidenteStore();
->>>>>>> origin/main
 
 const router = useRouter();
 
 // Estado reactivo para los datos del formulario de ubicación
 const formData = reactive({
-<<<<<<< HEAD
     direccion: '',
     distrito: ''
-=======
-    direccion: incidenteState.direccion || '',
-    distrito: incidenteState.municipio || ''
->>>>>>> origin/main
 });
 
 onMounted(() => {
@@ -170,12 +144,6 @@ onMounted(() => {
 
 // Simulación de apertura de mapa
 const openMap = () => {
-<<<<<<< HEAD
-=======
-    // Guardar los datos actuales al store antes de navegar
-    incidenteState.direccion = formData.direccion;
-    incidenteState.municipio = formData.distrito;
->>>>>>> origin/main
     router.push({ name: 'registrar-incidente-mapa' });
 };
 
@@ -188,15 +156,7 @@ const triggerSubmit = () => {
 };
 
 const handleSubmit = () => {
-<<<<<<< HEAD
     console.log("Formulario válido. Avanzando al Paso 3...", formData);
-=======
-    // Guardar en el store compartido
-    incidenteState.direccion = formData.direccion;
-    incidenteState.municipio = formData.distrito;
-    
-    console.log("Ubicación guardada en store. Avanzando al Paso 3...", formData);
->>>>>>> origin/main
     router.push({ name: 'registrar-incidente-declaracion' });
 };
 

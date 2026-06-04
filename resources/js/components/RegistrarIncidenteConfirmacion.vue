@@ -1,7 +1,6 @@
 <template>
     <div class="dashboard">
         
-<<<<<<< HEAD
         <aside class="sidebar">
             <div class="user-profile">
                 <div class="avatar">LZ</div>
@@ -58,13 +57,6 @@
                     </div>
                 </div>
             </header>
-=======
-        <Sidebar />
-
-        <main class="main-content">
-            
-            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
->>>>>>> origin/main
 
             <div class="form-view">
                 
@@ -78,10 +70,7 @@
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
-<<<<<<< HEAD
                     <div class="step-dot active"></div> 
-=======
->>>>>>> origin/main
                 </div>
 
                 <div class="section-header">
@@ -99,7 +88,6 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Información básica</span>
-<<<<<<< HEAD
                                 <span class="value" id="val-fecha">Fecha: 12/05/2026</span>
                             </div>
                             <div class="data-group">
@@ -109,17 +97,6 @@
                             <div class="data-group">
                                 <span class="label">Gravedad:</span>
                                 <span class="value" id="val-gravedad">Leve</span>
-=======
-                                <span class="value">Fecha: {{ incidenteState.fecha_incidente || 'No especificada' }}</span>
-                            </div>
-                            <div class="data-group">
-                                <span class="label">Tipo de incidente:</span>
-                                <span class="value">{{ incidenteState.tipo_accidente === 'victimas' ? 'Con víctimas' : 'Daños materiales' }}</span>
-                            </div>
-                            <div class="data-group">
-                                <span class="label">Gravedad:</span>
-                                <span class="value">{{ incidenteState.gravedad || 'No especificada' }}</span>
->>>>>>> origin/main
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-detalle')">Editar</button>
@@ -130,15 +107,7 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Ubicación</span>
-<<<<<<< HEAD
                                 <span class="value" id="val-direccion">Dirección: Av. Central, San José</span>
-=======
-                                <span class="value">Dirección: {{ incidenteState.direccion || 'No especificada' }}</span>
-                            </div>
-                            <div class="data-group">
-                                <span class="label">Distrito:</span>
-                                <span class="value">{{ incidenteState.municipio || 'No especificado' }}</span>
->>>>>>> origin/main
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-ubicacion')">Editar</button>
@@ -149,19 +118,11 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Involucrados</span>
-<<<<<<< HEAD
                                 <span class="value" id="val-vehiculos">Vehículos: 2 Registrados</span>
                             </div>
                             <div class="data-group">
                                 <span class="label">Personas:</span>
                                 <span class="value" id="val-personas">2 Registradas</span>
-=======
-                                <span class="value">Vehículos: {{ vehiculosCount }} Registrados</span>
-                            </div>
-                            <div class="data-group">
-                                <span class="label">Personas:</span>
-                                <span class="value">{{ personasCount }} Registradas</span>
->>>>>>> origin/main
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-involucrados')">Editar</button>
@@ -172,11 +133,7 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Evidencia</span>
-<<<<<<< HEAD
                                 <span class="value" id="val-archivos">Archivos: 5 Adjuntos</span>
-=======
-                                <span class="value">Archivos: {{ incidenteState.archivosCount || 0 }} Adjuntos</span>
->>>>>>> origin/main
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-evidencia')">Editar</button>
@@ -195,30 +152,10 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
-=======
-import Sidebar from './Sidebar.vue';
-import TopHeader from './TopHeader.vue';
-import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-import { useDatetime } from '../composables/useDatetime.js';
-import { useIncidenteStore } from '../composables/useIncidenteStore.js';
-
-const { currentDate, currentTime } = useDatetime();
-const { state: incidenteState, reset: resetStore } = useIncidenteStore();
-
-const router = useRouter();
-const isSubmitting = ref(false);
-
-// Contadores calculados
-const vehiculosCount = computed(() => incidenteState.vehiculos.filter(v => v.trim() !== '').length);
-const personasCount = computed(() => incidenteState.personas.filter(p => p.trim() !== '').length);
->>>>>>> origin/main
 
 // --- NAVEGACIÓN ---
 const handleBack = () => {
@@ -230,7 +167,6 @@ const handleEdit = (routeName) => {
 };
 
 const handleSubmit = async () => {
-<<<<<<< HEAD
     // Aquí iría el fetch/axios POST a tu API para guardar toda la información.
     console.log("¡Registro finalizado! Procesando envío a la base de datos (Laravel)...");
     
@@ -240,49 +176,6 @@ const handleSubmit = async () => {
 
     // Redirigir a la pantalla de éxito
     router.push({ name: 'registrar-incidente-exito' });
-=======
-    if (isSubmitting.value) return;
-    isSubmitting.value = true;
-
-    // Preparar payload para el backend
-    const payload = {
-        id_caso: incidenteState.id_caso,
-        tipo_accidente: incidenteState.tipo_accidente,
-        fecha_incidente: incidenteState.fecha_incidente,
-        hora_aproximada: incidenteState.hora_aproximada,
-        gravedad: incidenteState.gravedad,
-        direccion: incidenteState.direccion,
-        municipio: incidenteState.municipio,
-        descripcion: incidenteState.declaracion,
-        condicion_climatica: incidenteState.condicion_climatica,
-        tipo_via: incidenteState.tipo_via,
-        estado_pavimento: incidenteState.estado_pavimento,
-        vehiculos: incidenteState.vehiculos.filter(v => v.trim() !== ''),
-        personas: incidenteState.personas.filter(p => p.trim() !== ''),
-    };
-
-    try {
-        const response = await axios.post('/accidentes', payload);
-        console.log('Incidente registrado exitosamente:', response.data);
-        
-        localStorage.setItem('currentCaseId', incidenteState.id_caso);
-        router.push({ name: 'registrar-incidente-exito' });
-    } catch (error) {
-        console.error('Error al registrar el incidente:', error);
-        
-        // Fallback: si el backend no está disponible, continuar de todas formas (demo)
-        if (error.response) {
-            alert(`Error del servidor: ${error.response.data.message || 'Error desconocido'}`);
-        } else {
-            // Sin conexión al backend, modo demo
-            console.warn('Backend no disponible. Continuando en modo demo...');
-            localStorage.setItem('currentCaseId', incidenteState.id_caso);
-            router.push({ name: 'registrar-incidente-exito' });
-        }
-    } finally {
-        isSubmitting.value = false;
-    }
->>>>>>> origin/main
 };
 
 const goTo = (path) => {
