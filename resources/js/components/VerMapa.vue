@@ -9,11 +9,11 @@
             />
 
             <div class="map-container">
-                <!-- Panel lateral de alertas activas -->
+                <!-- Panel lateral de reportes activos -->
                 <div class="map-sidebar-info" v-if="incidentes.length > 0">
                     <div class="info-header">
                         <i class="ph ph-warning-circle"></i>
-                        <h3>Alertas Activas</h3>
+                        <h3>Reportes Activos</h3>
                     </div>
                     <div class="incidents-list">
                         <div
