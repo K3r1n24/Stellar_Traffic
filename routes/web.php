@@ -52,4 +52,3 @@ Route::post('/accidentes', [App\Http\Controllers\AccidenteController::class, 'st
 Route::get('/api/user', function () {
     return response()->json(auth()->user());
 })->middleware('auth');
-
