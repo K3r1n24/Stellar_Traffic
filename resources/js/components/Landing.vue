@@ -100,21 +100,21 @@
       <h3 class="section-subtitle">INDICADORES DE IMPACTO</h3>
       <div class="card-container flex-row space-evenly">
         <div class="impact-item">
-          <i class="ph ph-shield-check impact-icon"></i>
+          <i class="ph-fill ph-shield impact-icon"></i>
           <div class="text">
             <h4>24/7</h4>
             <p>Monitoreo continuo</p>
           </div>
         </div>
         <div class="impact-item">
-          <i class="ph ph-car impact-icon"></i>
+          <i class="ph-fill ph-car impact-icon"></i>
           <div class="text">
             <h4>+1200</h4>
             <p>Incidentes atendidos diariamente</p>
           </div>
         </div>
         <div class="impact-item">
-          <i class="ph ph-timer impact-icon"></i>
+          <i class="ph ph-clock impact-icon"></i>
           <div class="text">
             <h4>38%</h4>
             <p>Reducción en tiempos de respuesta</p>
