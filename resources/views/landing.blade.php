@@ -80,10 +80,21 @@
                 </a>
             </div>
             
-            <div class="relative">
-                <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[2rem] blur opacity-30"></div>
-                <img src="{{ asset('images/map_mockup.png') }}" alt="Map Visualization" class="relative rounded-[2rem] border border-gray-700/50 shadow-2xl object-cover w-full h-[400px] lg:h-[500px]">
-            </div>
+            <a href="{{ route('visitor.map') }}" class="relative group block focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-4 focus:ring-offset-[#0b1121] rounded-[2rem]" aria-label="Abrir mapa interactivo para visitantes">
+                <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[2rem] blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                <img src="{{ asset('images/map_mockup.png') }}" alt="Abrir mapa interactivo de Stellar Traffic" class="relative rounded-[2rem] border border-gray-700/50 shadow-2xl object-cover w-full h-[400px] lg:h-[500px] transition-transform duration-300 group-hover:-translate-y-1">
+                <div class="absolute bottom-5 left-5 right-5 glass-panel rounded-2xl px-5 py-4 flex items-center justify-between gap-4">
+                    <div>
+                        <span class="block text-sm font-semibold text-white">Explorar mapa</span>
+                        <span class="block text-xs text-gray-400">Ubicaciones, rutas y tiempos estimados</span>
+                    </div>
+                    <span class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.45)] group-hover:bg-blue-500 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </span>
+                </div>
+            </a>
         </section>
 
         <!-- Instituciones Integradas -->

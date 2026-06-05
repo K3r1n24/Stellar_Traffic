@@ -6,6 +6,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('landing');
 })->name('home');
+
+Route::get('/visitante/mapa', function () {
+    return view('visitor-map');
+})->name('visitor.map');
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 
 Route::get('/register', function () {
@@ -39,4 +44,3 @@ Route::post('/accidentes', [App\Http\Controllers\AccidenteController::class, 'st
 Route::get('/api/user', function () {
     return response()->json(auth()->user());
 })->middleware('auth');
-
