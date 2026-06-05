@@ -92,7 +92,7 @@ const { state: incidenteState } = useIncidenteStore();
 const router = useRouter();
 
 // Estado reactivo para almacenar el tipo de incidente seleccionado
-const selectedType = ref(incidenteState.tipo_accidente || null);
+const selectedType = ref(null);
 
 // Función para actualizar el tipo seleccionado
 const selectType = (type) => {
@@ -102,7 +102,6 @@ const selectType = (type) => {
 // Función para el botón Continuar
 const handleContinue = () => {
     if (selectedType.value) {
-        incidenteState.tipo_accidente = selectedType.value;
         console.log(`Procesando incidente de tipo: ${selectedType.value}`);
         router.push({
             name: "registrar-incidente-detalle",

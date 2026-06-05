@@ -6,6 +6,7 @@ services:
     image: stellar-traffic-app
     restart: unless-stopped
     working_dir: /var/www/
+    command: php artisan serve --host=0.0.0.0 --port=8000
     volumes:
       - ./:/var/www
     networks:
@@ -14,9 +15,6 @@ services:
       - db
     ports:
       - "8000:8000"
-
-    command: php artisan serve --host=0.0.0.0 --port=8000
-
   db:
     image: postgres:15-alpine
     restart: unless-stopped

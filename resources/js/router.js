@@ -21,6 +21,11 @@ const routes = [
         component: Dashboard
     },
     {
+        path: '/ver-mapa',
+        name: 'ver-mapa',
+        component: VerMapa
+    },
+    {
         path: '/registrar-incidente',
         name: 'registrar-incidente',
         component: RegistrarIncidente

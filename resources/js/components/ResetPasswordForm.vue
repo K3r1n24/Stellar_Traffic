@@ -16,74 +16,13 @@
     <section class="right-section">
       <div class="login-card">
         <div class="card-header">
-          <h2>Crea tu cuenta</h2>
-          <p>Regístrate para acceder al sistema inteligencia vial</p>
-        </div>
-
-        <div v-if="errorMessage" class="error-message">
-          <ul style="list-style-type: disc; padding-left: 20px; margin: 0;">
-            <li>{{ errorMessage }}</li>
-          </ul>
+          <h2>Restablecer contraseña</h2>
+          <p>Coloca tu nueva contraseña para recuperar el acceso a tu cuenta</p>
         </div>
 
         <form @submit.prevent="submitForm">
           <div class="form-group">
-            <label for="name">Nombre Completo</label>
-            <div class="input-wrapper">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              <input
-                type="text"
-                id="name"
-                v-model="form.name"
-                placeholder="Ej. Luis Zelaya"
-                required
-              />
-            </div>
-          </div>
-
-
-          <div class="form-group">
-            <label for="email">Correo electrónico</label>
-            <div class="input-wrapper">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
-              </svg>
-              <input
-                type="email"
-                id="email"
-                v-model="form.email"
-                placeholder="usuario@ejemplo.com"
-                required
-              />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="password">Contraseña</label>
+            <label for="password">Contraseña nueva</label>
             <div class="input-wrapper">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -105,6 +44,7 @@
                 v-model="form.password"
                 placeholder="••••••••••••••••"
                 required
+                autofocus
               />
               <svg
                 class="eye-icon"
@@ -144,7 +84,7 @@
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
               </svg>
               <input
-                :type="showPasswordConfirm ? 'text' : 'password'"
+                :type="showPasswordConfirmation ? 'text' : 'password'"
                 id="password_confirmation"
                 v-model="form.password_confirmation"
                 placeholder="••••••••••••••••"
@@ -152,8 +92,8 @@
               />
               <svg
                 class="eye-icon"
-                @click="showPasswordConfirm = !showPasswordConfirm"
-                :style="{ opacity: showPasswordConfirm ? '0.5' : '1' }"
+                @click="showPasswordConfirmation = !showPasswordConfirmation"
+                :style="{ opacity: showPasswordConfirmation ? '0.5' : '1' }"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -170,26 +110,28 @@
             </div>
           </div>
 
-          <label class="terms-checkbox">
-            <input type="checkbox" v-model="form.terms" required />
-            <span>
-              Acepto los <a href="#">términos y condiciones</a> y la
-              <a href="#">política de privacidad</a>
-            </span>
-          </label>
-
-          <button type="submit" class="submit-btn" :disabled="isLoading">
-            {{ isLoading ? 'Creando cuenta...' : 'Crear Cuenta' }}
-          </button>
-
-          <div class="divider">
-            <span>o</span>
+          <div v-if="errorMessage" class="error-message">
+            <ul style="list-style-type: disc; padding-left: 20px; margin: 0;">
+              <li>{{ errorMessage }}</li>
+            </ul>
           </div>
 
-          <p class="footer-text">
-            ¿Ya tienes una cuenta? <a href="/login">Inicia sesión</a>
-          </p>
+          <div v-if="successMessage" class="success-message">
+            {{ successMessage }}
+          </div>
+
+          <button type="submit" class="submit-btn" :disabled="isLoading">
+            {{ isLoading ? 'Restableciendo...' : 'Guardar nueva contraseña' }}
+          </button>
         </form>
+
+        <div class="divider">
+          <span>o</span>
+        </div>
+
+        <p class="footer-text">
+          ¿Ya recordaste tu cuenta? <a href="/login">Volver al login</a>
+        </p>
       </div>
     </section>
   </div>
@@ -198,44 +140,56 @@
 <script setup>
 import { ref, reactive } from 'vue';
 
+const props = defineProps({
+  token: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    default: '',
+  },
+});
+
 const form = reactive({
-  name: '',
-  email: '',
+  token: props.token,
+  email: props.email,
   password: '',
   password_confirmation: '',
-  terms: false,
 });
 
 const showPassword = ref(false);
-const showPasswordConfirm = ref(false);
+const showPasswordConfirmation = ref(false);
 const isLoading = ref(false);
 const errorMessage = ref('');
+const successMessage = ref('');
 
 const submitForm = async () => {
-  if (!form.terms) {
-    errorMessage.value = 'Debes aceptar los términos y condiciones.';
+  if (form.password !== form.password_confirmation) {
+    errorMessage.value = 'Las contraseñas no coinciden.';
     return;
   }
 
   isLoading.value = true;
   errorMessage.value = '';
+  successMessage.value = '';
 
   try {
-    const response = await axios.post('/register', form);
-    if (response.data.redirect) {
-      window.location.href = response.data.redirect;
-    }
-  } catch (error) {
-    console.error('Registration error:', error);
-    const responseData = error.response?.data;
+    const response = await axios.post('/password/reset', form);
+    successMessage.value = response.data.message || 'Contraseña restablecida con éxito.';
     
-    // Si hay errores de validación específicos, sacamos el primero
-    if (responseData?.errors) {
-        const firstErrorKey = Object.keys(responseData.errors)[0];
-        errorMessage.value = responseData.errors[firstErrorKey][0];
-    } else {
-        errorMessage.value = responseData?.message || 'Ocurrió un error al crear la cuenta.';
-    }
+    // Redirect to login after a short delay
+    setTimeout(() => {
+      if (response.data.redirect) {
+        window.location.href = response.data.redirect;
+      } else {
+        window.location.href = '/login';
+      }
+    }, 2000);
+  } catch (error) {
+    console.error('Password reset submit error:', error);
+    const responseData = error.response?.data;
+    errorMessage.value = responseData?.message || responseData?.errors?.email?.[0] || responseData?.errors?.password?.[0] || 'Ocurrió un error al restablecer la contraseña.';
   } finally {
     isLoading.value = false;
   }
@@ -243,17 +197,6 @@ const submitForm = async () => {
 </script>
 
 <style scoped>
-:root {
-  --bg-color: #02060f;
-  --card-bg: #030a1c;
-  --accent-blue: #2563eb;
-  --accent-glow: rgba(37, 99, 235, 0.3);
-  --text-white: #ffffff;
-  --text-gray: #94a3b8;
-  --border-color: rgba(37, 99, 235, 0.2);
-  --input-bg: rgba(5, 15, 35, 0.6);
-}
-
 .bg-glow-1 {
   position: absolute;
   top: -10%;
@@ -278,8 +221,8 @@ const submitForm = async () => {
   width: 100%;
   max-width: 1200px;
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 80px;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
   padding: 40px;
   align-items: center;
   margin: 0 auto;
@@ -343,9 +286,9 @@ const submitForm = async () => {
   background-color: #030a1c;
   border: 1.5px solid rgba(37, 99, 235, 0.2);
   border-radius: 24px;
-  padding: 40px;
+  padding: 48px;
   width: 100%;
-  max-width: 600px;
+  max-width: 520px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   position: relative;
   overflow: hidden;
@@ -364,7 +307,7 @@ const submitForm = async () => {
 
 .card-header {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .card-header h2 {
@@ -379,27 +322,14 @@ const submitForm = async () => {
   font-size: 0.95rem;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-@media (max-width: 600px) {
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-}
-
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: white;
   font-weight: 400;
   text-align: left;
@@ -416,9 +346,9 @@ const submitForm = async () => {
   background-color: rgba(5, 15, 35, 0.6);
   border: 1px solid rgba(37, 99, 235, 0.2);
   border-radius: 12px;
-  padding: 12px 16px 12px 44px;
+  padding: 14px 16px 14px 48px;
   color: white;
-  font-size: 0.95rem;
+  font-size: 1rem;
   transition: all 0.3s ease;
 }
 
@@ -430,16 +360,16 @@ const submitForm = async () => {
 
 .input-wrapper svg {
   position: absolute;
-  left: 14px;
+  left: 16px;
   color: #94a3b8;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   pointer-events: none;
 }
 
 .eye-icon {
   position: absolute;
-  right: 14px !important;
+  right: 16px !important;
   left: auto !important;
   cursor: pointer;
   pointer-events: all !important;
@@ -455,25 +385,15 @@ const submitForm = async () => {
   padding: 14px 18px;
 }
 
-.terms-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 20px 0 24px 0;
-  font-size: 0.8rem;
-  color: #94a3b8;
-  cursor: pointer;
-}
-
-.terms-checkbox input {
-  accent-color: #2563eb;
-  width: 16px;
-  height: 16px;
-}
-
-.terms-checkbox a {
-  color: #2563eb;
-  text-decoration: none;
+.success-message {
+  margin-bottom: 24px;
+  color: #34d399;
+  font-size: 0.95rem;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  border-radius: 14px;
+  padding: 14px 18px;
+  text-align: center;
 }
 
 .submit-btn {
@@ -482,13 +402,12 @@ const submitForm = async () => {
   color: white;
   border: none;
   border-radius: 12px;
-  padding: 14px;
+  padding: 16px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
-  margin-bottom: 20px;
 }
 
 .submit-btn:hover {
@@ -506,7 +425,7 @@ const submitForm = async () => {
 .divider {
   display: flex;
   align-items: center;
-  margin: 20px 0;
+  margin: 24px 0;
   color: #94a3b8;
   font-size: 0.9rem;
 }
