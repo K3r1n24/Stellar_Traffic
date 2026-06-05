@@ -5,11 +5,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('landing');
-});
+})->name('home');
 
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
+Route::get('/visitante/mapa', function () {
+    return view('visitor-map');
+})->name('visitor.map');
+
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 
 Route::get('/register', function () {
     return view('register');
@@ -42,4 +44,3 @@ Route::post('/accidentes', [App\Http\Controllers\AccidenteController::class, 'st
 Route::get('/api/user', function () {
     return response()->json(auth()->user());
 })->middleware('auth');
-
