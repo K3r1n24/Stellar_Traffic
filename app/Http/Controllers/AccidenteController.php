@@ -13,9 +13,13 @@ use Illuminate\Support\Facades\Auth;
 
 class AccidenteController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $accidentes = Accidente::all();
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json($accidentes);
+        }
 
         return view('accidentes.index', compact('accidentes'));
     }
