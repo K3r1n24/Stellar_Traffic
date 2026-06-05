@@ -48,15 +48,60 @@
                                 >
                             </div>
                             <div class="list-inputs" id="vehicles-list">
-                                <input
+                                <div
                                     v-for="(vehiculo, index) in vehiculos"
                                     :key="'vehiculo-' + index"
-                                    type="text"
-                                    class="outline-input"
+                                    class="block-card"
                                     :class="{ 'new-input': index >= 2 }"
-                                    placeholder="Marca/Año/Matricula"
-                                    v-model="vehiculos[index]"
-                                />
+                                >
+                                    <div class="block-card-header">
+                                        <span class="block-card-title">Vehículo #{{ index + 1 }}</span>
+                                        <button
+                                            v-if="vehiculos.length > 0"
+                                            class="delete-block-btn"
+                                            type="button"
+                                            title="Eliminar vehículo"
+                                            @click="removeVehicle(index)"
+                                        >
+                                            <i class="ph ph-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="block-card-body">
+                                        <div class="input-grid">
+                                            <div class="input-field">
+                                                <label>Marca / Modelo</label>
+                                                <input
+                                                    type="text"
+                                                    class="outline-input"
+                                                    placeholder="Ej. Toyota Corolla"
+                                                    v-model="vehiculo.marca"
+                                                    :disabled="vehiculo.noIdentificado"
+                                                />
+                                            </div>
+                                            <div class="input-field">
+                                                <label>Número de Placa / Matrícula</label>
+                                                <input
+                                                    type="text"
+                                                    class="outline-input"
+                                                    placeholder="Ej. P123-456"
+                                                    v-model="vehiculo.matricula"
+                                                    :disabled="vehiculo.noIdentificado"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="checkbox-wrapper">
+                                            <label class="custom-checkbox">
+                                                <input
+                                                    type="checkbox"
+                                                    v-model="vehiculo.noIdentificado"
+                                                    @change="handleVehicleCheckboxChange(index)"
+                                                />
+                                                <span class="checkmark"></span>
+                                                <span class="checkbox-label">Vehículo no identificado / Se dio a la fuga</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -68,17 +113,80 @@
                                 >
                             </div>
                             <div class="list-inputs" id="persons-list">
-                                <input
+                                <div
                                     v-for="(persona, index) in personas"
                                     :key="'persona-' + index"
-                                    type="text"
-                                    class="outline-input"
+                                    class="block-card"
                                     :class="{ 'new-input': index >= 2 }"
-                                    placeholder="Nombre/Licencia/Condición"
-                                    v-model="personas[index]"
-                                />
+                                >
+                                    <div class="block-card-header">
+                                        <span class="block-card-title">Persona #{{ index + 1 }}</span>
+                                        <button
+                                            v-if="personas.length > 0"
+                                            class="delete-block-btn"
+                                            type="button"
+                                            title="Eliminar persona"
+                                            @click="removePerson(index)"
+                                        >
+                                            <i class="ph ph-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="block-card-body">
+                                        <div class="input-grid three-columns">
+                                            <div class="input-field">
+                                                <label>Nombre Completo</label>
+                                                <input
+                                                    type="text"
+                                                    class="outline-input"
+                                                    placeholder="Ej. Juan Pérez"
+                                                    v-model="persona.nombre"
+                                                    :disabled="persona.noDisponible"
+                                                />
+                                            </div>
+                                            <div class="input-field">
+                                                <label>Número de Licencia</label>
+                                                <input
+                                                    type="text"
+                                                    class="outline-input"
+                                                    placeholder="Ej. 0318-120590-101-1"
+                                                    v-model="persona.licencia"
+                                                    :disabled="persona.noDisponible"
+                                                />
+                                            </div>
+                                            <div class="input-field">
+                                                <label>Condición <span class="required-star">*</span></label>
+                                                <select
+                                                    class="outline-select"
+                                                    v-model="persona.condicion"
+                                                    required
+                                                >
+                                                    <option value="" disabled selected>Seleccione...</option>
+                                                    <option value="Ileso">Ileso</option>
+                                                    <option value="Lesionado">Lesionado</option>
+                                                    <option value="Fallecido">Fallecido</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="checkbox-wrapper">
+                                            <label class="custom-checkbox">
+                                                <input
+                                                    type="checkbox"
+                                                    v-model="persona.noDisponible"
+                                                    @change="handlePersonCheckboxChange(index)"
+                                                />
+                                                <span class="checkmark"></span>
+                                                <span class="checkbox-label">Datos de persona no disponibles</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Texto de Ayuda Cohesivo -->
+                        <p class="help-text">
+                            * Si falta información, asegúrese de capturar las placas y los rostros en el siguiente paso de Evidencia.
+                        </p>
                     </form>
                 </div>
 
@@ -106,7 +214,7 @@
 <script setup>
 import Sidebar from "./Sidebar.vue";
 import TopHeader from "./TopHeader.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useDatetime } from "../composables/useDatetime.js";
@@ -117,22 +225,154 @@ const { state: incidenteState } = useIncidenteStore();
 
 const router = useRouter();
 
-// Arrays reactivos inicializados desde el store
-const vehiculos = ref([...incidenteState.vehiculos]);
-const personas = ref([...incidenteState.personas]);
+// Arrays reactivos locales
+const vehiculos = ref([]);
+const personas = ref([]);
 
-// Funciones para agregar campos dinámicamente
+// Funciones Helper para parsear la data del store de strings a objetos estructurados
+const parseVehiculo = (str) => {
+    if (!str || str.trim() === "") {
+        return { marca: "", matricula: "", noIdentificado: false };
+    }
+    if (str.includes("Vehículo no identificado / Se dio a la fuga")) {
+        return { marca: "Desconocido", matricula: "N/A", noIdentificado: true };
+    }
+    if (str.includes(" - Placa: ")) {
+        const parts = str.split(" - Placa: ");
+        return { marca: parts[0] || "", matricula: parts[1] || "", noIdentificado: false };
+    }
+    if (str.includes("/")) {
+        const parts = str.split("/");
+        return { marca: parts[0] || "", matricula: parts[2] || "", noIdentificado: false };
+    }
+    return { marca: str, matricula: "", noIdentificado: false };
+};
+
+const parsePersona = (str) => {
+    if (!str || str.trim() === "") {
+        return { nombre: "", licencia: "", condicion: "", noDisponible: false };
+    }
+    if (str.includes("Datos de persona no disponibles")) {
+        let condicion = "";
+        const condMatch = str.match(/Condición:\s*([^)]+)/);
+        if (condMatch) {
+            condicion = condMatch[1].trim();
+        }
+        return { nombre: "Desconocido", licencia: "N/A", condicion: condicion, noDisponible: true };
+    }
+    if (str.includes(" (Licencia: ")) {
+        const parts = str.split(" (Licencia: ");
+        const nombre = parts[0] || "";
+        const rest = parts[1] || "";
+        const licParts = rest.split(", Condición: ");
+        const licencia = licParts[0] || "";
+        const condicion = (licParts[1] || "").replace(")", "");
+        return { nombre, licencia, condicion, noDisponible: false };
+    }
+    if (str.includes("/")) {
+        const parts = str.split("/");
+        return { nombre: parts[0] || "", licencia: parts[1] || "", condicion: parts[2] || "", noDisponible: false };
+    }
+    return { nombre: str, licencia: "", condicion: "", noDisponible: false };
+};
+
+// Carga inicial y parseo
+onMounted(() => {
+    if (incidenteState.vehiculos && incidenteState.vehiculos.length > 0) {
+        // Mapear strings cargados
+        vehiculos.value = incidenteState.vehiculos.map(parseVehiculo);
+    } else {
+        // Inicializar con dos por defecto
+        vehiculos.value = [
+            { marca: "", matricula: "", noIdentificado: false },
+            { marca: "", matricula: "", noIdentificado: false }
+        ];
+    }
+
+    if (incidenteState.personas && incidenteState.personas.length > 0) {
+        personas.value = incidenteState.personas.map(parsePersona);
+    } else {
+        personas.value = [
+            { nombre: "", licencia: "", condicion: "", noDisponible: false },
+            { nombre: "", licencia: "", condicion: "", noDisponible: false }
+        ];
+    }
+});
+
+// Cambios en checkboxes
+const handleVehicleCheckboxChange = (index) => {
+    const v = vehiculos.value[index];
+    if (v.noIdentificado) {
+        v.marca = "Desconocido";
+        v.matricula = "N/A";
+    } else {
+        v.marca = "";
+        v.matricula = "";
+    }
+};
+
+const handlePersonCheckboxChange = (index) => {
+    const p = personas.value[index];
+    if (p.noDisponible) {
+        p.nombre = "Desconocido";
+        p.licencia = "N/A";
+    } else {
+        p.nombre = "";
+        p.licencia = "";
+    }
+};
+
+// Agregar/Eliminar elementos
 const addVehicle = () => {
-    vehiculos.value.push("");
+    vehiculos.value.push({ marca: "", matricula: "", noIdentificado: false });
+};
+
+const removeVehicle = (index) => {
+    vehiculos.value.splice(index, 1);
 };
 
 const addPerson = () => {
-    personas.value.push("");
+    personas.value.push({ nombre: "", licencia: "", condicion: "", noDisponible: false });
 };
 
+const removePerson = (index) => {
+    personas.value.splice(index, 1);
+};
+
+// Guardar en el store serializando a strings
 const saveToStore = () => {
-    incidenteState.vehiculos = [...vehiculos.value];
-    incidenteState.personas = [...personas.value];
+    incidenteState.vehiculos = vehiculos.value.map(v => {
+        if (v.noIdentificado) {
+            return "Vehículo no identificado / Se dio a la fuga";
+        }
+        if (!v.marca && !v.matricula) {
+            return "";
+        }
+        if (v.marca && v.matricula) {
+            return `${v.marca} - Placa: ${v.matricula}`;
+        }
+        return v.marca || `Placa: ${v.matricula}`;
+    });
+
+    incidenteState.personas = personas.value.map(p => {
+        if (p.noDisponible) {
+            return `Datos de persona no disponibles (Condición: ${p.condicion || 'Desconocida'})`;
+        }
+        if (!p.nombre && !p.licencia && !p.condicion) {
+            return "";
+        }
+        const parts = [];
+        if (p.nombre) parts.push(p.nombre);
+        
+        const details = [];
+        if (p.licencia) details.push(`Licencia: ${p.licencia}`);
+        if (p.condicion) details.push(`Condición: ${p.condicion}`);
+        
+        if (details.length > 0) {
+            return `${p.nombre || 'Desconocido'} (${details.join(', ')})`;
+        }
+        return p.nombre || "";
+    });
 };
 
 // Navegación
@@ -142,12 +382,18 @@ const handleBack = () => {
 };
 
 const handleNext = () => {
+    // Validar formulario
+    const form = document.getElementById("involved-form");
+    if (form && !form.reportValidity()) {
+        return;
+    }
+
     saveToStore();
 
     // Recolectar datos limpiando campos vacíos
     const data = {
-        vehiculos: vehiculos.value.filter((v) => v.trim() !== ""),
-        personas: personas.value.filter((p) => p.trim() !== ""),
+        vehiculos: incidenteState.vehiculos.filter((v) => v.trim() !== ""),
+        personas: incidenteState.personas.filter((p) => p.trim() !== ""),
     };
 
     console.log("Datos de involucrados guardados en store:", data);
@@ -595,6 +841,212 @@ const handleLogout = async () => {
     background-color: var(--accent-blue);
 }
 
+/* Tarjetas de Bloque Estructuradas */
+.block-card {
+    background-color: rgba(255, 255, 255, 0.015);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.block-card:hover {
+    border-color: rgba(51, 107, 250, 0.3);
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.block-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(29, 44, 82, 0.5);
+    padding-bottom: 12px;
+}
+
+.block-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.delete-block-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.delete-block-btn:hover {
+    color: var(--critical);
+    transform: scale(1.1);
+}
+
+.block-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Grillas para Inputs */
+.input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.input-grid.three-columns {
+    grid-template-columns: 1.5fr 1fr 1fr;
+}
+
+.input-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-field label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.required-star {
+    color: var(--critical);
+}
+
+/* Dropdown select moderno */
+.outline-select {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0 15px;
+    height: 55px;
+    width: 100%;
+    color: var(--text-main);
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238AABBB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px;
+}
+
+.outline-select:focus {
+    border-color: var(--accent-blue);
+    background-color: rgba(37, 99, 235, 0.05);
+}
+
+.outline-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.outline-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Checkbox personalizado sutil */
+.checkbox-wrapper {
+    margin-top: 5px;
+}
+
+.custom-checkbox {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    gap: 10px;
+}
+
+.custom-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: relative;
+    height: 18px;
+    width: 18px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.custom-checkbox:hover input ~ .checkmark {
+    border-color: var(--accent-blue);
+    background-color: rgba(37, 99, 235, 0.05);
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.custom-checkbox .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 4px;
+    height: 9px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+}
+
+.custom-checkbox input:checked ~ .checkbox-label {
+    color: var(--text-main);
+}
+
+/* Texto de Ayuda Cohesivo */
+.help-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 10px;
+    text-align: center;
+    letter-spacing: 0.3px;
+}
+
 /* Responsividad */
 @media (max-width: 900px) {
     .stepper-container {
@@ -602,6 +1054,10 @@ const handleLogout = async () => {
     }
     .details-card {
         padding: 30px 20px;
+    }
+    .input-grid, .input-grid.three-columns {
+        grid-template-columns: 1fr;
+        gap: 15px;
     }
 }
 </style>
