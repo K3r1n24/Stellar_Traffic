@@ -1,12 +1,62 @@
 <template>
     <div class="dashboard">
-        <Sidebar />
+        
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar">LZ</div>
+                <div class="user-info">
+                    <h4>Luis Zelaya</h4>
+                    <span>PANEL DE CONTROL PNC</span>
+                </div>
+                <i class="ph ph-list menu-icon"></i>
+            </div>
+
+            <div class="nav-section">
+                <p class="nav-title">PRINCIPAL</p>
+                <ul class="nav-list" id="main-nav">
+                    <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
+                    <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
+                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
+                    <li class="nav-item" @click="goTo('/ver-mapa')"><i class="ph ph-map-pin"></i> Ver mapa</li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <p class="nav-title">SISTEMA</p>
+                <ul class="nav-list">
+                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
+                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
+                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
+                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
+                </ul>
+            </div>
+
+            <div class="logout" @click="handleLogout">
+                <i class="ph ph-sign-out"></i> Salir de la cuenta
+            </div>
+        </aside>
 
         <main class="main-content">
-            <TopHeader
-                title="Registro de Incidente"
-                subtitle="Gestión rápida de incidentes y monitoreo vial"
-            />
+            
+            <header class="header">
+                <div class="header-titles">
+                    <h1>Registro de Incidente</h1>
+                    <p>Gestión rápida de incidentes y monitoreo vial</p>
+                </div>
+                <div class="header-actions">
+                    <div class="datetime-pill">
+                        <i class="ph ph-calendar-blank"></i>
+                        <div class="dt-text">
+                            <span class="date">12 Mayo 2026</span>
+                            <span class="time">09:23 PM</span>
+                        </div>
+                    </div>
+                    <div class="notification">
+                        <i class="ph ph-bell"></i>
+                        <span class="badge">2</span>
+                    </div>
+                </div>
+            </header>
 
             <div class="form-view">
                 <div class="stepper-container">
@@ -254,16 +304,9 @@
 </template>
 
 <script setup>
-import Sidebar from "./Sidebar.vue";
-import TopHeader from "./TopHeader.vue";
-import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios";
-import { useDatetime } from "../composables/useDatetime.js";
-import { useIncidenteStore } from "../composables/useIncidenteStore.js";
-
-const { currentDate, currentTime } = useDatetime();
-const { state: incidenteState } = useIncidenteStore();
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const router = useRouter();
 
@@ -531,8 +574,7 @@ const handleBack = () => {
 };
 
 const handleNext = () => {
-    incidenteState.archivosCount = uploadedFiles.value.length;
-    router.push({ name: "registrar-incidente-confirmacion" });
+    router.push({ name: 'registrar-incidente-confirmacion' });
 };
 
 const goTo = (path) => {
@@ -1084,59 +1126,83 @@ const handleLogout = async () => {
         opacity: 1;
         transform: translateY(0);
     }
-}
 
-.dropdown-item {
-    background: transparent;
-    border: none;
-    color: var(--text-main);
-    padding: 10px 16px;
-    font-size: 12px;
-    text-align: left;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    transition: background-color 0.2s;
-}
+    /* --- BARRA LATERAL --- */
+    .sidebar { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
+    .user-profile { display: flex; align-items: center; padding: 0 20px 20px; border-bottom: 1px solid var(--border-color); gap: 12px; }
+    .avatar { width: 40px; height: 40px; background-color: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; color: white; }
+    .user-info h4 { font-size: 14px; font-weight: 600; margin: 0; }
+    .user-info span { font-size: 10px; color: var(--text-muted); }
+    .menu-icon { margin-left: auto; cursor: pointer; color: var(--text-muted); font-size: 20px;}
 
-.dropdown-item:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}
+    .nav-section { margin-top: 25px; }
+    .nav-title { font-size: 11px; color: var(--text-muted); padding: 0 20px; margin-bottom: 10px; letter-spacing: 1px; }
+    .nav-list { list-style: none; margin: 0; padding: 0; }
+    .nav-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: var(--text-muted); font-size: 14px; cursor: pointer; transition: 0.2s; }
+    .nav-item i { font-size: 18px; }
+    .nav-item:hover { color: var(--text-main); }
+    .nav-item.active { background-color: rgba(37, 99, 235, 0.1); color: var(--text-main); border: 1px solid var(--primary-blue); border-radius: 8px; margin: 0 10px; padding: 12px 10px; }
+    .logout { margin-top: auto; padding: 20px; color: var(--critical); display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; }
 
-.dropdown-item i {
-    font-size: 14px;
-    color: var(--text-muted);
-}
+    /* --- CONTENIDO PRINCIPAL --- */
+    .main-content { flex: 1; padding: 30px 40px; display: flex; flex-direction: column; overflow-y: auto; }
 
-.dropdown-item.text-danger {
-    color: var(--critical);
-}
+    /* Encabezado */
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0; }
+    .header-titles h1 { font-size: 24px; font-weight: 600; margin: 0 0 5px 0; }
+    .header-titles p { color: var(--text-muted); font-size: 14px; margin: 0; }
+    .header-actions { display: flex; gap: 15px; align-items: center; }
 
-.dropdown-item.text-danger i {
-    color: var(--critical);
-}
+    .datetime-pill { display: flex; align-items: center; gap: 10px; background-color: var(--bg-card); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); }
+    .datetime-pill i { font-size: 20px; color: var(--text-muted); }
+    .dt-text { display: flex; flex-direction: column; font-size: 12px;}
+    .dt-text .date { font-weight: 600; }
+    .dt-text .time { color: var(--text-muted); font-size: 11px;}
 
-/* Modales */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-    animation: fadeInModal 0.2s ease-out;
-}
+    .notification { background-color: var(--bg-card); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); position: relative; cursor: pointer; }
+    .notification i { font-size: 20px; color: var(--text-muted); }
+    .badge { position: absolute; top: -2px; right: -2px; background-color: var(--critical); color: white; font-size: 10px; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; }
 
-@keyframes fadeInModal {
-    from {
-        opacity: 0;
+    /* --- VISTA DE EVIDENCIA --- */
+    .form-view { flex: 1; display: flex; flex-direction: column; max-width: 1000px; margin: 0 auto; width: 100%; }
+
+    /* Stepper - Paso 5 */
+    .stepper-container { position: relative; margin: 30px 0 50px 0; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 10px; }
+    .stepper-background-line { position: absolute; top: 50%; left: 0; width: 100%; height: 6px; background-color: #ffffff; transform: translateY(-50%); border-radius: 3px; z-index: 1; }
+    
+    /* Línea activa conectando casi todos los puntos */
+    .stepper-active-line { position: absolute; top: 50%; left: 0; width: 83%; height: 6px; background-color: var(--accent-blue); transform: translateY(-50%); border-radius: 3px; z-index: 2; transition: width 0.4s ease; }
+    
+    .step-dot { width: 24px; height: 24px; border-radius: 50%; background-color: #ffffff; z-index: 3; position: relative; transition: 0.4s ease; }
+    .step-dot.active { background-color: var(--accent-blue); box-shadow: 0 0 12px var(--accent-blue); }
+    .car-icon-floating { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); width: 45px; height: 45px; background-color: rgba(255, 255, 255, 0.08); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-muted); z-index: 4; }
+
+    /* Grid de Evidencia */
+    .evidence-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 30px; margin-bottom: 30px; align-items: stretch; }
+
+    /* Tarjeta Genérica */
+    .card-panel { border: 1px solid var(--accent-blue); border-radius: 16px; padding: 35px; background-color: transparent; display: flex; flex-direction: column; }
+    
+    .panel-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+    .panel-header i { font-size: 20px; color: var(--text-main); }
+    .panel-header-text h3 { font-size: 15px; font-weight: 500; margin: 0; }
+    .panel-header-text p { font-size: 12px; color: var(--text-muted); margin: 2px 0 0 0; }
+
+    /* Panel Izquierdo: Carga de Archivos */
+    .dropzone { 
+        flex: 1;
+        border: 2px dashed var(--border-color); 
+        border-radius: 12px; 
+        background-color: var(--dropzone-bg);
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 20px;
+        padding: 40px 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
     }
     to {
         opacity: 1;

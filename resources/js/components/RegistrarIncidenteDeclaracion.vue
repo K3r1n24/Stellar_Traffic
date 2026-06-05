@@ -52,10 +52,25 @@
         </aside>
 
         <main class="main-content">
-            <TopHeader
-                title="Registro de Incidente"
-                subtitle="Gestión rápida de incidentes y monitoreo vial"
-            />
+            <header class="header">
+                <div class="header-titles">
+                    <h1>Registro de Incidente</h1>
+                    <p>Gestión rápida de incidentes y monitoreo vial</p>
+                </div>
+                <div class="header-actions">
+                    <div class="datetime-pill">
+                        <i class="ph ph-calendar-blank"></i>
+                        <div class="dt-text">
+                            <span class="date">12 Mayo 2026</span>
+                            <span class="time">09:23 PM</span>
+                        </div>
+                    </div>
+                    <div class="notification">
+                        <i class="ph ph-bell"></i>
+                        <span class="badge">2</span>
+                    </div>
+                </div>
+            </header>
 
             <div class="form-view">
                 <div class="stepper-container">
@@ -228,8 +243,6 @@
 </template>
 
 <script setup>
-import Sidebar from "./Sidebar.vue";
-import TopHeader from "./TopHeader.vue";
 import { reactive, computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";

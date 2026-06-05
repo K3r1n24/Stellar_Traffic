@@ -1,6 +1,42 @@
 <template>
     <div class="dashboard">
-        <Sidebar />
+
+        
+        <!-- BARRA LATERAL (SIDEBAR) -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar">LZ</div>
+                <div class="user-info">
+                    <h4>Luis Zelaya</h4>
+                    <span>PANEL DE CONTROL PNC</span>
+                </div>
+                <i class="ph ph-list menu-icon"></i>
+            </div>
+
+            <div class="nav-section">
+                <p class="nav-title">PRINCIPAL</p>
+                <ul class="nav-list" id="main-nav">
+                    <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
+                    <li class="nav-item" @click="goTo('/registrar-incidente')"><i class="ph ph-plus-square"></i> Registrar incidente</li>
+                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
+                    <li class="nav-item active"><i class="ph ph-map-pin"></i> Ver mapa</li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <p class="nav-title">SISTEMA</p>
+                <ul class="nav-list">
+                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
+                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
+                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
+                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
+                </ul>
+            </div>
+
+            <div class="logout" @click="handleLogout">
+                <i class="ph ph-sign-out"></i> Salir de la cuenta
+            </div>
+        </aside>
 
         <main class="main-content">
             <TopHeader
@@ -129,17 +165,19 @@
                     </div>
                     <div id="global-map"></div>
                 </div>
+
             </div>
         </main>
     </div>
 </template>
 
 <script setup>
-import Sidebar from "./Sidebar.vue";
-import TopHeader from "./TopHeader.vue";
-import { onMounted, onUnmounted, ref, computed, watch } from "vue";
-import { useRoute } from "vue-router";
-import axios from "axios";
+
+import { onMounted, onUnmounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+
+const router = useRouter();
 
 // Estados reactivos
 const route = useRoute();
@@ -907,3 +945,4 @@ onUnmounted(() => {
     }
 }
 </style>
+

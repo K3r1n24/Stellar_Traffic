@@ -1,12 +1,62 @@
 <template>
     <div class="dashboard">
-        <Sidebar />
+        
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar">LZ</div>
+                <div class="user-info">
+                    <h4>Luis Zelaya</h4>
+                    <span>PANEL DE CONTROL PNC</span>
+                </div>
+                <i class="ph ph-list menu-icon"></i>
+            </div>
+
+            <div class="nav-section">
+                <p class="nav-title">PRINCIPAL</p>
+                <ul class="nav-list" id="main-nav">
+                    <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
+                    <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
+                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
+                    <li class="nav-item" @click="goTo('/ver-mapa')"><i class="ph ph-map-pin"></i> Ver mapa</li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <p class="nav-title">SISTEMA</p>
+                <ul class="nav-list">
+                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
+                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
+                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
+                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
+                </ul>
+            </div>
+
+            <div class="logout" @click="handleLogout">
+                <i class="ph ph-sign-out"></i> Salir de la cuenta
+            </div>
+        </aside>
 
         <main class="main-content">
-            <TopHeader
-                title="Registro de Incidente"
-                subtitle="Gestión rápida de incidentes y monitoreo vial"
-            />
+            
+            <header class="header">
+                <div class="header-titles">
+                    <h1>Registro de Incidente</h1>
+                    <p>Gestión rápida de incidentes y monitoreo vial</p>
+                </div>
+                <div class="header-actions">
+                    <div class="datetime-pill">
+                        <i class="ph ph-calendar-blank"></i>
+                        <div class="dt-text">
+                            <span class="date">12 Mayo 2026</span>
+                            <span class="time">09:23 PM</span>
+                        </div>
+                    </div>
+                    <div class="notification">
+                        <i class="ph ph-bell"></i>
+                        <span class="badge">2</span>
+                    </div>
+                </div>
+            </header>
 
             <div class="form-view">
                 <div class="stepper-container">
@@ -212,22 +262,15 @@
 </template>
 
 <script setup>
-import Sidebar from "./Sidebar.vue";
-import TopHeader from "./TopHeader.vue";
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios";
-import { useDatetime } from "../composables/useDatetime.js";
-import { useIncidenteStore } from "../composables/useIncidenteStore.js";
-
-const { currentDate, currentTime } = useDatetime();
-const { state: incidenteState } = useIncidenteStore();
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const router = useRouter();
 
-// Arrays reactivos locales
-const vehiculos = ref([]);
-const personas = ref([]);
+// Arrays reactivos para las listas dinámicas, inicializados con 2 elementos vacíos como en el HTML original
+const vehiculos = ref(['', '']);
+const personas = ref(['', '']);
 
 // Funciones Helper para parsear la data del store de strings a objetos estructurados
 const parseVehiculo = (str) => {
@@ -335,70 +378,21 @@ const addPerson = () => {
     personas.value.push({ nombre: "", licencia: "", condicion: "", noDisponible: false });
 };
 
-const removePerson = (index) => {
-    personas.value.splice(index, 1);
-};
-
-// Guardar en el store serializando a strings
-const saveToStore = () => {
-    incidenteState.vehiculos = vehiculos.value.map(v => {
-        if (v.noIdentificado) {
-            return "Vehículo no identificado / Se dio a la fuga";
-        }
-        if (!v.marca && !v.matricula) {
-            return "";
-        }
-        if (v.marca && v.matricula) {
-            return `${v.marca} - Placa: ${v.matricula}`;
-        }
-        return v.marca || `Placa: ${v.matricula}`;
-    });
-
-    incidenteState.personas = personas.value.map(p => {
-        if (p.noDisponible) {
-            return `Datos de persona no disponibles (Condición: ${p.condicion || 'Desconocida'})`;
-        }
-        if (!p.nombre && !p.licencia && !p.condicion) {
-            return "";
-        }
-        const parts = [];
-        if (p.nombre) parts.push(p.nombre);
-        
-        const details = [];
-        if (p.licencia) details.push(`Licencia: ${p.licencia}`);
-        if (p.condicion) details.push(`Condición: ${p.condicion}`);
-        
-        if (details.length > 0) {
-            return `${p.nombre || 'Desconocido'} (${details.join(', ')})`;
-        }
-        return p.nombre || "";
-    });
-};
-
 // Navegación
 const handleBack = () => {
-    saveToStore();
-    router.push({ name: "registrar-incidente-declaracion" });
+    router.push({ name: 'registrar-incidente-declaracion' });
 };
 
 const handleNext = () => {
-    // Validar formulario
-    const form = document.getElementById("involved-form");
-    if (form && !form.reportValidity()) {
-        return;
-    }
-
-    saveToStore();
-
     // Recolectar datos limpiando campos vacíos
     const data = {
         vehiculos: incidenteState.vehiculos.filter((v) => v.trim() !== ""),
         personas: incidenteState.personas.filter((p) => p.trim() !== ""),
     };
-
-    console.log("Datos de involucrados guardados en store:", data);
-
-    router.push({ name: "registrar-incidente-evidencia" });
+    
+    console.log("Datos de involucrados recolectados:", data);
+    
+    router.push({ name: 'registrar-incidente-evidencia' });
 };
 
 const goTo = (path) => {

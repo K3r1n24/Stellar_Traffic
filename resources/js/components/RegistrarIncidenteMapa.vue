@@ -1,10 +1,12 @@
 <template>
     <div class="dashboard">
-        <!-- Toast de Notificación de Selección de Ubicación -->
-        <transition name="toast-fade">
-            <div v-if="showNotification" class="toast-notification">
-                <div class="toast-icon">
-                    <i class="ph ph-check-circle"></i>
+        
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar">LZ</div>
+                <div class="user-info">
+                    <h4>Luis Zelaya</h4>
+                    <span>PANEL DE CONTROL PNC</span>
                 </div>
                 <div class="toast-content">
                     <span class="toast-title">Ubicación Seleccionada</span>
@@ -16,13 +18,27 @@
             </div>
         </transition>
 
-        <Sidebar />
-
         <main class="main-content">
-            <TopHeader
-                title="Registro de Incidente"
-                subtitle="Gestión rápida de incidentes y monitoreo vial"
-            />
+            
+            <header class="header">
+                <div class="header-titles">
+                    <h1>Registro de Incidente</h1>
+                    <p>Gestión rápida de incidentes y monitoreo vial</p>
+                </div>
+                <div class="header-actions">
+                    <div class="datetime-pill">
+                        <i class="ph ph-calendar-blank"></i>
+                        <div class="dt-text">
+                            <span class="date">12 Mayo 2026</span>
+                            <span class="time">09:23 PM</span>
+                        </div>
+                    </div>
+                    <div class="notification">
+                        <i class="ph ph-bell"></i>
+                        <span class="badge">2</span>
+                    </div>
+                </div>
+            </header>
 
             <div class="map-view">
                 <div class="stepper-container">
@@ -107,14 +123,9 @@
 </template>
 
 <script setup>
-import Sidebar from "./Sidebar.vue";
-import TopHeader from "./TopHeader.vue";
-import { onMounted, onUnmounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios";
-import { useDatetime } from "../composables/useDatetime.js";
-
-const { currentDate, currentTime } = useDatetime();
+import { onMounted, onUnmounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const router = useRouter();
 
