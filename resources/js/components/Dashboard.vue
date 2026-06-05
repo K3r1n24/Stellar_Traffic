@@ -23,47 +23,47 @@
                             class="card card-action"
                             @click="goTo('/registrar-incidente')"
                         >
-                            <div class="icon-box icon-solid-blue">
+                            <div class="icon-box icon-blue">
                                 <i class="ph ph-plus"></i>
                             </div>
                             <div class="card-text">
                                 <h4>Registrar incidente</h4>
                                 <p>Reporta un nuevo incidente</p>
                             </div>
-                            <i class="ph ph-chevron-right arrow"></i>
+                            <i class="ph ph-caret-right arrow"></i>
                         </div>
                         <div class="card card-action" @click="goTo('/mapa')">
-                            <div class="icon-box icon-outline-blue">
+                            <div class="icon-box icon-blue">
                                 <i class="ph ph-map-pin"></i>
                             </div>
                             <div class="card-text">
                                 <h4>Ver mapa</h4>
-                                <p>Visualiza los incidentes</p>
+                                <p>Visualiza incidentes</p>
                             </div>
-                            <i class="ph ph-chevron-right arrow"></i>
+                            <i class="ph ph-caret-right arrow"></i>
                         </div>
                         <div class="card card-action" @click="goTo('/buscar')">
-                            <div class="icon-box icon-outline-blue">
+                            <div class="icon-box icon-blue">
                                 <i class="ph ph-magnifying-glass"></i>
                             </div>
                             <div class="card-text">
                                 <h4>Buscar casos</h4>
                                 <p>Consulta incidentes</p>
                             </div>
-                            <i class="ph ph-chevron-right arrow"></i>
+                            <i class="ph ph-caret-right arrow"></i>
                         </div>
                         <div
                             class="card card-action"
                             @click="goTo('/reportes')"
                         >
-                            <div class="icon-box icon-outline-blue">
+                            <div class="icon-box icon-blue">
                                 <i class="ph ph-file-text"></i>
                             </div>
                             <div class="card-text">
-                                <h4>Reportes</h4>
-                                <p>Visualiza reportes</p>
+                                <h4>Estadísticas de reportes</h4>
+                                <p>Visualiza estadísticas</p>
                             </div>
-                            <i class="ph ph-chevron-right arrow"></i>
+                            <i class="ph ph-caret-right arrow"></i>
                         </div>
                     </div>
                 </section>
@@ -78,9 +78,9 @@
                                 <div class="s-info">
                                     <span>Seguro</span>
                                     <strong class="t-safe">{{
-                                        gravedadCounts.seguro === 0
+                                        gravedadCounts.bajo === 0
                                             ? 12
-                                            : gravedadCounts.seguro + 10
+                                            : gravedadCounts.bajo + 10
                                     }}</strong>
                                 </div>
                             </div>
@@ -132,10 +132,10 @@
                                 <i class="ph ph-calendar-blank"></i>
                             </div>
                             <div class="m-data">
-                                <span>Casos activos</span>
-                                <h2>{{ casosActivos }}</h2>
+                                <span>Casos registrados</span>
+                                <h2>{{ totalCasos }}</h2>
                                 <small class="t-blue"
-                                    >+{{ casosActivosIncremento }} hoy</small
+                                    >+{{ reportesHoy }} hoy</small
                                 >
                             </div>
                         </div>
@@ -144,10 +144,13 @@
                                 <i class="ph ph-warning"></i>
                             </div>
                             <div class="m-data">
-                                <span>Alertas activas</span>
-                                <h2>{{ alertasActivasCount }}</h2>
-                                <small class="t-red"
-                                    >↑ {{ urgentesCount }} urgente</small
+                                <span>Alertas urgentes</span>
+                                <h2>{{ alertasActivas }}</h2>
+                                <small class="t-red" v-if="alertasActivas > 0"
+                                    >↑ requiere atención</small
+                                >
+                                <small class="t-green" v-else
+                                    >✓ sistema estable</small
                                 >
                             </div>
                         </div>
@@ -156,10 +159,10 @@
                                 <i class="ph ph-check-circle"></i>
                             </div>
                             <div class="m-data">
-                                <span>Resueltos hoy</span>
-                                <h2>{{ resueltosHoy }}</h2>
+                                <span>Reportados hoy</span>
+                                <h2>{{ reportesHoy }}</h2>
                                 <small class="t-green"
-                                    >+{{ resueltosHoyIncremento }} hoy</small
+                                    >+{{ reportesHoy }} hoy</small
                                 >
                             </div>
                         </div>
@@ -213,8 +216,7 @@ const gravedadCounts = computed(() => {
     const counts = { seguro: 0, bajo: 0, medio: 0, alto: 0, critico: 0 };
     accidentes.value.forEach((a) => {
         const g = (a.gravedad || "").toLowerCase();
-        if (g === "seguro") counts.seguro++;
-        else if (g === "bajo" || g === "bajo riesgo") counts.bajo++;
+        if (g === "bajo" || g === "seguro") counts.bajo++;
         else if (g === "medio") counts.medio++;
         else if (g === "alto") counts.alto++;
         else if (g === "crítico" || g === "critico") counts.critico++;
@@ -224,34 +226,18 @@ const gravedadCounts = computed(() => {
 
 // Métricas Dinámicas
 const totalCasos = computed(() => accidentes.value.length);
-
-const casosActivos = computed(() => totalCasos.value > 0 ? totalCasos.value + 18 : 27);
-const casosActivosIncremento = computed(() => reportesHoy.value > 0 ? reportesHoy.value + 1 : 3);
-
-const alertasActivasCount = computed(() => {
-    const count = accidentes.value.filter((a) => {
-        const g = (a.gravedad || "").toLowerCase();
-        return g === "crítico" || g === "critico" || g === "alto";
-    }).length;
-    return count > 0 ? count : 2;
-});
-
-const urgentesCount = computed(() => {
-    const count = accidentes.value.filter((a) => {
-        const g = (a.gravedad || "").toLowerCase();
-        return g === "crítico" || g === "critico";
-    }).length;
-    return count > 0 ? count : 1;
-});
-
+const alertasActivas = computed(
+    () =>
+        accidentes.value.filter((a) => {
+            const g = (a.gravedad || "").toLowerCase();
+            return g === "crítico" || g === "critico" || g === "alto";
+        }).length,
+);
 const reportesHoy = computed(
     () =>
         accidentes.value.filter((a) => a.fecha_incidente === todayStr.value)
             .length,
 );
-
-const resueltosHoy = computed(() => reportesHoy.value > 0 ? reportesHoy.value * 2 + 7 : 9);
-const resueltosHoyIncremento = computed(() => reportesHoy.value > 0 ? reportesHoy.value + 3 : 5);
 
 onMounted(() => {
     fetchAccidentes();
@@ -262,18 +248,18 @@ onMounted(() => {
 .dashboard {
     --bg-dark: #061129;
     --bg-sidebar: #081738;
-    --bg-card: #0A1D47;
-    --border-color: #1D2C52;
+    --bg-card: #0a1d47;
+    --border-color: #1d2c52;
     --text-main: #ffffff;
-    --text-muted: #8AABBB;
+    --text-muted: #8aabbb;
 
     --primary-blue: #2563eb;
-    --accent-blue: #336BFA;
-    --safe: #00E676;
-    --low: #00D2C4;
-    --medium: #FFB300;
-    --high: #FF3333;
-    --critical: #D32F2F;
+    --accent-blue: #336bfa;
+    --safe: #00e676;
+    --low: #00d2c4;
+    --medium: #ffb300;
+    --high: #ff3333;
+    --critical: #d32f2f;
 
     background-color: var(--bg-dark);
     color: var(--text-main);
@@ -327,11 +313,10 @@ onMounted(() => {
     margin-bottom: 30px;
 }
 .section-title {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-muted);
     margin-bottom: 15px;
-    letter-spacing: 1.2px;
-    font-weight: 600;
+    letter-spacing: 1px;
 }
 
 .card {
@@ -357,7 +342,7 @@ onMounted(() => {
 }
 .card-action:hover {
     border-color: var(--accent-blue);
-    background-color: rgba(51, 107, 250, 0.05);
+    background-color: rgba(37, 99, 235, 0.05);
 }
 
 .icon-box {
@@ -370,14 +355,9 @@ onMounted(() => {
     font-size: 20px;
     margin-bottom: 25px;
 }
-.icon-solid-blue {
-    background-color: var(--accent-blue);
+.icon-blue {
+    background-color: var(--primary-blue);
     color: white;
-}
-.icon-outline-blue {
-    background-color: rgba(51, 107, 250, 0.05);
-    border: 1px solid rgba(51, 107, 250, 0.3);
-    color: var(--accent-blue);
 }
 
 .card-text h4 {
@@ -395,7 +375,6 @@ onMounted(() => {
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);
-    font-size: 14px;
 }
 
 /* Estado del Sistema */
@@ -404,20 +383,18 @@ onMounted(() => {
 }
 .status-items {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
-    padding: 20px 0 10px 0;
+    padding-top: 10px;
 }
 .status-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
-    gap: 12px;
+    gap: 15px;
 }
 .dot {
-    width: 24px;
-    height: 24px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
 }
 .bg-safe {
@@ -439,17 +416,14 @@ onMounted(() => {
 .s-info {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 4px;
+    gap: 5px;
 }
 .s-info span {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-muted);
-    font-weight: 500;
 }
 .s-info strong {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 14px;
 }
 
 /* Colores de texto */
@@ -487,30 +461,35 @@ onMounted(() => {
 .metric-card {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 24px 30px;
+    gap: 20px;
+    padding: 30px;
 }
 .m-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 36px;
-    margin-right: 5px;
+    font-size: 32px;
 }
 .icon-red {
     color: var(--high);
+    background-color: rgba(239, 68, 68, 0.1);
 }
 .icon-green {
     color: var(--safe);
+    background-color: rgba(34, 197, 94, 0.1);
 }
 .icon-blue {
     color: var(--accent-blue);
+    background-color: rgba(59, 130, 246, 0.1);
 }
 
 .m-data {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     width: 100%;
 }
 .m-data span {

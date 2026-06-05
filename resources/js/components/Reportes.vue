@@ -936,12 +936,12 @@ onMounted(() => {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: var(--text-muted);
+    color: #8AABBB !important;
     font-weight: 600;
 }
 
 .filter-select {
-    background-color: #081738;
+    background-color: var(--bg-sidebar, #081738);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     color: var(--text-main);
@@ -1038,8 +1038,8 @@ onMounted(() => {
 }
 
 .kpi-card {
-    background-color: rgba(19, 26, 44, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
     border-radius: 16px;
     padding: 22px;
     display: flex;
@@ -1095,7 +1095,7 @@ onMounted(() => {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: var(--text-muted);
+    color: #8AABBB !important;
     font-weight: 600;
 }
 
@@ -1110,7 +1110,7 @@ onMounted(() => {
 
 .kpi-subtext {
     font-size: 11px;
-    color: var(--text-muted);
+    color: #8AABBB !important;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1175,7 +1175,7 @@ onMounted(() => {
 
 .header-text-wrapper p {
     font-size: 11px;
-    color: var(--text-muted);
+    color: #8AABBB !important;
     margin: 2px 0 0 0;
 }
 
@@ -1215,11 +1215,11 @@ onMounted(() => {
 }
 
 .item-count {
-    color: var(--text-muted);
+    color: #8AABBB !important;
 }
 
 .pct-badge {
-    color: var(--text-main);
+    color: #ffffff !important;
     font-weight: 600;
     margin-left: 4px;
 }
@@ -1346,7 +1346,7 @@ onMounted(() => {
 }
 
 .legend-label {
-    color: var(--text-muted);
+    color: #8AABBB !important;
 }
 .legend-val {
     color: var(--text-main);
@@ -1369,7 +1369,7 @@ onMounted(() => {
 
 .mini-data-box h5 {
     font-size: 11px;
-    color: var(--text-muted);
+    color: #8AABBB !important;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 0 0 6px 0;
@@ -1383,7 +1383,7 @@ onMounted(() => {
 
 .mini-data-box span {
     font-size: 10px;
-    color: var(--text-muted);
+    color: #8AABBB !important;
 }
 
 .text-warning-box h3 {
@@ -1409,7 +1409,7 @@ onMounted(() => {
 .factor-title {
     font-size: 12px;
     font-weight: 600;
-    color: var(--text-muted);
+    color: #8AABBB !important;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 8px;
 }
@@ -1458,12 +1458,12 @@ onMounted(() => {
     padding: 2px 8px;
     border-radius: 6px;
     font-size: 11px;
-    color: var(--text-muted);
+    color: #8AABBB !important;
 }
 
 .no-data-mini {
     text-align: center;
-    color: var(--text-muted);
+    color: #8AABBB !important;
     font-size: 13px;
     padding: 20px 0;
 }
@@ -1472,7 +1472,7 @@ onMounted(() => {
 .empty-state {
     text-align: center;
     padding: 80px 0;
-    color: var(--text-muted);
+    color: #8AABBB !important;
     background-color: rgba(19, 26, 44, 0.3);
     border: 1px solid var(--border-color);
     border-radius: 16px;
