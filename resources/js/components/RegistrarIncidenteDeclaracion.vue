@@ -246,6 +246,11 @@
 import { reactive, computed, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import { useDatetime } from "../composables/useDatetime.js";
+import { useIncidenteStore } from "../composables/useIncidenteStore.js";
+
+const { currentDate, currentTime } = useDatetime();
+const { state: incidenteState } = useIncidenteStore();
 
 const router = useRouter();
 
@@ -385,16 +390,16 @@ const handleLogout = async () => {
 
 <style scoped>
 .dashboard {
-    --bg-dark: #0f1524;
-    --bg-sidebar: #0b101e;
-    --bg-card: #131a2c;
-    --border-color: #1f293d;
+    --bg-dark: #061129;
+    --bg-sidebar: #081738;
+    --bg-card: #0A1D47;
+    --border-color: #1D2C52;
     --text-main: #ffffff;
-    --text-muted: #8b95a5;
+    --text-muted: #8AABBB;
 
     --primary-blue: #2563eb;
-    --accent-blue: #3b82f6;
-    --critical: #dc2626;
+    --accent-blue: #336BFA;
+    --critical: #FF1744;
 
     background-color: var(--bg-dark);
     color: var(--text-main);
