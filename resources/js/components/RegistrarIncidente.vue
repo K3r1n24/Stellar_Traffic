@@ -1,101 +1,58 @@
 <template>
     <div class="dashboard">
-        
-        <aside class="sidebar">
-            <div class="user-profile">
-                <div class="avatar">LZ</div>
-                <div class="user-info">
-                    <h4>Luis Zelaya</h4>
-                    <span>PANEL DE CONTROL PNC</span>
-                </div>
-                <i class="ph ph-list menu-icon"></i>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">PRINCIPAL</p>
-                <ul class="nav-list" id="main-nav">
-                    <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
-                    <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
-                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
-                    <li class="nav-item" @click="goTo('/ver-mapa')"><i class="ph ph-map-pin"></i> Ver mapa</li>
-                </ul>
-            </div>
-
-            <div class="nav-section">
-                <p class="nav-title">SISTEMA</p>
-                <ul class="nav-list">
-                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
-                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
-                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
-                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
-                </ul>
-            </div>
-
-            <div class="logout" @click="handleLogout">
-                <i class="ph ph-sign-out"></i> Salir de la cuenta
-            </div>
-        </aside>
+        <Sidebar />
 
         <main class="main-content">
-            
-            <header class="header">
-                <div class="header-titles">
-                    <h1>Registro de Incidente</h1>
-                    <p>Gestión rápida de incidentes y monitoreo vial</p>
-                </div>
-                <div class="header-actions">
-                    <div class="datetime-pill">
-                        <i class="ph ph-calendar-blank"></i>
-                        <div class="dt-text">
-                            <span class="date">12 Mayo 2026</span>
-                            <span class="time">09:23 PM</span>
-                        </div>
-                    </div>
-                    <div class="notification">
-                        <i class="ph ph-bell"></i>
-                        <span class="badge">2</span>
-                    </div>
-                </div>
-            </header>
+            <TopHeader
+                title="Registro de Incidente"
+                subtitle="Gestión rápida de incidentes y monitoreo vial"
+            />
 
             <div class="selection-view">
-                
                 <div class="center-header">
                     <div class="icon-circle">
                         <i class="ph ph-car"></i>
                     </div>
                     <h2>Seleccionar tipo de incidente</h2>
-                    <p>Selecciona la categoría que mejor describa el incidente</p>
+                    <p>
+                        Selecciona la categoría que mejor describa el incidente
+                    </p>
                 </div>
 
                 <div class="cards-grid">
-                    <div 
-                        class="option-card selectable-card" 
-                        :class="{ 'selected': selectedType === 'victimas' }"
+                    <div
+                        class="option-card selectable-card"
+                        :class="{ selected: selectedType === 'victimas' }"
                         @click="selectType('victimas')"
                     >
                         <div class="card-icon-box">
                             <i class="ph ph-users-three"></i>
                         </div>
                         <div class="card-content">
-                            <h3>Incidente con<br>victimas o fallecimiento</h3>
+                            <h3>Incidente con<br />victimas o fallecimiento</h3>
                             <div class="short-divider"></div>
-                            <p>Incidentes que involucran<br>personas lesionadas o<br>fallecidas.</p>
+                            <p>
+                                Incidentes que involucran<br />personas
+                                lesionadas o<br />fallecidas.
+                            </p>
                         </div>
                     </div>
 
-                    <div 
-                        class="option-card selectable-card" 
-                        :class="{ 'selected': selectedType === 'materiales' }"
+                    <div
+                        class="option-card selectable-card"
+                        :class="{ selected: selectedType === 'materiales' }"
                         @click="selectType('materiales')"
                     >
                         <div class="card-icon-box">
                             <i class="ph ph-car-profile"></i>
                         </div>
                         <div class="card-content">
-                            <h3>Incidente con<br>daños materiales</h3>
+                            <h3>Incidente con<br />daños materiales</h3>
                             <div class="short-divider"></div>
-                            <p>Incidentes que solo causan<br>daños materiales entre<br>vehículos.</p>
+                            <p>
+                                Incidentes que solo causan<br />daños materiales
+                                entre<br />vehículos.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -106,20 +63,31 @@
                         <span>¿No estás seguro?</span>
                     </div>
                     <div class="action-buttons">
-                        <button class="btn btn-outline" @click="handleCancel">Cancelar</button>
-                        <button class="btn btn-primary" :disabled="!selectedType" @click="handleContinue">Continuar</button>
+                        <button class="btn btn-outline" @click="handleCancel">
+                            Cancelar
+                        </button>
+                        <button
+                            class="btn btn-primary"
+                            :disabled="!selectedType"
+                            @click="handleContinue"
+                        >
+                            Continuar
+                        </button>
                     </div>
                 </div>
-
             </div>
         </main>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
+import Sidebar from "./Sidebar.vue";
+import TopHeader from "./TopHeader.vue";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useIncidenteStore } from "../composables/useIncidenteStore.js";
+
+const { state: incidenteState } = useIncidenteStore();
 
 const router = useRouter();
 
@@ -135,385 +103,324 @@ const selectType = (type) => {
 const handleContinue = () => {
     if (selectedType.value) {
         console.log(`Procesando incidente de tipo: ${selectedType.value}`);
-        router.push({ name: 'registrar-incidente-detalle', query: { tipo: selectedType.value } });
+        router.push({
+            name: "registrar-incidente-detalle",
+            query: { tipo: selectedType.value },
+        });
     }
 };
 
 // Función para el botón Cancelar
 const handleCancel = () => {
-    router.push({ name: 'dashboard' });
-};
-
-// Navegación genérica del menú lateral
-const goTo = (path) => {
-    router.push(path);
-};
-
-// Función de logout
-const handleLogout = async () => {
-    try {
-        await axios.post('/logout');
-        window.location.href = '/login';
-    } catch (error) {
-        console.error('Error al cerrar sesión:', error);
-        window.location.href = '/login';
-    }
+    router.push({ name: "dashboard" });
 };
 </script>
 
 <style scoped>
     .dashboard {
-        --bg-dark: #0f1524;
-        --bg-sidebar: #0b101e;
-        --bg-card: #131a2c;
-        --border-color: #1f293d;
+        --bg-dark: #061129;
+        --bg-sidebar: #081738;
+        --bg-card: #0A1D47;
+        --border-color: #1D2C52;
         --text-main: #ffffff;
-        --text-muted: #8b95a5;
-        
+        --text-muted: #8AABBB;
+
         --primary-blue: #2563eb;
-        --accent-blue: #3b82f6;
-        --critical: #dc2626;
+        --accent-blue: #336BFA;
+        --critical: #FF1744;
 
-        background-color: var(--bg-dark);
-        color: var(--text-main);
-        height: 100vh;
-        display: flex;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    height: 100vh;
+    display: flex;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    .dashboard * {
-        box-sizing: border-box;
-    }
+.dashboard * {
+    box-sizing: border-box;
+}
 
-    /* --- BARRA LATERAL (SIDEBAR) --- */
-    .sidebar {
-        width: 260px;
-        background-color: var(--bg-sidebar);
-        border-right: 1px solid var(--border-color);
-        display: flex;
-        flex-direction: column;
-        padding: 20px 0;
-        flex-shrink: 0;
-    }
+/* --- CONTENIDO PRINCIPAL --- */
+.main-content {
+    flex: 1;
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
 
-    .user-profile {
-        display: flex;
-        align-items: center;
-        padding: 0 20px 20px;
-        border-bottom: 1px solid var(--border-color);
-        gap: 12px;
-    }
+/* Encabezado */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    flex-shrink: 0;
+}
 
-    .avatar {
-        width: 40px;
-        height: 40px;
-        background-color: var(--primary-blue);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 14px;
-        color: white;
-    }
+.header-titles h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+}
+.header-titles p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0;
+}
 
-    .user-info h4 { font-size: 14px; font-weight: 600; margin: 0; }
-    .user-info span { font-size: 10px; color: var(--text-muted); }
-    .menu-icon { margin-left: auto; cursor: pointer; color: var(--text-muted); font-size: 20px;}
+.header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
 
-    .nav-section { margin-top: 25px; }
-    .nav-title {
-        font-size: 11px;
-        color: var(--text-muted);
-        padding: 0 20px;
-        margin-bottom: 10px;
-        letter-spacing: 1px;
-    }
+.datetime-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--bg-card);
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.datetime-pill i {
+    font-size: 20px;
+    color: var(--text-muted);
+}
+.dt-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+}
+.dt-text .date {
+    font-weight: 600;
+}
+.dt-text .time {
+    color: var(--text-muted);
+    font-size: 11px;
+}
 
-    .nav-list { list-style: none; margin: 0; padding: 0; }
-    .nav-item {
-        padding: 12px 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--text-muted);
-        font-size: 14px;
-        cursor: pointer;
-        transition: 0.2s;
-    }
+.notification {
+    background-color: var(--bg-card);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    position: relative;
+    cursor: pointer;
+}
+.notification i {
+    font-size: 20px;
+    color: var(--text-muted);
+}
+.badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background-color: var(--critical);
+    color: white;
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+}
 
-    .nav-item i { font-size: 18px; }
-    .nav-item:hover { color: var(--text-main); }
-    .nav-item.active {
-        color: var(--text-main);
-        border: 1px solid var(--primary-blue);
-        border-radius: 8px;
-        margin: 0 10px;
-        padding: 12px 10px;
-        background-color: rgba(37, 99, 235, 0.1);
-    }
+/* --- VISTA DE SELECCIÓN DE INCIDENTE --- */
+.selection-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
 
-    .logout {
-        margin-top: auto;
-        padding: 20px;
-        color: var(--critical);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-        font-size: 14px;
-    }
+/* Cabecera central */
+.center-header {
+    text-align: center;
+    margin-bottom: 40px;
+    margin-top: 20px;
+}
 
-    /* --- CONTENIDO PRINCIPAL --- */
-    .main-content {
-        flex: 1;
-        padding: 30px 40px;
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-    }
+.icon-circle {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px auto;
+    font-size: 28px;
+    color: var(--text-muted);
+}
 
-    /* Encabezado */
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 40px;
-        flex-shrink: 0;
-    }
+.center-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+}
 
-    .header-titles h1 { font-size: 24px; font-weight: 600; margin: 0 0 5px 0; }
-    .header-titles p { color: var(--text-muted); font-size: 14px; margin: 0; }
+.center-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0;
+}
 
-    .header-actions { display: flex; gap: 15px; align-items: center; }
+/* Tarjetas de Opciones */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    max-width: 900px;
+    margin: 0 auto;
+}
 
-    .datetime-pill {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background-color: var(--bg-card);
-        padding: 10px 15px;
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-    }
-    .datetime-pill i { font-size: 20px; color: var(--text-muted); }
-    .dt-text { display: flex; flex-direction: column; font-size: 12px;}
-    .dt-text .date { font-weight: 600; }
-    .dt-text .time { color: var(--text-muted); font-size: 11px;}
+.option-card {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
 
-    .notification {
-        background-color: var(--bg-card);
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--border-color);
-        position: relative;
-        cursor: pointer;
-    }
-    .notification i { font-size: 20px; color: var(--text-muted); }
-    .badge {
-        position: absolute;
-        top: -2px;
-        right: -2px;
-        background-color: var(--critical);
-        color: white;
-        font-size: 10px;
-        width: 16px;
-        height: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-weight: bold;
-    }
+.option-card:hover {
+    border-color: #2b3954;
+    background-color: rgba(255, 255, 255, 0.02);
+}
 
-    /* --- VISTA DE SELECCIÓN DE INCIDENTE --- */
-    .selection-view {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
+/* Estado Activo (Seleccionado) */
+.option-card.selected {
+    border-color: var(--accent-blue);
+    background-color: rgba(37, 99, 235, 0.05);
+}
 
-    /* Cabecera central */
-    .center-header {
-        text-align: center;
-        margin-bottom: 40px;
-        margin-top: 20px;
-    }
+.card-icon-box {
+    width: 90px;
+    height: 90px;
+    background-color: var(--accent-blue);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 45px;
+    color: white;
+    flex-shrink: 0;
+}
 
-    .icon-circle {
-        width: 60px;
-        height: 60px;
-        background-color: rgba(255, 255, 255, 0.05);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 20px auto;
-        font-size: 28px;
-        color: var(--text-muted);
-    }
+.card-content h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    line-height: 1.3;
+}
 
-    .center-header h2 {
-        font-size: 22px;
-        font-weight: 600;
-        margin: 0 0 8px 0;
-    }
+.short-divider {
+    width: 30px;
+    height: 2px;
+    background-color: var(--border-color);
+    margin-bottom: 15px;
+}
 
-    .center-header p {
-        color: var(--text-muted);
-        font-size: 14px;
-        margin: 0;
-    }
+.option-card.selected .short-divider {
+    background-color: var(--accent-blue);
+}
 
-    /* Tarjetas de Opciones */
+.card-content p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Barra de Acciones Inferior */
+.bottom-action-bar {
+    margin-top: auto;
+    padding-top: 30px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.help-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.help-link i {
+    font-size: 20px;
+    color: var(--text-main);
+}
+
+.help-link:hover {
+    color: var(--text-main);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+.btn-outline:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.btn-primary {
+    background-color: var(--primary-blue);
+    border: 1px solid var(--primary-blue);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--accent-blue);
+}
+
+/* Estado deshabilitado del botón continuar */
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsividad */
+@media (max-width: 1024px) {
     .cards-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 25px;
-        max-width: 900px;
-        margin: 0 auto;
+        grid-template-columns: 1fr;
     }
-
     .option-card {
-        background-color: transparent;
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
-        padding: 30px;
-        display: flex;
-        align-items: center;
-        gap: 25px;
-        cursor: pointer;
-        transition: all 0.3s ease;
+        padding: 20px;
     }
-
-    .option-card:hover {
-        border-color: #2b3954;
-        background-color: rgba(255, 255, 255, 0.02);
-    }
-
-    /* Estado Activo (Seleccionado) */
-    .option-card.selected {
-        border-color: var(--accent-blue);
-        background-color: rgba(37, 99, 235, 0.05);
-    }
-
-    .card-icon-box {
-        width: 90px;
-        height: 90px;
-        background-color: var(--accent-blue);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 45px;
-        color: white;
-        flex-shrink: 0;
-    }
-
-    .card-content h3 {
-        font-size: 18px;
-        font-weight: 600;
-        margin: 0 0 15px 0;
-        line-height: 1.3;
-    }
-
-    .short-divider {
-        width: 30px;
-        height: 2px;
-        background-color: var(--border-color);
-        margin-bottom: 15px;
-    }
-    
-    .option-card.selected .short-divider {
-        background-color: var(--accent-blue);
-    }
-
-    .card-content p {
-        font-size: 13px;
-        color: var(--text-muted);
-        line-height: 1.5;
-        margin: 0;
-    }
-
-    /* Barra de Acciones Inferior */
-    .bottom-action-bar {
-        margin-top: auto;
-        padding-top: 30px;
-        border-top: 1px solid var(--border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .help-link {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: var(--text-muted);
-        font-size: 14px;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .help-link i {
-        font-size: 20px;
-        color: var(--text-main);
-    }
-
-    .help-link:hover {
-        color: var(--text-main);
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 15px;
-    }
-
-    .btn {
-        padding: 12px 28px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .btn-outline {
-        background-color: transparent;
-        border: 1px solid var(--border-color);
-        color: var(--text-main);
-    }
-
-    .btn-outline:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-    }
-
-    .btn-primary {
-        background-color: var(--primary-blue);
-        border: 1px solid var(--primary-blue);
-        color: white;
-    }
-
-    .btn-primary:hover:not(:disabled) {
-        background-color: var(--accent-blue);
-    }
-
-    /* Estado deshabilitado del botón continuar */
-    .btn-primary:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    /* Responsividad */
-    @media (max-width: 1024px) {
-        .cards-grid { grid-template-columns: 1fr; }
-        .option-card { padding: 20px; }
-    }
+}
 </style>

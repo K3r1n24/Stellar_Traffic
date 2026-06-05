@@ -7,16 +7,14 @@ import router from './router';
 import AppMain from './components/App.vue';
 import LoginForm from './components/LoginForm.vue';
 import RegisterForm from './components/RegisterForm.vue';
-import ForgotPasswordForm from './components/ForgotPasswordForm.vue';
-import ResetPasswordForm from './components/ResetPasswordForm.vue';
+import LandingPage from './components/Landing.vue';
 
 const app = createApp({});
 
 app.component('app-main', AppMain);
 app.component('login-form', LoginForm);
 app.component('register-form', RegisterForm);
-app.component('forgot-password-form', ForgotPasswordForm);
-app.component('reset-password-form', ResetPasswordForm);
+app.component('landing-page', LandingPage);
 
 app.use(router);
 app.mount('#app');
