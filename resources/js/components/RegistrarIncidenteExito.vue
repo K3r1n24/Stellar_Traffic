@@ -111,14 +111,14 @@ const handleLogout = async () => {
         --bg-dark: #061129;
         --bg-sidebar: #081738;
         --bg-card: #0A1D47;
-    --border-color: #1f293d;
-    --text-main: #ffffff;
-    --text-muted: #8b95a5;
+        --border-color: #1D2C52;
+        --text-main: #ffffff;
+        --text-muted: #8AABBB;
 
-    --primary-blue: #2563eb;
-    --accent-blue: #3b82f6;
-    --safe: #22c55e;
-    --critical: #dc2626;
+        --primary-blue: #2563eb;
+        --accent-blue: #336BFA;
+        --safe: #00E676;
+        --critical: #FF1744;
 
     background-color: var(--bg-dark);
     color: var(--text-main);

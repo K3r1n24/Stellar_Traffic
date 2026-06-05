@@ -92,15 +92,15 @@ const getRandomCoordsInSanMiguel = () => {
 
 // Generar icono personalizado palpitante según la gravedad del accidente
 const getMarkerIcon = (gravedad) => {
-    let color = "#3b82f6"; // Azul por defecto (Bajo/Seguro)
+    let color = "#336BFA"; // Azul por defecto (Bajo/Seguro)
     const g = (gravedad || "").toLowerCase();
     if (g === "crítico" || g === "critico")
-        color = "#dc2626"; // Rojo crítico
+        color = "#D32F2F"; // Rojo crítico
     else if (g === "alto")
-        color = "#ef4444"; // Naranja/Rojo alto
+        color = "#FF3333"; // Naranja/Rojo alto
     else if (g === "medio")
-        color = "#f59e0b"; // Amarillo medio
-    else if (g === "bajo" || g === "seguro") color = "#22c55e"; // Verde bajo
+        color = "#FFB300"; // Amarillo medio
+    else if (g === "bajo" || g === "seguro" || g === "bajo riesgo") color = "#00E676"; // Verde bajo
 
     return window.L.divIcon({
         className: "custom-map-marker",
@@ -187,40 +187,40 @@ const fetchAndRenderIncidentes = async () => {
 
                 const popupContent = `
                     <div style="color: #ffffff; font-family: 'Segoe UI', sans-serif; min-width: 220px; padding: 5px; background: transparent;">
-                        <h4 style="margin: 0 0 8px 0; color: #3b82f6; font-size: 13px; border-bottom: 1px solid #1f293d; padding-bottom: 5px; font-weight: 600;">
+                        <h4 style="margin: 0 0 8px 0; color: #336BFA; font-size: 13px; border-bottom: 1px solid #1D2C52; padding-bottom: 5px; font-weight: 600;">
                             Caso ID: ${incidente.id_caso || "N/A"}
                         </h4>
                         <div style="font-size: 11px; margin-bottom: 5px;">
-                            <strong style="color: #8b95a5;">Tipo:</strong> 
+                            <strong style="color: #8AABBB;">Tipo:</strong> 
                             <span style="color: #ffffff;">${incidente.tipo_accidente === "victimas" ? "Con víctimas" : "Daños materiales"}</span>
                         </div>
                         <div style="font-size: 11px; margin-bottom: 5px;">
-                            <strong style="color: #8b95a5;">Gravedad:</strong> 
+                            <strong style="color: #8AABBB;">Gravedad:</strong> 
                             <span style="color: ${
-                                incidente.gravedad === "Crítico"
-                                    ? "#dc2626"
-                                    : incidente.gravedad === "Alto"
-                                      ? "#ef4444"
-                                      : incidente.gravedad === "Medio"
-                                        ? "#f59e0b"
-                                        : "#22c55e"
+                                incidente.gravedad === "Crítico" || incidente.gravedad === "critico"
+                                ? "#D32F2F"
+                                : incidente.gravedad === "Alto"
+                                  ? "#FF3333"
+                                  : incidente.gravedad === "Medio"
+                                    ? "#FFB300"
+                                    : "#00E676"
                             }; font-weight: 600;">
                                 ${incidente.gravedad || "No especificada"}
                             </span>
                         </div>
                         <div style="font-size: 11px; margin-bottom: 5px;">
-                            <strong style="color: #8b95a5;">Fecha:</strong> 
+                            <strong style="color: #8AABBB;">Fecha:</strong> 
                             <span style="color: #ffffff;">${incidente.fecha_incidente || "N/A"}</span>
                         </div>
                         <div style="font-size: 11px; margin-bottom: 5px;">
-                            <strong style="color: #8b95a5;">Dirección:</strong> 
+                            <strong style="color: #8AABBB;">Dirección:</strong> 
                             <span style="color: #ffffff; display: block; margin-top: 2px; line-height: 1.3;">${incidente.direccion || "N/A"}</span>
                         </div>
                         ${
                             incidente.descripcion
                                 ? `
-                        <div style="font-size: 10px; margin-top: 8px; background: #0f1524; padding: 8px; border-radius: 6px; border: 1px solid #1f293d; max-height: 70px; overflow-y: auto;">
-                            <strong style="color: #8b95a5; display: block; margin-bottom: 2px;">Descripción:</strong>
+                        <div style="font-size: 10px; margin-top: 8px; background: #061129; padding: 8px; border-radius: 6px; border: 1px solid #1D2C52; max-height: 70px; overflow-y: auto;">
+                            <strong style="color: #8AABBB; display: block; margin-bottom: 2px;">Descripción:</strong>
                             <span style="color: #d1d5db; line-height: 1.3;">${incidente.descripcion}</span>
                         </div>
                         `
@@ -309,15 +309,15 @@ onUnmounted(() => {
     --bg-dark: #061129;
     --bg-sidebar: #081738;
     --bg-card: #0A1D47;
-    --border-color: #1f293d;
+    --border-color: #1D2C52;
     --text-main: #ffffff;
-    --text-muted: #8b95a5;
+    --text-muted: #8AABBB;
 
     --primary-blue: #2563eb;
-    --accent-blue: #3b82f6;
-    --safe: #22c55e;
-    --warning: #f59e0b;
-    --critical: #dc2626;
+    --accent-blue: #336BFA;
+    --safe: #00E676;
+    --warning: #FFB300;
+    --critical: #FF1744;
 
     background-color: var(--bg-dark);
     color: var(--text-main);

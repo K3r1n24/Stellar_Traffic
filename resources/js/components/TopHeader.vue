@@ -14,7 +14,7 @@
             </div>
             <div class="notification" @click="showNotificationAlert">
                 <i class="ph ph-bell"></i>
-                <span class="badge">3</span>
+                <span class="badge">1</span>
             </div>
         </div>
     </header>

@@ -869,15 +869,15 @@ onMounted(() => {
     --bg-dark: #061129;
     --bg-sidebar: #081738;
     --bg-card: #0A1D47;
-    --border-color: #1f293d;
+    --border-color: #1D2C52;
     --text-main: #ffffff;
-    --text-muted: #8b95a5;
+    --text-muted: #8AABBB;
 
     --primary-blue: #2563eb;
-    --accent-blue: #3b82f6;
-    --safe: #10b981;
-    --warning: #f59e0b;
-    --critical: #ef4444;
+    --accent-blue: #336BFA;
+    --safe: #00E676;
+    --warning: #FFB300;
+    --critical: #FF1744;
 
     background-color: var(--bg-dark);
     color: var(--text-main);

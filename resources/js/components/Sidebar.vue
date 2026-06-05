@@ -1,10 +1,10 @@
 <template>
     <aside :class="['sidebar', { 'sidebar-collapsed': isCollapsed }]">
         <div class="user-profile">
-            <div class="avatar">ST</div>
+            <div class="avatar">LZ</div>
             <div class="user-info">
-                <h4>Oficial de Tránsito</h4>
-                <span>ID: ST-2026</span>
+                <h4>Luis Zelaya</h4>
+                <span>PANEL DE CONTROL PNC</span>
             </div>
             <i class="ph ph-list menu-icon" @click="toggleSidebar"></i>
         </div>
@@ -67,7 +67,7 @@
                     @click="goTo('/reportes')"
                 >
                     <i class="ph ph-file-text"></i>
-                    <span class="nav-text">Estadísticas de reportes</span>
+                    <span class="nav-text">Reportes</span>
                 </li>
                 <li
                     :class="[
@@ -143,7 +143,7 @@ const handleLogout = async () => {
 .sidebar {
     width: 260px !important;
     background-color: var(--bg-sidebar, #081738);
-    border-right: 1px solid var(--border-color, #1f293d);
+    border-right: 1px solid var(--border-color, #1D2C52);
     display: flex;
     flex-direction: column;
     padding: 20px 0;
@@ -162,7 +162,7 @@ const handleLogout = async () => {
     display: flex;
     align-items: center;
     padding: 0 20px 20px;
-    border-bottom: 1px solid var(--border-color, #1f293d);
+    border-bottom: 1px solid var(--border-color, #1D2C52);
     gap: 12px;
     transition:
         padding 0.3s ease,
@@ -193,13 +193,13 @@ const handleLogout = async () => {
 
 .user-info span {
     font-size: 10px;
-    color: var(--text-muted, #8b95a5);
+    color: var(--text-muted, #8AABBB);
 }
 
 .menu-icon {
     margin-left: auto;
     cursor: pointer;
-    color: var(--text-muted, #8b95a5);
+    color: var(--text-muted, #8AABBB);
     font-size: 20px;
     transition: transform 0.3s ease;
 }
@@ -243,9 +243,9 @@ const handleLogout = async () => {
 }
 
 .nav-item.active {
-    background-color: rgba(37, 99, 235, 0.1);
+    background-color: rgba(51, 107, 250, 0.1);
     color: var(--text-main, #ffffff);
-    border: 1px solid var(--primary-blue, #2563eb);
+    border: 1px solid var(--accent-blue, #336BFA);
     border-radius: 8px;
     margin: 0 10px;
     padding: 12px 10px;
@@ -312,8 +312,8 @@ const handleLogout = async () => {
 .sidebar-collapsed .nav-item.active {
     margin: 0 15px !important;
     padding: 12px 0;
-    background-color: rgba(37, 99, 235, 0.1) !important;
-    border: 1px solid var(--primary-blue, #2563eb) !important;
+    background-color: rgba(51, 107, 250, 0.1) !important;
+    border: 1px solid var(--accent-blue, #336BFA) !important;
     border-radius: 8px !important;
 }
 

@@ -554,15 +554,15 @@ const handleLogout = async () => {
     --bg-dark: #061129;
     --bg-sidebar: #081738;
     --bg-card: #0A1D47;
-    --border-color: #1f293d;
+    --border-color: #1D2C52;
     --text-main: #ffffff;
-    --text-muted: #8b95a5;
+    --text-muted: #8AABBB;
 
     --primary-blue: #2563eb;
-    --accent-blue: #3b82f6;
-    --critical: #dc2626;
+    --accent-blue: #336BFA;
+    --critical: #FF1744;
     --dropzone-bg: rgba(255, 255, 255, 0.02);
-    --dropzone-hover: rgba(37, 99, 235, 0.05);
+    --dropzone-hover: rgba(51, 107, 250, 0.05);
 
     background-color: var(--bg-dark);
     color: var(--text-main);
