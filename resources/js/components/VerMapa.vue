@@ -22,7 +22,9 @@
                             class="incident-list-item"
                             :class="[
                                 'severity-' +
-                                    (incidente.gravedad || 'Medio').toLowerCase(),
+                                    (
+                                        incidente.gravedad || 'Medio'
+                                    ).toLowerCase(),
                             ]"
                             @click="focusIncident(incidente)"
                         >
@@ -92,9 +94,12 @@ const getRandomCoordsInSanMiguel = () => {
 const getMarkerIcon = (gravedad) => {
     let color = "#3b82f6"; // Azul por defecto (Bajo/Seguro)
     const g = (gravedad || "").toLowerCase();
-    if (g === "crítico" || g === "critico") color = "#dc2626"; // Rojo crítico
-    else if (g === "alto") color = "#ef4444"; // Naranja/Rojo alto
-    else if (g === "medio") color = "#f59e0b"; // Amarillo medio
+    if (g === "crítico" || g === "critico")
+        color = "#dc2626"; // Rojo crítico
+    else if (g === "alto")
+        color = "#ef4444"; // Naranja/Rojo alto
+    else if (g === "medio")
+        color = "#f59e0b"; // Amarillo medio
     else if (g === "bajo" || g === "seguro") color = "#22c55e"; // Verde bajo
 
     return window.L.divIcon({
@@ -131,7 +136,7 @@ const geocodeAddress = async (direccion, municipio) => {
                     format: "json",
                     limit: 1,
                 },
-            }
+            },
         );
         if (response.data && response.data.length > 0) {
             return [
@@ -142,7 +147,7 @@ const geocodeAddress = async (direccion, municipio) => {
     } catch (err) {
         console.warn(
             `Error al geocodificar dirección: ${direccion}. Usando fallback...`,
-            err
+            err,
         );
     }
     return null;
@@ -165,7 +170,7 @@ const fetchAndRenderIncidentes = async () => {
             if (idx < 3 && incidente.direccion) {
                 coords = await geocodeAddress(
                     incidente.direccion,
-                    incidente.municipio || "San Miguel"
+                    incidente.municipio || "San Miguel",
                 );
             }
 
@@ -259,7 +264,7 @@ const initMap = () => {
                     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 subdomains: "abcd",
                 maxZoom: 20,
-            }
+            },
         ).addTo(map);
 
         // ResizeObserver para recalcular el tamaño del mapa cuando la sidebar cambie de tamaño
