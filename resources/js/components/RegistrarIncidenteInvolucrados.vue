@@ -133,7 +133,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -142,6 +142,42 @@ const router = useRouter();
 // Arrays reactivos para las listas dinámicas, inicializados con 2 elementos vacíos como en el HTML original
 const vehiculos = ref(['', '']);
 const personas = ref(['', '']);
+
+onMounted(() => {
+    // Prioridad: 1) Manual (usuario ya editó) → 2) IA → 3) Vacío
+    const savedVehiculos = localStorage.getItem('incidente_vehiculos');
+    const savedPersonas = localStorage.getItem('incidente_personas');
+    
+    if (savedVehiculos || savedPersonas) {
+        // Datos manuales existen (el usuario ya pasó por aquí)
+        if (savedVehiculos) {
+            try { vehiculos.value = JSON.parse(savedVehiculos); } catch (e) {}
+        }
+        if (savedPersonas) {
+            try { personas.value = JSON.parse(savedPersonas); } catch (e) {}
+        }
+    } else {
+        // Sin datos manuales: cargar desde la IA
+        const iaDataRaw = localStorage.getItem('incidente_ia_data');
+        if (iaDataRaw) {
+            try {
+                const iaData = JSON.parse(iaDataRaw);
+                if (iaData.vehiculos && Array.isArray(iaData.vehiculos) && iaData.vehiculos.length > 0) {
+                    vehiculos.value = [...iaData.vehiculos];
+                }
+                if (iaData.personas && Array.isArray(iaData.personas) && iaData.personas.length > 0) {
+                    personas.value = [...iaData.personas];
+                }
+            } catch (e) {
+                console.error('Error al cargar datos de IA en involucrados', e);
+            }
+        }
+    }
+
+    // Asegurarse de que al menos haya algún campo si los arrays están vacíos
+    if (vehiculos.value.length === 0) vehiculos.value = ['', ''];
+    if (personas.value.length === 0) personas.value = ['', ''];
+});
 
 // Funciones para agregar campos dinámicamente
 const addVehicle = () => {
@@ -154,17 +190,22 @@ const addPerson = () => {
 
 // Navegación
 const handleBack = () => {
+    // Guardar avance
+    localStorage.setItem('incidente_vehiculos', JSON.stringify(vehiculos.value));
+    localStorage.setItem('incidente_personas', JSON.stringify(personas.value));
     router.push({ name: 'registrar-incidente-declaracion' });
 };
 
 const handleNext = () => {
     // Recolectar datos limpiando campos vacíos
-    const data = {
-        vehiculos: vehiculos.value.filter(v => v.trim() !== ''),
-        personas: personas.value.filter(p => p.trim() !== '')
-    };
-    
-    console.log("Datos de involucrados recolectados:", data);
+    const cleanedVehicles = vehiculos.value.filter(v => v.trim() !== '');
+    const cleanedPersons = personas.value.filter(p => p.trim() !== '');
+
+    console.log("Datos de involucrados recolectados:", { cleanedVehicles, cleanedPersons });
+
+    // Guardar en localStorage
+    localStorage.setItem('incidente_vehiculos', JSON.stringify(vehiculos.value));
+    localStorage.setItem('incidente_personas', JSON.stringify(personas.value));
     
     router.push({ name: 'registrar-incidente-evidencia' });
 };

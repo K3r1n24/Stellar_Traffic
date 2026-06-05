@@ -68,6 +68,42 @@
                     <p>Selecciona la categoría que mejor describa el incidente</p>
                 </div>
 
+                <!-- Sección de Copiloto de IA -->
+                <div class="ai-copilot-container">
+                    <div class="ai-header">
+                        <div class="ai-sparkle"><i class="ph ph-sparkle"></i></div>
+                        <div>
+                            <h3>Copiloto de Registro Rápido con IA</h3>
+                            <p>Describe el incidente con tus propias palabras y la IA pre-llenará todo el formulario</p>
+                        </div>
+                    </div>
+                    <div class="ai-body">
+                        <textarea 
+                            v-model="aiText" 
+                            placeholder="Ej: Choque leve entre un sedán gris y una motocicleta en la Av. España a las 2:30 PM. Pavimento mojado por lluvia. Ambos conductores con lesiones leves y discutiendo..."
+                            class="ai-textarea"
+                            :disabled="isLoadingAi"
+                        ></textarea>
+                        <button 
+                            class="btn btn-ai" 
+                            type="button"
+                            @click="processWithAi" 
+                            :disabled="isLoadingAi || !aiText.trim()"
+                        >
+                            <i v-if="isLoadingAi" class="ph ph-circle-notch spin"></i>
+                            <i v-else class="ph ph-sparkles"></i>
+                            <span>{{ isLoadingAi ? 'Analizando incidente...' : 'Pre-llenar con IA' }}</span>
+                        </button>
+                    </div>
+                    <div v-if="aiError" class="ai-error-message">
+                        <i class="ph ph-warning-circle"></i> {{ aiError }}
+                    </div>
+                </div>
+
+                <div class="or-divider">
+                    <span>O continuar de forma manual</span>
+                </div>
+
                 <div class="cards-grid">
                     <div 
                         class="option-card selectable-card" 
@@ -123,8 +159,67 @@ import axios from 'axios';
 
 const router = useRouter();
 
+// Estado reactivo para el Copiloto de IA
+const aiText = ref('');
+const isLoadingAi = ref(false);
+const aiError = ref(null);
+
 // Estado reactivo para almacenar el tipo de incidente seleccionado
 const selectedType = ref(null);
+
+const processWithAi = async () => {
+    if (!aiText.value.trim()) return;
+    
+    isLoadingAi.value = true;
+    aiError.value = null;
+    
+    try {
+        const response = await axios.post('/api/ia/parsear-incidente', {
+            descripcion: aiText.value
+        });
+        
+        const data = response.data;
+        console.log('Datos extraídos por IA:', data);
+        
+        // IMPORTANTE: Limpiar TODAS las claves individuales de pasos anteriores
+        // para que no sobreescriban los datos frescos de la IA en los componentes
+        localStorage.removeItem('incidente_fecha');
+        localStorage.removeItem('incidente_hora');
+        localStorage.removeItem('incidente_gravedad');
+        localStorage.removeItem('incidente_caso_id');
+        localStorage.removeItem('incidente_direccion');
+        localStorage.removeItem('incidente_distrito');
+        localStorage.removeItem('incidente_declaracion');
+        localStorage.removeItem('incidente_clima');
+        localStorage.removeItem('incidente_via');
+        localStorage.removeItem('incidente_pavimento');
+        localStorage.removeItem('incidente_vehiculos');
+        localStorage.removeItem('incidente_personas');
+        localStorage.removeItem('incidente_tipo');
+        localStorage.removeItem('incidente_evidencias');
+        localStorage.removeItem('currentCaseId');
+
+        // Guardar la respuesta estructurada en localStorage
+        localStorage.setItem('incidente_ia_data', JSON.stringify(data));
+        
+        // Establecer el tipo de incidente según lo que extrajo la IA
+        if (data.tipo_accidente) {
+            selectedType.value = data.tipo_accidente;
+            
+            // Avanzar automáticamente tras una pequeña animación/espera
+            setTimeout(() => {
+                router.push({ name: 'registrar-incidente-detalle', query: { tipo: selectedType.value } });
+            }, 600);
+        } else {
+            aiError.value = "No se pudo clasificar el tipo de accidente.";
+        }
+    } catch (error) {
+        console.error('Error al procesar con IA:', error);
+        aiError.value = error.response?.data?.error || "Error al comunicarse con el servicio de Inteligencia Artificial.";
+    } finally {
+        isLoadingAi.value = false;
+    }
+};
 
 // Función para actualizar el tipo seleccionado
 const selectType = (type) => {
@@ -509,6 +604,128 @@ const handleLogout = async () => {
     .btn-primary:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+    }
+
+    /* --- COPILOTO IA --- */
+    .ai-copilot-container {
+        max-width: 900px;
+        margin: 0 auto 30px auto;
+        width: 100%;
+        background: radial-gradient(100% 100% at 0% 0%, rgba(37, 99, 235, 0.15) 0%, rgba(15, 21, 36, 0) 100%), var(--bg-card);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    .ai-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    .ai-sparkle {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 20px;
+        color: white;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    }
+    .ai-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+    }
+    .ai-header p {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin: 4px 0 0 0;
+    }
+    .ai-body {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .ai-textarea {
+        width: 100%;
+        height: 90px;
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 12px;
+        color: var(--text-main);
+        font-family: inherit;
+        font-size: 14px;
+        resize: none;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+    .ai-textarea:focus {
+        border-color: var(--accent-blue);
+    }
+    .btn-ai {
+        align-self: flex-end;
+        background: linear-gradient(90deg, var(--primary-blue), #6366f1);
+        border: none;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .btn-ai:hover:not(:disabled) {
+        background: linear-gradient(90deg, var(--accent-blue), #4f46e5);
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    }
+    .btn-ai:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .ai-error-message {
+        margin-top: 12px;
+        color: #f87171;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .spin {
+        animation: spin-animation 1s linear infinite;
+    }
+    @keyframes spin-animation {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .or-divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 900px;
+        margin: 0 auto 30px auto;
+        width: 100%;
+    }
+    .or-divider::before, .or-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background-color: var(--border-color);
+    }
+    .or-divider span {
+        padding: 0 15px;
+        color: var(--text-muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     /* Responsividad */

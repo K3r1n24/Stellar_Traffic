@@ -44,3 +44,6 @@ Route::post('/accidentes', [App\Http\Controllers\AccidenteController::class, 'st
 Route::get('/api/user', function () {
     return response()->json(auth()->user());
 })->middleware('auth');
+
+Route::post('/api/ia/parsear-incidente', [App\Http\Controllers\IaController::class, 'parsearIncidente'])->middleware('auth');
+

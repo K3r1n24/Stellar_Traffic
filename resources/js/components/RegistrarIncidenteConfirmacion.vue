@@ -88,15 +88,15 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Información básica</span>
-                                <span class="value" id="val-fecha">Fecha: 12/05/2026</span>
+                                <span class="value" id="val-fecha">Fecha: {{ fecha }}</span>
                             </div>
                             <div class="data-group">
                                 <span class="label">Tipo de incidente:</span>
-                                <span class="value" id="val-tipo">Vehicular</span>
+                                <span class="value" id="val-tipo">{{ tipo }}</span>
                             </div>
                             <div class="data-group">
                                 <span class="label">Gravedad:</span>
-                                <span class="value" id="val-gravedad">Leve</span>
+                                <span class="value" id="val-gravedad">{{ gravedad }}</span>
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-detalle')">Editar</button>
@@ -107,7 +107,7 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Ubicación</span>
-                                <span class="value" id="val-direccion">Dirección: Av. Central, San José</span>
+                                <span class="value" id="val-direccion">Dirección: {{ direccion }}</span>
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-ubicacion')">Editar</button>
@@ -118,11 +118,11 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Involucrados</span>
-                                <span class="value" id="val-vehiculos">Vehículos: 2 Registrados</span>
+                                <span class="value" id="val-vehiculos">Vehículos: {{ vehiculosCount }} Registrados</span>
                             </div>
                             <div class="data-group">
                                 <span class="label">Personas:</span>
-                                <span class="value" id="val-personas">2 Registradas</span>
+                                <span class="value" id="val-personas">{{ personasCount }} Registradas</span>
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-involucrados')">Editar</button>
@@ -133,7 +133,7 @@
                         <div class="data-groups-wrapper">
                             <div class="data-group first-group">
                                 <span class="label">Evidencia</span>
-                                <span class="value" id="val-archivos">Archivos: 5 Adjuntos</span>
+                                <span class="value" id="val-archivos">Archivos: {{ archivosCount }} Adjuntos</span>
                             </div>
                         </div>
                         <button class="edit-btn" @click="handleEdit('registrar-incidente-evidencia')">Editar</button>
@@ -152,10 +152,47 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
+
+const fecha = ref('No especificada');
+const tipo = ref('Vehicular');
+const gravedad = ref('No especificada');
+const direccion = ref('No especificada');
+const vehiculosCount = ref(0);
+const personasCount = ref(0);
+const archivosCount = ref(0);
+
+onMounted(() => {
+    fecha.value = localStorage.getItem('incidente_fecha') || 'No especificada';
+    
+    const tipoVal = localStorage.getItem('incidente_tipo') || localStorage.getItem('incidente_ia_data') ? JSON.parse(localStorage.getItem('incidente_ia_data') || '{}').tipo_accidente : 'materiales';
+    tipo.value = tipoVal === 'victimas' ? 'Con víctimas o lesionados' : 'Daños materiales';
+    
+    gravedad.value = localStorage.getItem('incidente_gravedad') || 'No especificada';
+    
+    const dir = localStorage.getItem('incidente_direccion') || '';
+    const dist = localStorage.getItem('incidente_distrito') || '';
+    direccion.value = dir ? (dir + (dist ? ', ' + dist : '')) : 'No especificada';
+
+    try {
+        const v = JSON.parse(localStorage.getItem('incidente_vehiculos') || '[]');
+        vehiculosCount.value = v.filter(item => item.trim() !== '').length;
+    } catch(e) {}
+
+    try {
+        const p = JSON.parse(localStorage.getItem('incidente_personas') || '[]');
+        personasCount.value = p.filter(item => item.trim() !== '').length;
+    } catch(e) {}
+
+    try {
+        const a = JSON.parse(localStorage.getItem('incidente_evidencias') || '[]');
+        archivosCount.value = a.length || 0;
+    } catch (e) {}
+});
 
 // --- NAVEGACIÓN ---
 const handleBack = () => {
@@ -167,15 +204,40 @@ const handleEdit = (routeName) => {
 };
 
 const handleSubmit = async () => {
-    // Aquí iría el fetch/axios POST a tu API para guardar toda la información.
     console.log("¡Registro finalizado! Procesando envío a la base de datos (Laravel)...");
     
-    // Generar un ID de caso falso para demostración
-    const newCaseId = 'ACC-2026-' + Math.floor(Math.random() * 10000);
-    localStorage.setItem('currentCaseId', newCaseId);
+    try {
+        const iaData = JSON.parse(localStorage.getItem('incidente_ia_data') || '{}');
+        const tipoVal = localStorage.getItem('incidente_tipo') || iaData.tipo_accidente || 'materiales';
 
-    // Redirigir a la pantalla de éxito
-    router.push({ name: 'registrar-incidente-exito' });
+        const payload = {
+            tipo_accidente: tipoVal,
+            fecha_incidente: localStorage.getItem('incidente_fecha') || new Date().toISOString().split('T')[0],
+            hora_aproximada: localStorage.getItem('incidente_hora') || '12:00',
+            gravedad: localStorage.getItem('incidente_gravedad') || 'Leve',
+            direccion: localStorage.getItem('incidente_direccion') || 'No especificada',
+            municipio: localStorage.getItem('incidente_distrito') || 'No especificado',
+            id_caso: localStorage.getItem('incidente_caso_id') || ('ACC-' + Date.now()),
+            descripcion: localStorage.getItem('incidente_declaracion') || 'No especificada',
+            condicion_climatica: localStorage.getItem('incidente_clima') || 'Despejado',
+            tipo_via: localStorage.getItem('incidente_via') || 'Urbana',
+            estado_pavimento: localStorage.getItem('incidente_pavimento') || 'Seco',
+            declaracion_involucrados: localStorage.getItem('incidente_declaracion') || '',
+            vehiculos: JSON.parse(localStorage.getItem('incidente_vehiculos') || '[]').filter(v => v.trim() !== ''),
+            personas: JSON.parse(localStorage.getItem('incidente_personas') || '[]').filter(p => p.trim() !== ''),
+        };
+
+        const response = await axios.post('/accidentes', payload);
+        console.log("¡Registro guardado en base de datos!", response.data);
+
+        localStorage.setItem('currentCaseId', payload.id_caso);
+
+        // Redirigir a la pantalla de éxito
+        router.push({ name: 'registrar-incidente-exito' });
+    } catch (error) {
+        console.error("Error al registrar el accidente:", error);
+        alert("Hubo un error al guardar el incidente en la base de datos. Asegúrate de que el ID de caso sea único.");
+    }
 };
 
 const goTo = (path) => {
