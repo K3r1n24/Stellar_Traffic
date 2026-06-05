@@ -1,5 +1,21 @@
 <template>
     <div class="dashboard">
+        <!-- Toast de Notificación de Selección de Ubicación -->
+        <transition name="toast-fade">
+            <div v-if="showNotification" class="toast-notification">
+                <div class="toast-icon">
+                    <i class="ph ph-check-circle"></i>
+                </div>
+                <div class="toast-content">
+                    <span class="toast-title">Ubicación Seleccionada</span>
+                    <p class="toast-text">{{ notificationMessage }}</p>
+                </div>
+                <button class="toast-close" type="button" @click="showNotification = false">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+        </transition>
+
         <Sidebar />
 
         <main class="main-content">
@@ -82,7 +98,7 @@
                         type="button"
                         @click="handleNext"
                     >
-                        Continuar
+                        Guardar
                     </button>
                 </div>
             </div>
@@ -108,6 +124,8 @@ const isLoadingMap = ref(true);
 const mapError = ref(null);
 const selectedAddress = ref("");
 const selectedDistrict = ref("");
+const showNotification = ref(false);
+const notificationMessage = ref("");
 let map = null;
 let currentMarker = null;
 let resizeObserver = null;
@@ -144,6 +162,13 @@ const fetchAddressFromCoords = (lat, lng) => {
                     "Distrito:",
                     selectedDistrict.value,
                 );
+
+                // Mostrar notificación al seleccionar en el mapa
+                notificationMessage.value = "Ubicación lista. Haz clic en 'Guardar' para continuar.";
+                showNotification.value = true;
+                setTimeout(() => {
+                    showNotification.value = false;
+                }, 5000);
             }
         })
         .catch((err) => {
@@ -383,6 +408,13 @@ const handleSearch = (e) => {
                     console.log(
                         `Búsqueda exitosa. Marcador colocado en: Lat ${lat}, Lng ${lon}`,
                     );
+
+                    // Mostrar notificación
+                    notificationMessage.value = "Dirección localizada. Haz clic en 'Guardar' para continuar.";
+                    showNotification.value = true;
+                    setTimeout(() => {
+                        showNotification.value = false;
+                    }, 5000);
                 } else {
                     alert(
                         "No se encontró la dirección. Intenta con otros términos.",
@@ -833,5 +865,89 @@ const handleLogout = async () => {
     .stepper-container {
         display: none;
     }
+}
+
+/* Toast Notification Premium */
+.toast-notification {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    background: rgba(10, 29, 71, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(51, 107, 250, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 9999;
+    max-width: 380px;
+}
+
+.toast-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(37, 99, 235, 0.15);
+    color: #336BFA;
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(51, 107, 250, 0.3);
+}
+
+.toast-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.toast-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.toast-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.toast-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.toast-close:hover {
+    color: #ffffff;
+}
+
+/* Transiciones de Vue */
+.toast-fade-enter-active,
+.toast-fade-leave-active {
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast-fade-enter-from {
+    transform: translateX(50px);
+    opacity: 0;
+}
+
+.toast-fade-leave-to {
+    transform: translateX(50px);
+    opacity: 0;
 }
 </style>
