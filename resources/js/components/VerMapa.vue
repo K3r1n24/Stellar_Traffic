@@ -306,9 +306,9 @@ onUnmounted(() => {
 
 <style scoped>
 .dashboard {
-    --bg-dark: #0f1524;
-    --bg-sidebar: #0b101e;
-    --bg-card: #131a2c;
+    --bg-dark: #061129;
+    --bg-sidebar: #081738;
+    --bg-card: #0A1D47;
     --border-color: #1f293d;
     --text-main: #ffffff;
     --text-muted: #8b95a5;

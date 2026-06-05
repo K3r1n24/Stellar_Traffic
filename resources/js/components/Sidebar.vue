@@ -12,19 +12,44 @@
         <div class="nav-section">
             <p class="nav-title">PRINCIPAL</p>
             <ul class="nav-list" id="main-nav">
-                <li :class="['nav-item', { active: currentRoute === '/dashboard' }]" @click="goTo('/dashboard')">
+                <li
+                    :class="[
+                        'nav-item',
+                        { active: currentRoute === '/dashboard' },
+                    ]"
+                    @click="goTo('/dashboard')"
+                >
                     <i class="ph ph-house"></i>
                     <span class="nav-text">Inicio</span>
                 </li>
-                <li :class="['nav-item', { active: currentRoute.includes('registrar-incidente') }]" @click="goTo('/registrar-incidente')">
+                <li
+                    :class="[
+                        'nav-item',
+                        {
+                            active: currentRoute.includes(
+                                'registrar-incidente',
+                            ),
+                        },
+                    ]"
+                    @click="goTo('/registrar-incidente')"
+                >
                     <i class="ph ph-plus-square"></i>
                     <span class="nav-text">Registrar incidente</span>
                 </li>
-                <li :class="['nav-item', { active: currentRoute === '/buscar' }]" @click="goTo('/buscar')">
+                <li
+                    :class="[
+                        'nav-item',
+                        { active: currentRoute === '/buscar' },
+                    ]"
+                    @click="goTo('/buscar')"
+                >
                     <i class="ph ph-magnifying-glass"></i>
                     <span class="nav-text">Buscar casos</span>
                 </li>
-                <li :class="['nav-item', { active: currentRoute === '/mapa' }]" @click="goTo('/mapa')">
+                <li
+                    :class="['nav-item', { active: currentRoute === '/mapa' }]"
+                    @click="goTo('/mapa')"
+                >
                     <i class="ph ph-map-pin"></i>
                     <span class="nav-text">Ver mapa</span>
                 </li>
@@ -34,19 +59,40 @@
         <div class="nav-section">
             <p class="nav-title">SISTEMA</p>
             <ul class="nav-list">
-                <li :class="['nav-item', { active: currentRoute === '/reportes' }]" @click="goTo('/reportes')">
+                <li
+                    :class="[
+                        'nav-item',
+                        { active: currentRoute === '/reportes' },
+                    ]"
+                    @click="goTo('/reportes')"
+                >
                     <i class="ph ph-file-text"></i>
                     <span class="nav-text">Estadísticas de reportes</span>
                 </li>
-                <li :class="['nav-item', { active: currentRoute === '/historial' }]" @click="goTo('/historial')">
+                <li
+                    :class="[
+                        'nav-item',
+                        { active: currentRoute === '/historial' },
+                    ]"
+                    @click="goTo('/historial')"
+                >
                     <i class="ph ph-clock-counter-clockwise"></i>
                     <span class="nav-text">Historial</span>
                 </li>
-                <li :class="['nav-item', { active: currentRoute === '/configuracion' }]" @click="goTo('/configuracion')">
+                <li
+                    :class="[
+                        'nav-item',
+                        { active: currentRoute === '/configuracion' },
+                    ]"
+                    @click="goTo('/configuracion')"
+                >
                     <i class="ph ph-gear"></i>
                     <span class="nav-text">Configuración</span>
                 </li>
-                <li :class="['nav-item', { active: currentRoute === '/ayuda' }]" @click="goTo('/ayuda')">
+                <li
+                    :class="['nav-item', { active: currentRoute === '/ayuda' }]"
+                    @click="goTo('/ayuda')"
+                >
                     <i class="ph ph-question"></i>
                     <span class="nav-text">Ayuda</span>
                 </li>
@@ -61,21 +107,21 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import axios from 'axios';
+import { ref, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import axios from "axios";
 
 const router = useRouter();
 const route = useRoute();
 
 // Cargar el estado colapsado inicial de localStorage
-const isCollapsed = ref(localStorage.getItem('sidebar-collapsed') === 'true');
+const isCollapsed = ref(localStorage.getItem("sidebar-collapsed") === "true");
 
 const currentRoute = computed(() => route.path);
 
 const toggleSidebar = () => {
     isCollapsed.value = !isCollapsed.value;
-    localStorage.setItem('sidebar-collapsed', isCollapsed.value);
+    localStorage.setItem("sidebar-collapsed", isCollapsed.value);
 };
 
 const goTo = (path) => {
@@ -84,11 +130,11 @@ const goTo = (path) => {
 
 const handleLogout = async () => {
     try {
-        await axios.post('/logout');
-        window.location.href = '/login';
+        await axios.post("/logout");
+        window.location.href = "/login";
     } catch (error) {
-        console.error('Error al cerrar sesión:', error);
-        window.location.href = '/login';
+        console.error("Error al cerrar sesión:", error);
+        window.location.href = "/login";
     }
 };
 </script>
@@ -96,7 +142,7 @@ const handleLogout = async () => {
 <style scoped>
 .sidebar {
     width: 260px !important;
-    background-color: var(--bg-sidebar, #0b101e);
+    background-color: var(--bg-sidebar, #081738);
     border-right: 1px solid var(--border-color, #1f293d);
     display: flex;
     flex-direction: column;
@@ -118,7 +164,10 @@ const handleLogout = async () => {
     padding: 0 20px 20px;
     border-bottom: 1px solid var(--border-color, #1f293d);
     gap: 12px;
-    transition: padding 0.3s ease, flex-direction 0.3s ease, justify-content 0.3s ease;
+    transition:
+        padding 0.3s ease,
+        flex-direction 0.3s ease,
+        justify-content 0.3s ease;
 }
 
 .avatar {
@@ -207,7 +256,9 @@ const handleLogout = async () => {
 .nav-title,
 .nav-text,
 .logout-text {
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
     opacity: 1;
     transform: translateX(0);
     white-space: nowrap;
@@ -280,7 +331,9 @@ const handleLogout = async () => {
     gap: 10px;
     cursor: pointer;
     font-size: 14px;
-    transition: justify-content 0.3s ease, padding 0.3s ease;
+    transition:
+        justify-content 0.3s ease,
+        padding 0.3s ease;
 }
 
 .sidebar-collapsed .logout {

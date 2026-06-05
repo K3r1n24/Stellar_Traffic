@@ -52,7 +52,10 @@
                             </div>
                             <i class="ph ph-caret-right arrow"></i>
                         </div>
-                        <div class="card card-action" @click="goTo('/reportes')">
+                        <div
+                            class="card card-action"
+                            @click="goTo('/reportes')"
+                        >
                             <div class="icon-box icon-blue">
                                 <i class="ph ph-file-text"></i>
                             </div>
@@ -228,12 +231,12 @@ const alertasActivas = computed(
         accidentes.value.filter((a) => {
             const g = (a.gravedad || "").toLowerCase();
             return g === "crítico" || g === "critico" || g === "alto";
-        }).length
+        }).length,
 );
 const reportesHoy = computed(
     () =>
         accidentes.value.filter((a) => a.fecha_incidente === todayStr.value)
-            .length
+            .length,
 );
 
 onMounted(() => {
@@ -243,9 +246,9 @@ onMounted(() => {
 
 <style scoped>
 .dashboard {
-    --bg-dark: #0f1524;
-    --bg-sidebar: #0b101e;
-    --bg-card: #131a2c;
+    --bg-dark: #061129;
+    --bg-sidebar: #081738;
+    --bg-card: #0A1D47;
     --border-color: #1f293d;
     --text-main: #ffffff;
     --text-muted: #8b95a5;

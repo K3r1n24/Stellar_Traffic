@@ -14,7 +14,11 @@
                 <div class="filters-bar">
                     <div class="filter-group">
                         <label for="filter-tempo">Temporalidad</label>
-                        <select id="filter-tempo" v-model="selectedTemporalidad" class="filter-select">
+                        <select
+                            id="filter-tempo"
+                            v-model="selectedTemporalidad"
+                            class="filter-select"
+                        >
                             <option value="all">Todo el historial</option>
                             <option value="today">Hoy</option>
                             <option value="week">Últimos 7 días</option>
@@ -24,9 +28,17 @@
 
                     <div class="filter-group">
                         <label for="filter-mun">Distrito / Municipio</label>
-                        <select id="filter-mun" v-model="selectedMunicipio" class="filter-select">
+                        <select
+                            id="filter-mun"
+                            v-model="selectedMunicipio"
+                            class="filter-select"
+                        >
                             <option value="">Todos los distritos</option>
-                            <option v-for="mun in uniqueMunicipios" :key="mun" :value="mun">
+                            <option
+                                v-for="mun in uniqueMunicipios"
+                                :key="mun"
+                                :value="mun"
+                            >
                                 {{ mun }}
                             </option>
                         </select>
@@ -34,7 +46,11 @@
 
                     <div class="filter-group">
                         <label for="filter-grav">Gravedad</label>
-                        <select id="filter-grav" v-model="selectedGravedad" class="filter-select">
+                        <select
+                            id="filter-grav"
+                            v-model="selectedGravedad"
+                            class="filter-select"
+                        >
                             <option value="">Todas las gravedades</option>
                             <option value="Crítico">Crítico</option>
                             <option value="Alto">Alto</option>
@@ -45,10 +61,18 @@
                 </div>
 
                 <div class="actions-bar">
-                    <button class="btn btn-secondary" @click="exportToCSV" title="Descargar datos en formato CSV">
+                    <button
+                        class="btn btn-secondary"
+                        @click="exportToCSV"
+                        title="Descargar datos en formato CSV"
+                    >
                         <i class="ph ph-file-csv"></i> Exportar CSV
                     </button>
-                    <button class="btn btn-primary" @click="exportReport" title="Imprimir informe en PDF / Físico">
+                    <button
+                        class="btn btn-primary"
+                        @click="exportReport"
+                        title="Imprimir informe en PDF / Físico"
+                    >
                         <i class="ph ph-printer"></i> Imprimir Reporte
                     </button>
                 </div>
@@ -57,10 +81,19 @@
             <!-- Membrete exclusivo para Impresión Física -->
             <div class="print-header">
                 <h2>STELLAR TRAFFIC - INFORME ESTADÍSTICO</h2>
-                <p>Generado automáticamente por el Sistema de Control de Tránsito</p>
+                <p>
+                    Generado automáticamente por el Sistema de Control de
+                    Tránsito
+                </p>
                 <div class="print-metadata">
-                    <span><strong>Fecha de Impresión:</strong> {{ formatCurrentDate() }}</span>
-                    <span><strong>Filtros Aplicados:</strong> {{ getAppliedFiltersText() }}</span>
+                    <span
+                        ><strong>Fecha de Impresión:</strong>
+                        {{ formatCurrentDate() }}</span
+                    >
+                    <span
+                        ><strong>Filtros Aplicados:</strong>
+                        {{ getAppliedFiltersText() }}</span
+                    >
                 </div>
             </div>
 
@@ -74,22 +107,34 @@
             <div v-else-if="accidentes.length === 0" class="empty-state">
                 <i class="ph ph-chart-line-down"></i>
                 <h2>No hay suficientes datos</h2>
-                <p>Registra incidentes primero para poder generar informes estadísticos.</p>
+                <p>
+                    Registra incidentes primero para poder generar informes
+                    estadísticos.
+                </p>
             </div>
 
             <!-- Si hay datos, pero el filtro los excluye a todos -->
-            <div v-else-if="filteredAccidentes.length === 0" class="empty-state">
+            <div
+                v-else-if="filteredAccidentes.length === 0"
+                class="empty-state"
+            >
                 <i class="ph ph-funnel-x"></i>
                 <h2>Sin resultados para los filtros aplicados</h2>
-                <p>Prueba ajustando los criterios de temporalidad, distrito o gravedad arriba.</p>
-                <button class="btn btn-secondary" style="margin-top: 15px; margin-inline: auto;" @click="resetFilters">
+                <p>
+                    Prueba ajustando los criterios de temporalidad, distrito o
+                    gravedad arriba.
+                </p>
+                <button
+                    class="btn btn-secondary"
+                    style="margin-top: 15px; margin-inline: auto"
+                    @click="resetFilters"
+                >
                     Restablecer Filtros
                 </button>
             </div>
 
             <!-- Dashboard de Estadísticas Activo -->
             <div v-else class="statistics-dashboard">
-                
                 <!-- KPIs Superiores Interactivos -->
                 <div class="kpis-grid">
                     <div class="kpi-card">
@@ -98,8 +143,13 @@
                         </div>
                         <div class="kpi-details">
                             <span class="kpi-label">Incidentes Filtrados</span>
-                            <h3 class="kpi-value">{{ filteredAccidentes.length }}</h3>
-                            <span class="kpi-subtext">de {{ accidentes.length }} registrados en total</span>
+                            <h3 class="kpi-value">
+                                {{ filteredAccidentes.length }}
+                            </h3>
+                            <span class="kpi-subtext"
+                                >de {{ accidentes.length }} registrados en
+                                total</span
+                            >
                         </div>
                     </div>
 
@@ -109,8 +159,13 @@
                         </div>
                         <div class="kpi-details">
                             <span class="kpi-label">Índice Crítico / Alto</span>
-                            <h3 class="kpi-value text-danger">{{ criticalRatio }}%</h3>
-                            <span class="kpi-subtext">{{ criticalCount }} incidentes de alto riesgo</span>
+                            <h3 class="kpi-value text-danger">
+                                {{ criticalRatio }}%
+                            </h3>
+                            <span class="kpi-subtext"
+                                >{{ criticalCount }} incidentes de alto
+                                riesgo</span
+                            >
                         </div>
                     </div>
 
@@ -120,8 +175,13 @@
                         </div>
                         <div class="kpi-details">
                             <span class="kpi-label">Zona de Mayor Riesgo</span>
-                            <h3 class="kpi-value text-warning">{{ topMunicipioName }}</h3>
-                            <span class="kpi-subtext">{{ topMunicipioCount }} reportes en esta zona</span>
+                            <h3 class="kpi-value text-warning">
+                                {{ topMunicipioName }}
+                            </h3>
+                            <span class="kpi-subtext"
+                                >{{ topMunicipioCount }} reportes en esta
+                                zona</span
+                            >
                         </div>
                     </div>
 
@@ -131,22 +191,29 @@
                         </div>
                         <div class="kpi-details">
                             <span class="kpi-label">Clima Predominante</span>
-                            <h3 class="kpi-value text-success">{{ topClimaName }}</h3>
-                            <span class="kpi-subtext">Presente en {{ topClimaCount }} incidentes</span>
+                            <h3 class="kpi-value text-success">
+                                {{ topClimaName }}
+                            </h3>
+                            <span class="kpi-subtext"
+                                >Presente en
+                                {{ topClimaCount }} incidentes</span
+                            >
                         </div>
                     </div>
                 </div>
 
                 <!-- Gráficos del Reporte -->
                 <div class="report-grid">
-                    
                     <!-- Tarjeta 1: Distribución por Gravedad -->
                     <div class="report-card">
                         <div class="card-title-header">
                             <i class="ph ph-chart-bar"></i>
                             <div class="header-text-wrapper">
                                 <h4>Distribución de Gravedad</h4>
-                                <p>Porcentaje de incidentes según el nivel de urgencia</p>
+                                <p>
+                                    Porcentaje de incidentes según el nivel de
+                                    urgencia
+                                </p>
                             </div>
                         </div>
                         <div class="stat-items-group">
@@ -157,19 +224,26 @@
                             >
                                 <div class="item-info">
                                     <span class="item-name">
-                                        <span class="status-dot-indicator" :class="item.class"></span>
+                                        <span
+                                            class="status-dot-indicator"
+                                            :class="item.class"
+                                        ></span>
                                         {{ item.name }}
                                     </span>
                                     <span class="item-count">
-                                        <strong>{{ item.count }}</strong> cas. 
-                                        <span class="pct-badge">({{ item.percentage }}%)</span>
+                                        <strong>{{ item.count }}</strong> cas.
+                                        <span class="pct-badge"
+                                            >({{ item.percentage }}%)</span
+                                        >
                                     </span>
                                 </div>
                                 <div class="progress-bar-container">
                                     <div
                                         class="progress-bar-fill"
                                         :class="item.class"
-                                        :style="{ width: item.percentage + '%' }"
+                                        :style="{
+                                            width: item.percentage + '%',
+                                        }"
                                     ></div>
                                 </div>
                             </div>
@@ -182,7 +256,9 @@
                             <i class="ph ph-chart-pie"></i>
                             <div class="header-text-wrapper">
                                 <h4>Tipos de Incidentes</h4>
-                                <p>Contraste entre daños físicos y materiales</p>
+                                <p>
+                                    Contraste entre daños físicos y materiales
+                                </p>
                             </div>
                         </div>
                         <div class="types-distribution">
@@ -190,32 +266,58 @@
                                 <div class="dual-progress-bar">
                                     <div
                                         class="fill-victimas"
-                                        :style="{ width: typeStats.victimas.percentage + '%' }"
+                                        :style="{
+                                            width:
+                                                typeStats.victimas.percentage +
+                                                '%',
+                                        }"
                                         v-if="typeStats.victimas.percentage > 0"
                                         title="Con víctimas"
                                     ></div>
                                     <div
                                         class="fill-materiales"
-                                        :style="{ width: typeStats.materiales.percentage + '%' }"
-                                        v-if="typeStats.materiales.percentage > 0"
+                                        :style="{
+                                            width:
+                                                typeStats.materiales
+                                                    .percentage + '%',
+                                        }"
+                                        v-if="
+                                            typeStats.materiales.percentage > 0
+                                        "
                                         title="Daños materiales"
                                     ></div>
                                 </div>
-                                
+
                                 <div class="bar-legends-row">
                                     <div class="bar-legend">
-                                        <span class="legend-dot bg-victimas"></span>
-                                        <span class="legend-label">Con víctimas</span>
-                                        <span class="legend-val">({{ typeStats.victimas.percentage }}%)</span>
+                                        <span
+                                            class="legend-dot bg-victimas"
+                                        ></span>
+                                        <span class="legend-label"
+                                            >Con víctimas</span
+                                        >
+                                        <span class="legend-val"
+                                            >({{
+                                                typeStats.victimas.percentage
+                                            }}%)</span
+                                        >
                                     </div>
                                     <div class="bar-legend">
-                                        <span class="legend-dot bg-materiales"></span>
-                                        <span class="legend-label">Daños materiales</span>
-                                        <span class="legend-val">({{ typeStats.materiales.percentage }}%)</span>
+                                        <span
+                                            class="legend-dot bg-materiales"
+                                        ></span>
+                                        <span class="legend-label"
+                                            >Daños materiales</span
+                                        >
+                                        <span class="legend-val"
+                                            >({{
+                                                typeStats.materiales.percentage
+                                            }}%)</span
+                                        >
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="grid-2-cols">
                                 <div class="mini-data-box text-warning-box">
                                     <h5>Víctimas</h5>
@@ -240,7 +342,10 @@
                                 <p>Zonas con mayor frecuencia de reportes</p>
                             </div>
                         </div>
-                        <div class="stat-items-group" v-if="municipioStats.length > 0">
+                        <div
+                            class="stat-items-group"
+                            v-if="municipioStats.length > 0"
+                        >
                             <div
                                 class="stat-progress-item"
                                 v-for="(item, idx) in municipioStats"
@@ -248,20 +353,31 @@
                             >
                                 <div class="item-info">
                                     <span class="item-name">
-                                        <strong class="ranking-badge" :class="'rank-' + (idx + 1)">#{{ idx + 1 }}</strong>
+                                        <strong
+                                            class="ranking-badge"
+                                            :class="'rank-' + (idx + 1)"
+                                            >#{{ idx + 1 }}</strong
+                                        >
                                         {{ item.name }}
                                     </span>
-                                    <span class="item-count"><strong>{{ item.count }}</strong> reportes</span>
+                                    <span class="item-count"
+                                        ><strong>{{ item.count }}</strong>
+                                        reportes</span
+                                    >
                                 </div>
                                 <div class="progress-bar-container">
                                     <div
                                         class="progress-bar-fill bg-blue-gradient"
-                                        :style="{ width: item.percentage + '%' }"
+                                        :style="{
+                                            width: item.percentage + '%',
+                                        }"
                                     ></div>
                                 </div>
                             </div>
                         </div>
-                        <div v-else class="no-data-mini">Sin datos de distritos en la selección</div>
+                        <div v-else class="no-data-mini">
+                            Sin datos de distritos en la selección
+                        </div>
                     </div>
 
                     <!-- Tarjeta 4: Factores Viales y Ambientales -->
@@ -270,40 +386,77 @@
                             <i class="ph ph-cloud-sun"></i>
                             <div class="header-text-wrapper">
                                 <h4>Factores Viales y Ambientales</h4>
-                                <p>Condición del entorno al momento del suceso</p>
+                                <p>
+                                    Condición del entorno al momento del suceso
+                                </p>
                             </div>
                         </div>
                         <div class="factors-grid">
                             <div class="factor-column">
-                                <span class="factor-title">Condición Climática</span>
+                                <span class="factor-title"
+                                    >Condición Climática</span
+                                >
                                 <div class="factor-cards">
-                                    <div v-for="item in climaStats" :key="item.name" class="factor-mini-card">
+                                    <div
+                                        v-for="item in climaStats"
+                                        :key="item.name"
+                                        class="factor-mini-card"
+                                    >
                                         <div class="factor-card-left">
-                                            <i class="ph" :class="getClimaIcon(item.name)"></i>
-                                            <span class="factor-name">{{ item.name || 'No especificado' }}</span>
+                                            <i
+                                                class="ph"
+                                                :class="getClimaIcon(item.name)"
+                                            ></i>
+                                            <span class="factor-name">{{
+                                                item.name || "No especificado"
+                                            }}</span>
                                         </div>
-                                        <strong class="factor-count">{{ item.count }}</strong>
+                                        <strong class="factor-count">{{
+                                            item.count
+                                        }}</strong>
                                     </div>
-                                    <div v-if="climaStats.length === 0" class="no-data-mini">Sin datos</div>
+                                    <div
+                                        v-if="climaStats.length === 0"
+                                        class="no-data-mini"
+                                    >
+                                        Sin datos
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="factor-column">
-                                <span class="factor-title">Tipo de Calzada</span>
+                                <span class="factor-title"
+                                    >Tipo de Calzada</span
+                                >
                                 <div class="factor-cards">
-                                    <div v-for="item in viaStats" :key="item.name" class="factor-mini-card">
+                                    <div
+                                        v-for="item in viaStats"
+                                        :key="item.name"
+                                        class="factor-mini-card"
+                                    >
                                         <div class="factor-card-left">
-                                            <i class="ph" :class="getViaIcon(item.name)"></i>
-                                            <span class="factor-name">{{ item.name || 'No especificado' }}</span>
+                                            <i
+                                                class="ph"
+                                                :class="getViaIcon(item.name)"
+                                            ></i>
+                                            <span class="factor-name">{{
+                                                item.name || "No especificado"
+                                            }}</span>
                                         </div>
-                                        <strong class="factor-count">{{ item.count }}</strong>
+                                        <strong class="factor-count">{{
+                                            item.count
+                                        }}</strong>
                                     </div>
-                                    <div v-if="viaStats.length === 0" class="no-data-mini">Sin datos</div>
+                                    <div
+                                        v-if="viaStats.length === 0"
+                                        class="no-data-mini"
+                                    >
+                                        Sin datos
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
                 <!-- Firma para Reportes Impresos -->
@@ -317,7 +470,6 @@
                         <p>Sello de Autorización</p>
                     </div>
                 </div>
-
             </div>
         </main>
     </div>
@@ -352,40 +504,55 @@ const fetchAccidentes = async () => {
 
 // Obtener municipios únicos para el selector
 const uniqueMunicipios = computed(() => {
-    const list = accidentes.value.map(a => a.municipio).filter(Boolean);
+    const list = accidentes.value.map((a) => a.municipio).filter(Boolean);
     return [...new Set(list)].sort();
 });
 
 // Filtrar accidentes
 const filteredAccidentes = computed(() => {
-    return accidentes.value.filter(a => {
+    return accidentes.value.filter((a) => {
         // 1. Filtro de temporalidad
         if (selectedTemporalidad.value !== "all") {
             const fechaAccidente = new Date(a.created_at);
             const hoy = new Date();
-            
+
             // Poner horas a cero para comparar solo fechas
-            const fechaAccidenteZero = new Date(fechaAccidente.getFullYear(), fechaAccidente.getMonth(), fechaAccidente.getDate());
-            const hoyZero = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-            
+            const fechaAccidenteZero = new Date(
+                fechaAccidente.getFullYear(),
+                fechaAccidente.getMonth(),
+                fechaAccidente.getDate(),
+            );
+            const hoyZero = new Date(
+                hoy.getFullYear(),
+                hoy.getMonth(),
+                hoy.getDate(),
+            );
+
             const diffTime = Math.abs(hoyZero - fechaAccidenteZero);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
             if (selectedTemporalidad.value === "today" && diffDays > 0) {
                 // Verificar si es estrictamente hoy
-                const esHoy = fechaAccidente.getDate() === hoy.getDate() &&
-                             fechaAccidente.getMonth() === hoy.getMonth() &&
-                             fechaAccidente.getFullYear() === hoy.getFullYear();
+                const esHoy =
+                    fechaAccidente.getDate() === hoy.getDate() &&
+                    fechaAccidente.getMonth() === hoy.getMonth() &&
+                    fechaAccidente.getFullYear() === hoy.getFullYear();
                 if (!esHoy) return false;
             } else if (selectedTemporalidad.value === "week" && diffDays > 7) {
                 return false;
-            } else if (selectedTemporalidad.value === "month" && diffDays > 30) {
+            } else if (
+                selectedTemporalidad.value === "month" &&
+                diffDays > 30
+            ) {
                 return false;
             }
         }
 
         // 2. Filtro de Municipio
-        if (selectedMunicipio.value && a.municipio !== selectedMunicipio.value) {
+        if (
+            selectedMunicipio.value &&
+            a.municipio !== selectedMunicipio.value
+        ) {
             return false;
         }
 
@@ -404,7 +571,9 @@ const filteredAccidentes = computed(() => {
 // --- CÁLCULO DE KPIs DINÁMICOS ---
 
 const criticalCount = computed(() => {
-    return filteredAccidentes.value.filter(a => a.gravedad === 'Crítico' || a.gravedad === 'Alto').length;
+    return filteredAccidentes.value.filter(
+        (a) => a.gravedad === "Crítico" || a.gravedad === "Alto",
+    ).length;
 });
 
 const criticalRatio = computed(() => {
@@ -416,7 +585,7 @@ const criticalRatio = computed(() => {
 const topMunicipioName = computed(() => {
     if (filteredAccidentes.value.length === 0) return "Ninguno";
     const counts = {};
-    filteredAccidentes.value.forEach(a => {
+    filteredAccidentes.value.forEach((a) => {
         if (a.municipio) counts[a.municipio] = (counts[a.municipio] || 0) + 1;
     });
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
@@ -426,7 +595,7 @@ const topMunicipioName = computed(() => {
 const topMunicipioCount = computed(() => {
     if (filteredAccidentes.value.length === 0) return 0;
     const counts = {};
-    filteredAccidentes.value.forEach(a => {
+    filteredAccidentes.value.forEach((a) => {
         if (a.municipio) counts[a.municipio] = (counts[a.municipio] || 0) + 1;
     });
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
@@ -436,7 +605,7 @@ const topMunicipioCount = computed(() => {
 const topClimaName = computed(() => {
     if (filteredAccidentes.value.length === 0) return "Ninguno";
     const counts = {};
-    filteredAccidentes.value.forEach(a => {
+    filteredAccidentes.value.forEach((a) => {
         const c = a.condicion_climatica || "Despejado";
         counts[c] = (counts[c] || 0) + 1;
     });
@@ -447,7 +616,7 @@ const topClimaName = computed(() => {
 const topClimaCount = computed(() => {
     if (filteredAccidentes.value.length === 0) return 0;
     const counts = {};
-    filteredAccidentes.value.forEach(a => {
+    filteredAccidentes.value.forEach((a) => {
         const c = a.condicion_climatica || "Despejado";
         counts[c] = (counts[c] || 0) + 1;
     });
@@ -612,7 +781,11 @@ const formatCurrentDate = () => {
 const getAppliedFiltersText = () => {
     const parts = [];
     if (selectedTemporalidad.value !== "all") {
-        const label = { today: "Hoy", week: "Últimos 7 días", month: "Último mes" }[selectedTemporalidad.value];
+        const label = {
+            today: "Hoy",
+            week: "Últimos 7 días",
+            month: "Último mes",
+        }[selectedTemporalidad.value];
         parts.push(`Temporalidad: ${label}`);
     } else {
         parts.push("Temporalidad: Histórico total");
@@ -638,10 +811,20 @@ const exportToCSV = () => {
     if (filteredAccidentes.value.length === 0) return;
 
     // Crear cabeceras
-    const headers = ["ID Accidente", "ID Caso", "Municipio/Distrito", "Dirección", "Gravedad", "Tipo Accidente", "Clima", "Calzada", "Fecha Registro"];
-    
+    const headers = [
+        "ID Accidente",
+        "ID Caso",
+        "Municipio/Distrito",
+        "Dirección",
+        "Gravedad",
+        "Tipo Accidente",
+        "Clima",
+        "Calzada",
+        "Fecha Registro",
+    ];
+
     // Mapear datos
-    const rows = filteredAccidentes.value.map(a => [
+    const rows = filteredAccidentes.value.map((a) => [
         a.id_accidente,
         a.id_caso || "",
         a.municipio || "",
@@ -650,22 +833,23 @@ const exportToCSV = () => {
         a.tipo_accidente === "victimas" ? "Con víctimas" : "Daños materiales",
         a.condicion_climatica || "Despejado",
         a.tipo_via || "Calle urbana",
-        a.created_at
+        a.created_at,
     ]);
 
     // Unir contenido
-    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" 
-        + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
-    
+    const csvContent =
+        "data:text/csv;charset=utf-8,\uFEFF" +
+        [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+
     // Crear elemento de descarga temporal
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    
-    const timestamp = new Date().toISOString().slice(0,10);
+
+    const timestamp = new Date().toISOString().slice(0, 10);
     link.setAttribute("download", `reporte_estadistico_${timestamp}.csv`);
     document.body.appendChild(link);
-    
+
     link.click();
     document.body.removeChild(link);
 };
@@ -682,9 +866,9 @@ onMounted(() => {
 
 <style scoped>
 .dashboard {
-    --bg-dark: #0f1524;
-    --bg-sidebar: #0b101e;
-    --bg-card: #131a2c;
+    --bg-dark: #061129;
+    --bg-sidebar: #081738;
+    --bg-card: #0A1D47;
     --border-color: #1f293d;
     --text-main: #ffffff;
     --text-muted: #8b95a5;
@@ -757,7 +941,7 @@ onMounted(() => {
 }
 
 .filter-select {
-    background-color: #0b101e;
+    background-color: #081738;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     color: var(--text-main);
@@ -834,7 +1018,9 @@ onMounted(() => {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Membrete Oculto en Web */
@@ -930,9 +1116,15 @@ onMounted(() => {
     text-overflow: ellipsis;
 }
 
-.text-danger { color: var(--critical) !important; }
-.text-warning { color: var(--warning) !important; }
-.text-success { color: var(--safe) !important; }
+.text-danger {
+    color: var(--critical) !important;
+}
+.text-warning {
+    color: var(--warning) !important;
+}
+.text-success {
+    color: var(--safe) !important;
+}
 
 /* Grid de Reportes */
 .report-grid {
@@ -1076,9 +1268,21 @@ onMounted(() => {
     font-weight: 700;
 }
 
-.rank-1 { background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-.rank-2 { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-.rank-3 { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+.rank-1 {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.rank-2 {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.rank-3 {
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
 
 /* Distribución por Tipo de Accidentes */
 .types-distribution {
@@ -1134,11 +1338,20 @@ onMounted(() => {
     border-radius: 50%;
 }
 
-.bg-victimas { background-color: var(--warning); }
-.bg-materiales { background-color: var(--accent-blue); }
+.bg-victimas {
+    background-color: var(--warning);
+}
+.bg-materiales {
+    background-color: var(--accent-blue);
+}
 
-.legend-label { color: var(--text-muted); }
-.legend-val { color: var(--text-main); font-weight: 600; }
+.legend-label {
+    color: var(--text-muted);
+}
+.legend-val {
+    color: var(--text-main);
+    font-weight: 600;
+}
 
 .mini-data-box {
     background-color: rgba(11, 16, 30, 0.4);
@@ -1173,8 +1386,12 @@ onMounted(() => {
     color: var(--text-muted);
 }
 
-.text-warning-box h3 { color: var(--warning); }
-.text-info-box h3 { color: var(--accent-blue); }
+.text-warning-box h3 {
+    color: var(--warning);
+}
+.text-info-box h3 {
+    color: var(--accent-blue);
+}
 
 /* Grid de Factores */
 .factors-grid {
@@ -1290,14 +1507,14 @@ onMounted(() => {
     .main-content > :first-child {
         display: none !important;
     }
-    
+
     .main-content {
         padding: 0 !important;
         background-color: white !important;
         color: black !important;
         overflow: visible !important;
     }
-    
+
     .dashboard {
         background-color: white !important;
         color: black !important;
@@ -1352,7 +1569,8 @@ onMounted(() => {
         backdrop-filter: none !important;
     }
 
-    .kpi-label, .kpi-subtext {
+    .kpi-label,
+    .kpi-subtext {
         color: #555 !important;
     }
 
@@ -1386,7 +1604,8 @@ onMounted(() => {
         color: black !important;
     }
 
-    .card-title-header p, .header-text-wrapper p {
+    .card-title-header p,
+    .header-text-wrapper p {
         color: #555 !important;
     }
 
@@ -1408,11 +1627,13 @@ onMounted(() => {
         color: black !important;
     }
 
-    .mini-data-box h5, .mini-data-box span {
+    .mini-data-box h5,
+    .mini-data-box span {
         color: #555 !important;
     }
 
-    .text-warning-box h3, .text-info-box h3 {
+    .text-warning-box h3,
+    .text-info-box h3 {
         color: black !important;
     }
 
@@ -1480,7 +1701,7 @@ onMounted(() => {
     .kpis-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .report-grid {
         grid-template-columns: 1fr;
     }
@@ -1490,12 +1711,12 @@ onMounted(() => {
     .kpis-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .filters-actions-container {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .actions-bar {
         justify-content: flex-end;
     }

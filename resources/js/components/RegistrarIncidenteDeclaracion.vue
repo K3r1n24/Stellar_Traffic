@@ -3,7 +3,10 @@
         <Sidebar />
 
         <main class="main-content">
-            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
+            <TopHeader
+                title="Registro de Incidente"
+                subtitle="Gestión rápida de incidentes y monitoreo vial"
+            />
 
             <div class="form-view">
                 <div class="stepper-container">
@@ -176,13 +179,13 @@
 </template>
 
 <script setup>
-import Sidebar from './Sidebar.vue';
-import TopHeader from './TopHeader.vue';
+import Sidebar from "./Sidebar.vue";
+import TopHeader from "./TopHeader.vue";
 import { reactive, computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { useDatetime } from '../composables/useDatetime.js';
-import { useIncidenteStore } from '../composables/useIncidenteStore.js';
+import { useDatetime } from "../composables/useDatetime.js";
+import { useIncidenteStore } from "../composables/useIncidenteStore.js";
 
 const { currentDate, currentTime } = useDatetime();
 const { state: incidenteState } = useIncidenteStore();
@@ -257,9 +260,9 @@ const handleLogout = async () => {
 
 <style scoped>
 .dashboard {
-    --bg-dark: #0f1524;
-    --bg-sidebar: #0b101e;
-    --bg-card: #131a2c;
+    --bg-dark: #061129;
+    --bg-sidebar: #081738;
+    --bg-card: #0A1D47;
     --border-color: #1f293d;
     --text-main: #ffffff;
     --text-muted: #8b95a5;

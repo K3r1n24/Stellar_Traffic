@@ -67,10 +67,7 @@
             </div>
 
             <!-- Listado de reportes (orden descendente) -->
-            <div
-                v-else-if="filteredAccidentes.length > 0"
-                class="history-list"
-            >
+            <div v-else-if="filteredAccidentes.length > 0" class="history-list">
                 <div
                     v-for="incidente in filteredAccidentes"
                     :key="incidente.id_accidente"
@@ -86,7 +83,9 @@
                                 class="severity-indicator"
                                 :class="
                                     'bg-' +
-                                    (incidente.gravedad || 'Medio').toLowerCase()
+                                    (
+                                        incidente.gravedad || 'Medio'
+                                    ).toLowerCase()
                                 "
                             ></div>
                             <div class="title-info">
@@ -193,7 +192,7 @@
                             <span class="detail-label"
                                 ><i class="ph ph-article"></i> Descripción /
                                 Declaración</span
-                                >
+                            >
                             <p class="description-text">
                                 {{ incidente.descripcion }}
                             </p>
@@ -209,7 +208,9 @@
                 <p v-if="accidentes.length > 0">
                     Prueba ajustando los filtros de búsqueda.
                 </p>
-                <p v-else>Aún no has registrado ningún incidente en el sistema.</p>
+                <p v-else>
+                    Aún no has registrado ningún incidente en el sistema.
+                </p>
             </div>
         </main>
     </div>
@@ -254,22 +255,24 @@ const fetchAccidentes = async () => {
 const criticosCount = computed(
     () =>
         accidentes.value.filter(
-            (a) => a.gravedad === "Crítico" || a.gravedad === "Alto"
-        ).length
+            (a) => a.gravedad === "Crítico" || a.gravedad === "Alto",
+        ).length,
 );
 const materialesCount = computed(
     () =>
-        accidentes.value.filter((a) => a.tipo_accidente === "materiales").length
+        accidentes.value.filter((a) => a.tipo_accidente === "materiales")
+            .length,
 );
 const victimasCount = computed(
-    () => accidentes.value.filter((a) => a.tipo_accidente === "victimas").length
+    () =>
+        accidentes.value.filter((a) => a.tipo_accidente === "victimas").length,
 );
 
 // Filtrado, búsqueda y ordenación de la lista (del último al primero)
 const filteredAccidentes = computed(() => {
     // Clonar la lista y ordenar por ID de accidente de forma descendente (los más nuevos arriba)
     let list = [...accidentes.value].sort(
-        (a, b) => b.id_accidente - a.id_accidente
+        (a, b) => b.id_accidente - a.id_accidente,
     );
 
     // Filtrar por consulta de texto (ID caso, dirección, municipio o descripción)
@@ -279,8 +282,9 @@ const filteredAccidentes = computed(() => {
             (a) =>
                 (a.id_caso && a.id_caso.toLowerCase().includes(query)) ||
                 (a.direccion && a.direccion.toLowerCase().includes(query)) ||
-                (a.descripcion && a.descripcion.toLowerCase().includes(query)) ||
-                (a.municipio && a.municipio.toLowerCase().includes(query))
+                (a.descripcion &&
+                    a.descripcion.toLowerCase().includes(query)) ||
+                (a.municipio && a.municipio.toLowerCase().includes(query)),
         );
     }
 
@@ -304,9 +308,9 @@ onMounted(() => {
 
 <style scoped>
 .dashboard {
-    --bg-dark: #0f1524;
-    --bg-sidebar: #0b101e;
-    --bg-card: #131a2c;
+    --bg-dark: #061129;
+    --bg-sidebar: #081738;
+    --bg-card: #0A1D47;
     --border-color: #1f293d;
     --text-main: #ffffff;
     --text-muted: #8b95a5;

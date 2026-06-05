@@ -1,19 +1,21 @@
 <template>
     <div class="dashboard">
-        
         <Sidebar />
 
         <main class="main-content">
-            
-            <TopHeader title="Registro de Incidente" subtitle="Gestión rápida de incidentes y monitoreo vial" />
+            <TopHeader
+                title="Registro de Incidente"
+                subtitle="Gestión rápida de incidentes y monitoreo vial"
+            />
 
             <div class="map-view">
-                
                 <div class="stepper-container">
-                    <div class="car-icon-floating"><i class="ph ph-car"></i></div>
+                    <div class="car-icon-floating">
+                        <i class="ph ph-car"></i>
+                    </div>
                     <div class="stepper-background-line"></div>
                     <div class="stepper-active-line"></div>
-                    
+
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
                     <div class="step-dot"></div>
@@ -22,7 +24,6 @@
                 </div>
 
                 <div class="map-card">
-                    
                     <div class="map-header">
                         <div class="map-title-group">
                             <i class="ph ph-map-pin"></i>
@@ -34,7 +35,13 @@
 
                         <div class="search-wrapper">
                             <i class="ph ph-magnifying-glass"></i>
-                            <input type="text" class="search-input" placeholder="Buscar dirección o lugar" v-model="searchQuery" @keypress.enter="handleSearch">
+                            <input
+                                type="text"
+                                class="search-input"
+                                placeholder="Buscar dirección o lugar"
+                                v-model="searchQuery"
+                                @keypress.enter="handleSearch"
+                            />
                         </div>
                     </div>
 
@@ -43,7 +50,10 @@
                             <i class="ph ph-warning-octagon"></i>
                             <p>{{ mapError }}</p>
                         </div>
-                        <div v-else-if="isLoadingMap" class="map-loading-overlay">
+                        <div
+                            v-else-if="isLoadingMap"
+                            class="map-loading-overlay"
+                        >
                             <div class="spinner"></div>
                             <p>Cargando mapa vial...</p>
                         </div>
@@ -52,39 +62,52 @@
 
                     <div class="selected-address-bar" v-if="selectedAddress">
                         <i class="ph ph-map-pin-line"></i>
-                        <span><strong>Ubicación seleccionada:</strong> {{ selectedAddress }}</span>
+                        <span
+                            ><strong>Ubicación seleccionada:</strong>
+                            {{ selectedAddress }}</span
+                        >
                     </div>
-
                 </div>
 
                 <div class="bottom-action-bar">
-                    <button class="btn btn-outline" type="button" @click="handleBack">Atrás</button>
-                    <button class="btn btn-primary" type="button" @click="handleNext">Continuar</button>
+                    <button
+                        class="btn btn-outline"
+                        type="button"
+                        @click="handleBack"
+                    >
+                        Atrás
+                    </button>
+                    <button
+                        class="btn btn-primary"
+                        type="button"
+                        @click="handleNext"
+                    >
+                        Continuar
+                    </button>
                 </div>
-
             </div>
         </main>
     </div>
 </template>
 
 <script setup>
-import Sidebar from './Sidebar.vue';
-import TopHeader from './TopHeader.vue';
-import { onMounted, onUnmounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-import { useDatetime } from '../composables/useDatetime.js';
+import Sidebar from "./Sidebar.vue";
+import TopHeader from "./TopHeader.vue";
+import { onMounted, onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import { useDatetime } from "../composables/useDatetime.js";
 
 const { currentDate, currentTime } = useDatetime();
 
 const router = useRouter();
 
 // Variables de estado
-const searchQuery = ref('');
+const searchQuery = ref("");
 const isLoadingMap = ref(true);
 const mapError = ref(null);
-const selectedAddress = ref('');
-const selectedDistrict = ref('');
+const selectedAddress = ref("");
+const selectedDistrict = ref("");
 let map = null;
 let currentMarker = null;
 let resizeObserver = null;
@@ -92,30 +115,43 @@ let resizeObserver = null;
 // Obtener dirección a partir de las coordenadas (Reverse Geocoding)
 const fetchAddressFromCoords = (lat, lng) => {
     isLoadingMap.value = true;
-    axios.get(`https://nominatim.openstreetmap.org/reverse`, {
-        params: {
-            lat: lat,
-            lon: lng,
-            format: 'json',
-            addressdetails: 1
-        }
-    })
-    .then(response => {
-        if (response.data) {
-            const addr = response.data.address || {};
-            selectedAddress.value = response.data.display_name;
-            
-            // Intentar extraer el distrito o barrio
-            selectedDistrict.value = addr.neighbourhood || addr.suburb || addr.quarter || addr.city_district || addr.town || addr.city || '';
-            console.log("Dirección resuelta:", selectedAddress.value, "Distrito:", selectedDistrict.value);
-        }
-    })
-    .catch(err => {
-        console.error("Error en reverse geocoding:", err);
-    })
-    .finally(() => {
-        isLoadingMap.value = false;
-    });
+    axios
+        .get(`https://nominatim.openstreetmap.org/reverse`, {
+            params: {
+                lat: lat,
+                lon: lng,
+                format: "json",
+                addressdetails: 1,
+            },
+        })
+        .then((response) => {
+            if (response.data) {
+                const addr = response.data.address || {};
+                selectedAddress.value = response.data.display_name;
+
+                // Intentar extraer el distrito o barrio
+                selectedDistrict.value =
+                    addr.neighbourhood ||
+                    addr.suburb ||
+                    addr.quarter ||
+                    addr.city_district ||
+                    addr.town ||
+                    addr.city ||
+                    "";
+                console.log(
+                    "Dirección resuelta:",
+                    selectedAddress.value,
+                    "Distrito:",
+                    selectedDistrict.value,
+                );
+            }
+        })
+        .catch((err) => {
+            console.error("Error en reverse geocoding:", err);
+        })
+        .finally(() => {
+            isLoadingMap.value = false;
+        });
 };
 
 // Función para inicializar el mapa
@@ -127,10 +163,10 @@ const initMap = () => {
 
     try {
         // Cargar coordenadas previamente guardadas si existen
-        const savedLat = localStorage.getItem('incidente_mapa_lat');
-        const savedLng = localStorage.getItem('incidente_mapa_lng');
-        const savedAddress = localStorage.getItem('incidente_direccion');
-        const savedDistrict = localStorage.getItem('incidente_distrito');
+        const savedLat = localStorage.getItem("incidente_mapa_lat");
+        const savedLng = localStorage.getItem("incidente_mapa_lng");
+        const savedAddress = localStorage.getItem("incidente_direccion");
+        const savedDistrict = localStorage.getItem("incidente_distrito");
 
         let initialCoords = [9.9281, -84.0907];
         let hasSavedLocation = false;
@@ -147,35 +183,47 @@ const initMap = () => {
         }
 
         // Crear mapa
-        map = window.L.map('incident-map').setView(initialCoords, hasSavedLocation ? 16 : 14);
+        map = window.L.map("incident-map").setView(
+            initialCoords,
+            hasSavedLocation ? 16 : 14,
+        );
 
         // Capa oscura (Dark Theme para coincidir con la UI)
-        window.L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            subdomains: 'abcd',
-            maxZoom: 20
-        }).addTo(map);
+        window.L.tileLayer(
+            "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+            {
+                attribution:
+                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                subdomains: "abcd",
+                maxZoom: 20,
+            },
+        ).addTo(map);
 
         // Configurar iconos por defecto usando URLs absolutas de CDN
         const defaultIcon = window.L.icon({
-            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-            iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+            iconUrl:
+                "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+            iconRetinaUrl:
+                "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+            shadowUrl:
+                "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
             iconSize: [25, 41],
             iconAnchor: [12, 41],
             popupAnchor: [1, -34],
-            shadowSize: [41, 41]
+            shadowSize: [41, 41],
         });
 
         // Si hay una ubicación guardada previa, colocar marcador e inicializar textos
         if (hasSavedLocation) {
-            currentMarker = window.L.marker(initialCoords, { icon: defaultIcon }).addTo(map);
-            selectedAddress.value = savedAddress || '';
-            selectedDistrict.value = savedDistrict || '';
+            currentMarker = window.L.marker(initialCoords, {
+                icon: defaultIcon,
+            }).addTo(map);
+            selectedAddress.value = savedAddress || "";
+            selectedDistrict.value = savedDistrict || "";
         }
 
         // Configurar marcador si ya se hace click
-        map.on('click', function(e) {
+        map.on("click", function (e) {
             const lat = e.latlng.lat;
             const lng = e.latlng.lng;
 
@@ -183,13 +231,15 @@ const initMap = () => {
                 map.removeLayer(currentMarker);
             }
 
-            currentMarker = window.L.marker([lat, lng], { icon: defaultIcon }).addTo(map);
+            currentMarker = window.L.marker([lat, lng], {
+                icon: defaultIcon,
+            }).addTo(map);
             fetchAddressFromCoords(lat, lng);
         });
 
         // Configurar ResizeObserver para actualizar el mapa cuando su contenedor cambie de tamaño (ej. colapso de sidebar)
-        const mapElement = document.getElementById('incident-map');
-        if (mapElement && 'ResizeObserver' in window) {
+        const mapElement = document.getElementById("incident-map");
+        if (mapElement && "ResizeObserver" in window) {
             resizeObserver = new ResizeObserver(() => {
                 if (map) {
                     map.invalidateSize();
@@ -205,10 +255,10 @@ const initMap = () => {
             }
             isLoadingMap.value = false;
         }, 150);
-
     } catch (err) {
         console.error("Error al inicializar el mapa Leaflet:", err);
-        mapError.value = "Ocurrió un error al cargar el mapa. Por favor, recarga la página.";
+        mapError.value =
+            "Ocurrió un error al cargar el mapa. Por favor, recarga la página.";
         isLoadingMap.value = false;
     }
 };
@@ -223,25 +273,27 @@ const loadLeafletResources = () => {
         }
 
         // Si ya se está cargando el script en la página, esperar a que termine
-        const existingScript = document.querySelector('script[src*="leaflet.js"]');
+        const existingScript = document.querySelector(
+            'script[src*="leaflet.js"]',
+        );
         if (existingScript) {
-            existingScript.addEventListener('load', () => resolve());
-            existingScript.addEventListener('error', (e) => reject(e));
+            existingScript.addEventListener("load", () => resolve());
+            existingScript.addEventListener("error", (e) => reject(e));
             return;
         }
 
         // Si no existen las etiquetas en el DOM, cargarlas dinámicamente
         // 1. Cargar CSS
         if (!document.querySelector('link[href*="leaflet.css"]')) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
             document.head.appendChild(link);
         }
 
         // 2. Cargar JS
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        const script = document.createElement("script");
+        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
         script.async = true;
         script.onload = () => resolve();
         script.onerror = (e) => reject(e);
@@ -258,7 +310,8 @@ onMounted(async () => {
         }, 100);
     } catch (err) {
         console.error("No se pudo cargar Leaflet desde CDN:", err);
-        mapError.value = "Error al descargar recursos del mapa. Verifica tu conexión a internet.";
+        mapError.value =
+            "Error al descargar recursos del mapa. Verifica tu conexión a internet.";
         isLoadingMap.value = false;
     }
 });
@@ -277,76 +330,93 @@ const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.value && map) {
         isLoadingMap.value = true;
-        axios.get(`https://nominatim.openstreetmap.org/search`, {
-            params: {
-                q: searchQuery.value,
-                format: 'json',
-                addressdetails: 1,
-                limit: 1
-            }
-        })
-        .then(response => {
-            if (response.data && response.data.length > 0) {
-                const result = response.data[0];
-                const lat = parseFloat(result.lat);
-                const lon = parseFloat(result.lon);
-                
-                // Mover mapa a la ubicación encontrada
-                map.setView([lat, lon], 16);
-                
-                // Colocar marcador automático
-                const defaultIcon = window.L.icon({
-                    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-                    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-                    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41]
-                });
+        axios
+            .get(`https://nominatim.openstreetmap.org/search`, {
+                params: {
+                    q: searchQuery.value,
+                    format: "json",
+                    addressdetails: 1,
+                    limit: 1,
+                },
+            })
+            .then((response) => {
+                if (response.data && response.data.length > 0) {
+                    const result = response.data[0];
+                    const lat = parseFloat(result.lat);
+                    const lon = parseFloat(result.lon);
 
-                if (currentMarker) {
-                    map.removeLayer(currentMarker);
+                    // Mover mapa a la ubicación encontrada
+                    map.setView([lat, lon], 16);
+
+                    // Colocar marcador automático
+                    const defaultIcon = window.L.icon({
+                        iconUrl:
+                            "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+                        iconRetinaUrl:
+                            "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+                        shadowUrl:
+                            "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41],
+                    });
+
+                    if (currentMarker) {
+                        map.removeLayer(currentMarker);
+                    }
+                    currentMarker = window.L.marker([lat, lon], {
+                        icon: defaultIcon,
+                    }).addTo(map);
+
+                    // Actualizar dirección y distrito a partir del resultado
+                    selectedAddress.value = result.display_name;
+                    const addr = result.address || {};
+                    selectedDistrict.value =
+                        addr.neighbourhood ||
+                        addr.suburb ||
+                        addr.quarter ||
+                        addr.city_district ||
+                        addr.town ||
+                        addr.city ||
+                        "";
+                    console.log(
+                        `Búsqueda exitosa. Marcador colocado en: Lat ${lat}, Lng ${lon}`,
+                    );
+                } else {
+                    alert(
+                        "No se encontró la dirección. Intenta con otros términos.",
+                    );
                 }
-                currentMarker = window.L.marker([lat, lon], { icon: defaultIcon }).addTo(map);
-                
-                // Actualizar dirección y distrito a partir del resultado
-                selectedAddress.value = result.display_name;
-                const addr = result.address || {};
-                selectedDistrict.value = addr.neighbourhood || addr.suburb || addr.quarter || addr.city_district || addr.town || addr.city || '';
-                console.log(`Búsqueda exitosa. Marcador colocado en: Lat ${lat}, Lng ${lon}`);
-            } else {
-                alert("No se encontró la dirección. Intenta con otros términos.");
-            }
-        })
-        .catch(err => {
-            console.error("Error buscando dirección:", err);
-            alert("Error al conectar con el servicio de búsqueda.");
-        })
-        .finally(() => {
-            isLoadingMap.value = false;
-        });
+            })
+            .catch((err) => {
+                console.error("Error buscando dirección:", err);
+                alert("Error al conectar con el servicio de búsqueda.");
+            })
+            .finally(() => {
+                isLoadingMap.value = false;
+            });
     }
 };
 
 // Navegación
 const handleBack = () => {
-    router.push({ name: 'registrar-incidente-ubicacion' });
+    router.push({ name: "registrar-incidente-ubicacion" });
 };
 
 const handleNext = () => {
     if (currentMarker) {
         const position = currentMarker.getLatLng();
         console.log("Coordenadas guardadas:", position);
-        
+
         // Guardar la ubicación en localStorage
-        localStorage.setItem('incidente_mapa_lat', position.lat);
-        localStorage.setItem('incidente_mapa_lng', position.lng);
-        localStorage.setItem('incidente_direccion', selectedAddress.value);
-        localStorage.setItem('incidente_distrito', selectedDistrict.value);
-        
+        localStorage.setItem("incidente_mapa_lat", position.lat);
+        localStorage.setItem("incidente_mapa_lng", position.lng);
+        localStorage.setItem("incidente_direccion", selectedAddress.value);
+        localStorage.setItem("incidente_distrito", selectedDistrict.value);
+
         // Redirigir de vuelta al formulario de ubicación, que ahora tendrá cargados los datos
-        router.push({ name: 'registrar-incidente-ubicacion' });
+        router.push({ name: "registrar-incidente-ubicacion" });
     } else {
         alert("Por favor, selecciona una ubicación en el mapa haciendo clic.");
     }
@@ -358,164 +428,410 @@ const goTo = (path) => {
 
 const handleLogout = async () => {
     try {
-        await axios.post('/logout');
-        window.location.href = '/login';
+        await axios.post("/logout");
+        window.location.href = "/login";
     } catch (error) {
-        console.error('Error al cerrar sesión:', error);
-        window.location.href = '/login';
+        console.error("Error al cerrar sesión:", error);
+        window.location.href = "/login";
     }
 };
 </script>
 
 <style scoped>
-    .dashboard {
-        --bg-dark: #0f1524;
-        --bg-sidebar: #0b101e;
-        --bg-card: #131a2c;
-        --border-color: #1f293d;
-        --text-main: #ffffff;
-        --text-muted: #8b95a5;
-        
-        --primary-blue: #2563eb;
-        --accent-blue: #3b82f6;
-        --critical: #dc2626;
+.dashboard {
+    --bg-dark: #061129;
+    --bg-sidebar: #081738;
+    --bg-card: #0A1D47;
+    --border-color: #1f293d;
+    --text-main: #ffffff;
+    --text-muted: #8b95a5;
 
-        background-color: var(--bg-dark);
-        color: var(--text-main);
-        height: 100vh;
-        display: flex;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+    --primary-blue: #2563eb;
+    --accent-blue: #3b82f6;
+    --critical: #dc2626;
+
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    height: 100vh;
+    display: flex;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.dashboard * {
+    box-sizing: border-box;
+}
+
+/* --- CONTENIDO PRINCIPAL --- */
+.main-content {
+    flex: 1;
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Encabezado */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+.header-titles h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+.header-titles p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+.header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.datetime-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--bg-card);
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.datetime-pill i {
+    font-size: 20px;
+    color: var(--text-muted);
+}
+.dt-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+}
+.dt-text .date {
+    font-weight: 600;
+}
+.dt-text .time {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.notification {
+    background-color: var(--bg-card);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    position: relative;
+    cursor: pointer;
+}
+.notification i {
+    font-size: 20px;
+    color: var(--text-muted);
+}
+.badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background-color: var(--critical);
+    color: white;
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+/* --- VISTA DEL MAPA --- */
+.map-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Stepper - Paso 2 */
+.stepper-container {
+    position: relative;
+    margin: 30px 0 50px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 10px;
+}
+.stepper-background-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background-color: #ffffff;
+    transform: translateY(-50%);
+    border-radius: 3px;
+    z-index: 1;
+}
+.stepper-active-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 38%;
+    height: 6px;
+    background-color: var(--accent-blue);
+    transform: translateY(-50%);
+    border-radius: 3px;
+    z-index: 2;
+    transition: width 0.4s ease;
+}
+
+.step-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    z-index: 3;
+    position: relative;
+    transition: 0.4s ease;
+}
+.step-dot.active {
+    background-color: var(--accent-blue);
+    box-shadow: 0 0 12px var(--accent-blue);
+}
+.car-icon-floating {
+    position: absolute;
+    top: -45px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 45px;
+    height: 45px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--text-muted);
+}
+
+/* Contenedor Principal del Mapa */
+.map-card {
+    border: 1px solid var(--accent-blue);
+    border-radius: 16px;
+    padding: 30px;
+    background-color: transparent;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.map-title-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.map-title-group i {
+    font-size: 24px;
+    color: var(--text-main);
+}
+.map-title-text h3 {
+    font-size: 16px;
+    font-weight: 500;
+}
+.map-title-text p {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Buscador integrado */
+.search-wrapper {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    height: 45px;
+    width: 350px;
+    transition: 0.3s;
+}
+.search-wrapper:focus-within {
+    border-color: var(--accent-blue);
+    background-color: rgba(37, 99, 235, 0.05);
+}
+.search-wrapper i {
+    font-size: 18px;
+    color: var(--text-muted);
+    margin-right: 15px;
+}
+.search-input {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-size: 13px;
+    width: 100%;
+    height: 100%;
+    outline: none;
+}
+.search-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* Contenedor Leaflet */
+.leaflet-container-wrapper {
+    width: 100%;
+    height: 450px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+#incident-map {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Ajustes oscuros para controles Leaflet asegurados con :deep para saltar el scope */
+:deep(.leaflet-bar a) {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border-color) !important;
+}
+:deep(.leaflet-bar a:hover) {
+    background-color: var(--border-color) !important;
+}
+
+/* Barra de Acciones Inferior */
+.bottom-action-bar {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+}
+.btn {
+    padding: 14px 40px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+.btn-outline:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+.btn-primary {
+    background-color: var(--primary-blue);
+    border: 1px solid var(--primary-blue);
+    color: white;
+}
+.btn-primary:hover {
+    background-color: var(--accent-blue);
+}
+
+/* Overlays de carga y error */
+.map-loading-overlay,
+.map-error-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    z-index: 10;
+}
+.map-error-overlay i {
+    font-size: 40px;
+    color: var(--critical);
+}
+.map-error-overlay p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--accent-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
+}
 
-    .dashboard * { box-sizing: border-box; }
+/* Barra de dirección seleccionada */
+.selected-address-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: rgba(37, 99, 235, 0.08);
+    border: 1px solid var(--accent-blue);
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 13px;
+    color: var(--text-main);
+    animation: fadeIn 0.3s ease-in-out;
+}
+.selected-address-bar i {
+    font-size: 18px;
+    color: var(--accent-blue);
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-    /* --- CONTENIDO PRINCIPAL --- */
-    .main-content { flex: 1; padding: 30px 40px; display: flex; flex-direction: column; overflow-y: auto; }
-
-    /* Encabezado */
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0; }
-    .header-titles h1 { font-size: 24px; font-weight: 600; margin-bottom: 5px; }
-    .header-titles p { color: var(--text-muted); font-size: 14px; }
-    .header-actions { display: flex; gap: 15px; align-items: center; }
-
-    .datetime-pill { display: flex; align-items: center; gap: 10px; background-color: var(--bg-card); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); }
-    .datetime-pill i { font-size: 20px; color: var(--text-muted); }
-    .dt-text { display: flex; flex-direction: column; font-size: 12px;}
-    .dt-text .date { font-weight: 600; }
-    .dt-text .time { color: var(--text-muted); font-size: 11px;}
-
-    .notification { background-color: var(--bg-card); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); position: relative; cursor: pointer; }
-    .notification i { font-size: 20px; color: var(--text-muted); }
-    .badge { position: absolute; top: -2px; right: -2px; background-color: var(--critical); color: white; font-size: 10px; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; }
-
-    /* --- VISTA DEL MAPA --- */
-    .map-view { flex: 1; display: flex; flex-direction: column; max-width: 1000px; margin: 0 auto; width: 100%; }
-
-    /* Stepper - Paso 2 */
-    .stepper-container { position: relative; margin: 30px 0 50px 0; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 10px; }
-    .stepper-background-line { position: absolute; top: 50%; left: 0; width: 100%; height: 6px; background-color: #ffffff; transform: translateY(-50%); border-radius: 3px; z-index: 1; }
-    .stepper-active-line { position: absolute; top: 50%; left: 0; width: 38%; height: 6px; background-color: var(--accent-blue); transform: translateY(-50%); border-radius: 3px; z-index: 2; transition: width 0.4s ease; }
-    
-    .step-dot { width: 24px; height: 24px; border-radius: 50%; background-color: #ffffff; z-index: 3; position: relative; transition: 0.4s ease; }
-    .step-dot.active { background-color: var(--accent-blue); box-shadow: 0 0 12px var(--accent-blue); }
-    .car-icon-floating { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); width: 45px; height: 45px; background-color: rgba(255, 255, 255, 0.08); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-muted); }
-
-    /* Contenedor Principal del Mapa */
-    .map-card { border: 1px solid var(--accent-blue); border-radius: 16px; padding: 30px; background-color: transparent; margin-bottom: 30px; display: flex; flex-direction: column; gap: 20px;}
-    
-    .map-header { display: flex; justify-content: space-between; align-items: center; }
-    .map-title-group { display: flex; align-items: center; gap: 15px; }
-    .map-title-group i { font-size: 24px; color: var(--text-main); }
-    .map-title-text h3 { font-size: 16px; font-weight: 500; }
-    .map-title-text p { font-size: 12px; color: var(--text-muted); }
-
-    /* Buscador integrado */
-    .search-wrapper { background-color: transparent; border: 1px solid var(--border-color); border-radius: 12px; display: flex; align-items: center; padding: 0 20px; height: 45px; width: 350px; transition: 0.3s; }
-    .search-wrapper:focus-within { border-color: var(--accent-blue); background-color: rgba(37, 99, 235, 0.05); }
-    .search-wrapper i { font-size: 18px; color: var(--text-muted); margin-right: 15px; }
-    .search-input { background: transparent; border: none; color: var(--text-main); font-size: 13px; width: 100%; height: 100%; outline: none; }
-    .search-input::placeholder { color: var(--text-muted); }
-
-    /* Contenedor Leaflet */
-    .leaflet-container-wrapper { width: 100%; height: 450px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); position: relative; }
-    #incident-map { width: 100%; height: 100%; z-index: 1; }
-    
-    /* Ajustes oscuros para controles Leaflet asegurados con :deep para saltar el scope */
-    :deep(.leaflet-bar a) { background-color: var(--bg-card) !important; color: var(--text-main) !important; border-color: var(--border-color) !important; }
-    :deep(.leaflet-bar a:hover) { background-color: var(--border-color) !important; }
-
-    /* Barra de Acciones Inferior */
-    .bottom-action-bar { margin-top: auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; }
-    .btn { padding: 14px 40px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s; }
-    .btn-outline { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
-    .btn-outline:hover { background-color: rgba(255, 255, 255, 0.05); }
-    .btn-primary { background-color: var(--primary-blue); border: 1px solid var(--primary-blue); color: white; }
-    .btn-primary:hover { background-color: var(--accent-blue); }
-
-    /* Overlays de carga y error */
-    .map-loading-overlay, .map-error-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: var(--bg-card);
-        display: flex;
+/* Responsividad */
+@media (max-width: 900px) {
+    .map-header {
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 15px;
-        z-index: 10;
+        align-items: flex-start;
+        gap: 20px;
     }
-    .map-error-overlay i {
-        font-size: 40px;
-        color: var(--critical);
+    .search-wrapper {
+        width: 100%;
     }
-    .map-error-overlay p {
-        color: var(--text-muted);
-        font-size: 14px;
+    .stepper-container {
+        display: none;
     }
-    .spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid rgba(255, 255, 255, 0.1);
-        border-top-color: var(--accent-blue);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    /* Barra de dirección seleccionada */
-    .selected-address-bar {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        background-color: rgba(37, 99, 235, 0.08);
-        border: 1px solid var(--accent-blue);
-        border-radius: 10px;
-        padding: 12px 18px;
-        font-size: 13px;
-        color: var(--text-main);
-        animation: fadeIn 0.3s ease-in-out;
-    }
-    .selected-address-bar i {
-        font-size: 18px;
-        color: var(--accent-blue);
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(5px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Responsividad */
-    @media (max-width: 900px) {
-        .map-header { flex-direction: column; align-items: flex-start; gap: 20px; }
-        .search-wrapper { width: 100%; }
-        .stepper-container { display: none; }
-    }
+}
 </style>
