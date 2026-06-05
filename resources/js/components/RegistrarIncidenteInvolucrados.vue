@@ -262,7 +262,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -272,100 +272,43 @@ const router = useRouter();
 const vehiculos = ref(['', '']);
 const personas = ref(['', '']);
 
-// Funciones Helper para parsear la data del store de strings a objetos estructurados
-const parseVehiculo = (str) => {
-    if (!str || str.trim() === "") {
-        return { marca: "", matricula: "", noIdentificado: false };
-    }
-    if (str.includes("Vehículo no identificado / Se dio a la fuga")) {
-        return { marca: "Desconocido", matricula: "N/A", noIdentificado: true };
-    }
-    if (str.includes(" - Placa: ")) {
-        const parts = str.split(" - Placa: ");
-        return { marca: parts[0] || "", matricula: parts[1] || "", noIdentificado: false };
-    }
-    if (str.includes("/")) {
-        const parts = str.split("/");
-        return { marca: parts[0] || "", matricula: parts[2] || "", noIdentificado: false };
-    }
-    return { marca: str, matricula: "", noIdentificado: false };
-};
-
-const parsePersona = (str) => {
-    if (!str || str.trim() === "") {
-        return { nombre: "", licencia: "", condicion: "", noDisponible: false };
-    }
-    if (str.includes("Datos de persona no disponibles")) {
-        let condicion = "";
-        const condMatch = str.match(/Condición:\s*([^)]+)/);
-        if (condMatch) {
-            condicion = condMatch[1].trim();
-        }
-        return { nombre: "Desconocido", licencia: "N/A", condicion: condicion, noDisponible: true };
-    }
-    if (str.includes(" (Licencia: ")) {
-        const parts = str.split(" (Licencia: ");
-        const nombre = parts[0] || "";
-        const rest = parts[1] || "";
-        const licParts = rest.split(", Condición: ");
-        const licencia = licParts[0] || "";
-        const condicion = (licParts[1] || "").replace(")", "");
-        return { nombre, licencia, condicion, noDisponible: false };
-    }
-    if (str.includes("/")) {
-        const parts = str.split("/");
-        return { nombre: parts[0] || "", licencia: parts[1] || "", condicion: parts[2] || "", noDisponible: false };
-    }
-    return { nombre: str, licencia: "", condicion: "", noDisponible: false };
-};
-
-// Carga inicial y parseo
 onMounted(() => {
-    if (incidenteState.vehiculos && incidenteState.vehiculos.length > 0) {
-        // Mapear strings cargados
-        vehiculos.value = incidenteState.vehiculos.map(parseVehiculo);
+    // Prioridad: 1) Manual (usuario ya editó) → 2) IA → 3) Vacío
+    const savedVehiculos = localStorage.getItem('incidente_vehiculos');
+    const savedPersonas = localStorage.getItem('incidente_personas');
+    
+    if (savedVehiculos || savedPersonas) {
+        // Datos manuales existen (el usuario ya pasó por aquí)
+        if (savedVehiculos) {
+            try { vehiculos.value = JSON.parse(savedVehiculos); } catch (e) {}
+        }
+        if (savedPersonas) {
+            try { personas.value = JSON.parse(savedPersonas); } catch (e) {}
+        }
     } else {
-        // Inicializar con dos por defecto
-        vehiculos.value = [
-            { marca: "", matricula: "", noIdentificado: false },
-            { marca: "", matricula: "", noIdentificado: false }
-        ];
+        // Sin datos manuales: cargar desde la IA
+        const iaDataRaw = localStorage.getItem('incidente_ia_data');
+        if (iaDataRaw) {
+            try {
+                const iaData = JSON.parse(iaDataRaw);
+                if (iaData.vehiculos && Array.isArray(iaData.vehiculos) && iaData.vehiculos.length > 0) {
+                    vehiculos.value = [...iaData.vehiculos];
+                }
+                if (iaData.personas && Array.isArray(iaData.personas) && iaData.personas.length > 0) {
+                    personas.value = [...iaData.personas];
+                }
+            } catch (e) {
+                console.error('Error al cargar datos de IA en involucrados', e);
+            }
+        }
     }
 
-    if (incidenteState.personas && incidenteState.personas.length > 0) {
-        personas.value = incidenteState.personas.map(parsePersona);
-    } else {
-        personas.value = [
-            { nombre: "", licencia: "", condicion: "", noDisponible: false },
-            { nombre: "", licencia: "", condicion: "", noDisponible: false }
-        ];
-    }
+    // Asegurarse de que al menos haya algún campo si los arrays están vacíos
+    if (vehiculos.value.length === 0) vehiculos.value = ['', ''];
+    if (personas.value.length === 0) personas.value = ['', ''];
 });
 
-// Cambios en checkboxes
-const handleVehicleCheckboxChange = (index) => {
-    const v = vehiculos.value[index];
-    if (v.noIdentificado) {
-        v.marca = "Desconocido";
-        v.matricula = "N/A";
-    } else {
-        v.marca = "";
-        v.matricula = "";
-    }
-};
-
-const handlePersonCheckboxChange = (index) => {
-    const p = personas.value[index];
-    if (p.noDisponible) {
-        p.nombre = "Desconocido";
-        p.licencia = "N/A";
-    } else {
-        p.nombre = "";
-        p.licencia = "";
-    }
-};
-
-// Agregar/Eliminar elementos
+// Funciones para agregar campos dinámicamente
 const addVehicle = () => {
     vehiculos.value.push({ marca: "", matricula: "", noIdentificado: false });
 };
@@ -380,17 +323,22 @@ const addPerson = () => {
 
 // Navegación
 const handleBack = () => {
+    // Guardar avance
+    localStorage.setItem('incidente_vehiculos', JSON.stringify(vehiculos.value));
+    localStorage.setItem('incidente_personas', JSON.stringify(personas.value));
     router.push({ name: 'registrar-incidente-declaracion' });
 };
 
 const handleNext = () => {
     // Recolectar datos limpiando campos vacíos
-    const data = {
-        vehiculos: incidenteState.vehiculos.filter((v) => v.trim() !== ""),
-        personas: incidenteState.personas.filter((p) => p.trim() !== ""),
-    };
-    
-    console.log("Datos de involucrados recolectados:", data);
+    const cleanedVehicles = vehiculos.value.filter(v => v.trim() !== '');
+    const cleanedPersons = personas.value.filter(p => p.trim() !== '');
+
+    console.log("Datos de involucrados recolectados:", { cleanedVehicles, cleanedPersons });
+
+    // Guardar en localStorage
+    localStorage.setItem('incidente_vehiculos', JSON.stringify(vehiculos.value));
+    localStorage.setItem('incidente_personas', JSON.stringify(personas.value));
     
     router.push({ name: 'registrar-incidente-evidencia' });
 };

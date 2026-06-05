@@ -154,20 +154,32 @@ const formData = reactive({
 });
 
 onMounted(() => {
-    // Si hay una dirección y distrito seleccionados en el mapa, los cargamos
-    const direccionGuardada = localStorage.getItem("incidente_direccion");
-    const distritoGuardado = localStorage.getItem("incidente_distrito");
-
-    if (direccionGuardada) {
-        formData.direccion = direccionGuardada;
-    }
-    if (distritoGuardado) {
-        formData.distrito = distritoGuardado;
+    // Prioridad: 1) Manual (usuario ya editó) → 2) IA → 3) Vacío
+    const direccionGuardada = localStorage.getItem('incidente_direccion');
+    const distritoGuardado = localStorage.getItem('incidente_distrito');
+    
+    if (direccionGuardada || distritoGuardado) {
+        if (direccionGuardada) formData.direccion = direccionGuardada;
+        if (distritoGuardado) formData.distrito = distritoGuardado;
+    } else {
+        const iaDataRaw = localStorage.getItem('incidente_ia_data');
+        if (iaDataRaw) {
+            try {
+                const iaData = JSON.parse(iaDataRaw);
+                if (iaData.direccion) formData.direccion = iaData.direccion;
+                if (iaData.municipio) formData.distrito = iaData.municipio;
+            } catch (e) {
+                console.error('Error al parsear datos de la IA', e);
+            }
+        }
     }
 });
 
 // Simulación de apertura de mapa
 const openMap = () => {
+    // Guardar lo actual por si abre el mapa
+    localStorage.setItem('incidente_direccion', formData.direccion);
+    localStorage.setItem('incidente_distrito', formData.distrito);
     router.push({ name: 'registrar-incidente-mapa' });
 };
 
@@ -181,6 +193,11 @@ const triggerSubmit = () => {
 
 const handleSubmit = () => {
     console.log("Formulario válido. Avanzando al Paso 3...", formData);
+    
+    // Guardar valores en localStorage
+    localStorage.setItem('incidente_direccion', formData.direccion);
+    localStorage.setItem('incidente_distrito', formData.distrito);
+
     router.push({ name: 'registrar-incidente-declaracion' });
 };
 

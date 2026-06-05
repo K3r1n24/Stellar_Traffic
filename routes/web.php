@@ -7,17 +7,9 @@ Route::get('/', function () {
     return view('landing');
 })->name('home');
 
-Route::get('/cobertura', function () {
-    return view('cobertura');
-})->name('cobertura');
-
-Route::get('/emergencias', function () {
-    return view('emergencias');
-})->name('emergencias');
-
-Route::get('/acerca-de', function () {
-    return view('acerca-de');
-})->name('acerca-de');
+Route::get('/visitante/mapa', function () {
+    return view('visitor-map');
+})->name('visitor.map');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 
@@ -52,3 +44,6 @@ Route::post('/accidentes', [App\Http\Controllers\AccidenteController::class, 'st
 Route::get('/api/user', function () {
     return response()->json(auth()->user());
 })->middleware('auth');
+
+Route::post('/api/ia/parsear-incidente', [App\Http\Controllers\IaController::class, 'parsearIncidente'])->middleware('auth');
+

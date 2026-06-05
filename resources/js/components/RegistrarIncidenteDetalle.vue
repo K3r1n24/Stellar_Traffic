@@ -198,6 +198,31 @@ const generateCaseID = () => {
 // Generar el ID al montar el componente
 onMounted(() => {
     formData.casoId = generateCaseID();
+    
+    // Prioridad de datos: 1) Manual (si el usuario ya editó este paso) → 2) IA → 3) Vacío
+    const savedFecha = localStorage.getItem('incidente_fecha');
+    const savedHora = localStorage.getItem('incidente_hora');
+    const savedGravedad = localStorage.getItem('incidente_gravedad');
+    
+    // Si hay datos manuales, usarlos (significa que el usuario ya pasó por aquí)
+    if (savedFecha || savedHora || savedGravedad) {
+        if (savedFecha) formData.fecha = savedFecha;
+        if (savedHora) formData.hora = savedHora;
+        if (savedGravedad) formData.gravedad = savedGravedad;
+    } else {
+        // Si no hay datos manuales, intentar cargar desde la IA
+        const iaDataRaw = localStorage.getItem('incidente_ia_data');
+        if (iaDataRaw) {
+            try {
+                const iaData = JSON.parse(iaDataRaw);
+                if (iaData.fecha_incidente) formData.fecha = iaData.fecha_incidente;
+                if (iaData.hora_aproximada) formData.hora = iaData.hora_aproximada;
+                if (iaData.gravedad) formData.gravedad = iaData.gravedad;
+            } catch (e) {
+                console.error('Error al parsear datos de la IA', e);
+            }
+        }
+    }
 });
 
 // Computed property para el color del punto de gravedad
@@ -229,6 +254,13 @@ const triggerSubmit = () => {
 
 const handleSubmit = () => {
     console.log("Formulario listo para enviarse al siguiente paso.", formData);
+    
+    // Guardar en localStorage para persistencia y para confirmación
+    localStorage.setItem('incidente_fecha', formData.fecha);
+    localStorage.setItem('incidente_hora', formData.hora);
+    localStorage.setItem('incidente_gravedad', formData.gravedad);
+    localStorage.setItem('incidente_caso_id', formData.casoId);
+
     // Cuando exista la siguiente vista (ej. Ubicación):
     router.push({ name: 'registrar-incidente-ubicacion' });
 };

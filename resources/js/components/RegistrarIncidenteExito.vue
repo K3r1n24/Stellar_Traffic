@@ -119,17 +119,33 @@ const viewReport = () => {
     alert(`Redirigiendo al detalle del reporte ${reportId.value}`);
 };
 
+const clearIncidentCache = () => {
+    localStorage.removeItem('currentCaseId');
+    localStorage.removeItem('incidente_ia_data');
+    localStorage.removeItem('incidente_fecha');
+    localStorage.removeItem('incidente_hora');
+    localStorage.removeItem('incidente_gravedad');
+    localStorage.removeItem('incidente_caso_id');
+    localStorage.removeItem('incidente_direccion');
+    localStorage.removeItem('incidente_distrito');
+    localStorage.removeItem('incidente_declaracion');
+    localStorage.removeItem('incidente_clima');
+    localStorage.removeItem('incidente_via');
+    localStorage.removeItem('incidente_pavimento');
+    localStorage.removeItem('incidente_vehiculos');
+    localStorage.removeItem('incidente_personas');
+    localStorage.removeItem('incidente_tipo');
+};
+
 const goHome = () => {
     console.log("Navegando al Dashboard principal...");
-    // Limpiar caché temporal de registro si existiera
-    localStorage.removeItem('currentCaseId');
+    clearIncidentCache();
     router.push({ name: 'dashboard' });
 };
 
 const newIncident = () => {
     console.log("Reiniciando el flujo de registro...");
-    // Limpiar caché y redirigir al Paso inicial (o selección de tipo)
-    localStorage.removeItem('currentCaseId');
+    clearIncidentCache();
     router.push({ name: 'registrar-incidente' });
 };
 

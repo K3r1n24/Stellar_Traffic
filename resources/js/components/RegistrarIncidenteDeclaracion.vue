@@ -243,7 +243,7 @@
 </template>
 
 <script setup>
-import { reactive, computed, ref } from "vue";
+import { reactive, computed, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useDatetime } from "../composables/useDatetime.js";
@@ -264,6 +264,72 @@ const formData = reactive({
 
 const declaracionError = ref(false);
 
+onMounted(() => {
+    // Prioridad: 1) Manual (usuario ya editó) → 2) IA → 3) Vacío
+    const savedDecl = localStorage.getItem('incidente_declaracion');
+    const savedClima = localStorage.getItem('incidente_clima');
+    const savedVia = localStorage.getItem('incidente_via');
+    const savedPav = localStorage.getItem('incidente_pavimento');
+
+    if (savedDecl || savedClima || savedVia || savedPav) {
+        if (savedDecl) formData.declaracion = savedDecl;
+        if (savedClima) formData.clima = savedClima;
+        if (savedVia) formData.via = savedVia;
+        if (savedPav) formData.pavimento = savedPav;
+    } else {
+        // Cargar desde la IA
+        const iaDataRaw = localStorage.getItem('incidente_ia_data');
+        if (iaDataRaw) {
+            try {
+                const iaData = JSON.parse(iaDataRaw);
+                if (iaData.declaracion_involucrados) {
+                    formData.declaracion = iaData.declaracion_involucrados;
+                } else if (iaData.descripcion) {
+                    formData.declaracion = iaData.descripcion;
+                }
+
+                // Mapear clima
+                if (iaData.condicion_climatica) {
+                    const climaStr = iaData.condicion_climatica.toLowerCase();
+                    if (climaStr.includes('lluv') || climaStr.includes('mojado')) {
+                        formData.clima = 'lluvioso';
+                    } else if (climaStr.includes('nub') || climaStr.includes('niebla')) {
+                        formData.clima = 'nublado';
+                    } else {
+                        formData.clima = 'soleado';
+                    }
+                }
+
+                // Mapear vía
+                if (iaData.tipo_via) {
+                    const viaStr = iaData.tipo_via.toLowerCase();
+                    if (viaStr.includes('carretera') || viaStr.includes('autopista')) {
+                        formData.via = 'carretera';
+                    } else if (viaStr.includes('rural') || viaStr.includes('tierra')) {
+                        formData.via = 'rural';
+                    } else {
+                        formData.via = 'urbana';
+                    }
+                }
+
+                // Mapear pavimento
+                if (iaData.estado_pavimento) {
+                    const pavStr = iaData.estado_pavimento.toLowerCase();
+                    if (pavStr.includes('polvo') || pavStr.includes('tierra')) {
+                        formData.pavimento = 'polvo';
+                    } else if (pavStr.includes('piedra') || pavStr.includes('empedrado')) {
+                        formData.pavimento = 'piedra';
+                    } else {
+                        formData.pavimento = 'asfalto';
+                    }
+                }
+            } catch (e) {
+                console.error('Error al cargar datos de IA en declaración', e);
+            }
+        }
+    }
+});
+
 // Contador de caracteres
 const charCount = computed(() => formData.declaracion.length);
 const charCountColor = computed(() => {
@@ -277,6 +343,11 @@ const selectOption = (group, value) => {
 
 // Navegación
 const handleBack = () => {
+    // Guardar avance actual al ir atrás
+    localStorage.setItem('incidente_declaracion', formData.declaracion);
+    localStorage.setItem('incidente_clima', formData.clima);
+    localStorage.setItem('incidente_via', formData.via);
+    localStorage.setItem('incidente_pavimento', formData.pavimento);
     router.push({ name: "registrar-incidente-ubicacion" });
 };
 
@@ -292,6 +363,13 @@ const handleNext = () => {
     declaracionError.value = false;
 
     console.log("Avanzando al siguiente paso con los datos:", formData);
+    
+    // Guardar en localStorage
+    localStorage.setItem('incidente_declaracion', formData.declaracion);
+    localStorage.setItem('incidente_clima', formData.clima);
+    localStorage.setItem('incidente_via', formData.via);
+    localStorage.setItem('incidente_pavimento', formData.pavimento);
+
     router.push({ name: "registrar-incidente-involucrados" });
 };
 
