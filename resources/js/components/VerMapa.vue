@@ -512,12 +512,12 @@ onUnmounted(() => {
 .search-nav-bar-mini {
     display: flex;
     align-items: center;
-    gap: 12px;
-    background-color: rgba(10, 29, 71, 0.4);
-    border: 1px solid rgba(29, 44, 82, 0.7);
+    gap: 15px;
+    background-color: rgba(10, 29, 71, 0.45);
+    border: 1px solid rgba(29, 44, 82, 0.75);
     border-radius: 30px;
-    padding: 6px 14px;
-    max-width: 620px;
+    padding: 8px 18px;
+    max-width: 780px;
     margin: 0 auto;
     z-index: 10;
 }
@@ -526,14 +526,14 @@ onUnmounted(() => {
     position: relative;
     display: flex;
     align-items: center;
-    width: 260px;
+    width: 330px;
 }
 
 .search-icon-mini {
     position: absolute;
-    left: 10px;
+    left: 12px;
     color: var(--text-muted);
-    font-size: 14px;
+    font-size: 15px;
     pointer-events: none;
 }
 
@@ -542,9 +542,9 @@ onUnmounted(() => {
     background-color: rgba(6, 17, 41, 0.5);
     border: 1px solid var(--border-color);
     border-radius: 20px;
-    padding: 6px 30px 6px 30px;
+    padding: 7px 30px 7px 34px;
     color: var(--text-main);
-    font-size: 12px;
+    font-size: 13px;
     outline: none;
     transition: all 0.2s ease;
 }
@@ -557,12 +557,12 @@ onUnmounted(() => {
 
 .clear-search-btn-mini {
     position: absolute;
-    right: 8px;
+    right: 10px;
     background: none;
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -579,13 +579,13 @@ onUnmounted(() => {
 .filter-badges-mini {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
 }
 
 .filter-badge-mini {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 500;
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 15px;
     background-color: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
@@ -639,7 +639,7 @@ onUnmounted(() => {
 }
 
 .results-count-mini {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-muted);
     white-space: nowrap;
 }
