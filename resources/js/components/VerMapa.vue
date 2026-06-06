@@ -6,7 +6,68 @@
             <TopHeader
                 title="Monitoreo Vial"
                 subtitle="Geolocalización de incidentes y alertas en tiempo real"
-            />
+            >
+                <template #center>
+                    <!-- Barra de Navegación/Búsqueda Unificada Compacta -->
+                    <div class="search-nav-bar-mini">
+                        <div class="search-input-wrapper-mini">
+                            <i class="ph ph-magnifying-glass search-icon-mini"></i>
+                            <input 
+                                v-model="searchQuery"
+                                type="text" 
+                                placeholder="Buscar por ID, dirección o descripción..." 
+                                class="search-input-mini"
+                                ref="searchInputRef"
+                            />
+                            <button v-if="searchQuery" @click="clearSearch" class="clear-search-btn-mini" title="Limpiar búsqueda">
+                                <i class="ph ph-x"></i>
+                            </button>
+                        </div>
+
+                        <div class="filter-badges-mini">
+                            <span 
+                                class="filter-badge-mini" 
+                                :class="{ active: selectedGravedad === '' }"
+                                @click="selectedGravedad = ''"
+                            >
+                                Todos
+                            </span>
+                            <span 
+                                class="filter-badge-mini severity-badge-critico" 
+                                :class="{ active: selectedGravedad === 'crítico' }"
+                                @click="selectedGravedad = 'crítico'"
+                            >
+                                Crítico
+                            </span>
+                            <span 
+                                class="filter-badge-mini severity-badge-alto" 
+                                :class="{ active: selectedGravedad === 'alto' }"
+                                @click="selectedGravedad = 'alto'"
+                            >
+                                Alto
+                            </span>
+                            <span 
+                                class="filter-badge-mini severity-badge-medio" 
+                                :class="{ active: selectedGravedad === 'medio' }"
+                                @click="selectedGravedad = 'medio'"
+                            >
+                                Medio
+                            </span>
+                            <span 
+                                class="filter-badge-mini severity-badge-bajo" 
+                                :class="{ active: selectedGravedad === 'bajo' }"
+                                @click="selectedGravedad = 'bajo'"
+                            >
+                                Bajo
+                            </span>
+                        </div>
+
+                        <div class="results-count-mini">
+                            Encontrados: <strong>{{ incidentesFiltrados.length }}</strong>
+                        </div>
+                    </div>
+                </template>
+            </TopHeader>
 
             <div class="map-container">
                 <!-- Panel lateral de reportes activos -->
@@ -15,9 +76,10 @@
                         <i class="ph ph-warning-circle"></i>
                         <h3>Reportes Activos</h3>
                     </div>
-                    <div class="incidents-list">
+                    
+                    <div class="incidents-list" v-if="incidentesFiltrados.length > 0">
                         <div
-                            v-for="incidente in incidentes"
+                            v-for="incidente in incidentesFiltrados"
                             :key="incidente.id_accidente"
                             class="incident-list-item"
                             :class="[
@@ -46,6 +108,13 @@
                             </p>
                         </div>
                     </div>
+
+                    <!-- Estado de búsqueda vacía -->
+                    <div class="empty-search-state" v-else>
+                        <i class="ph ph-magnifying-glass"></i>
+                        <p>No se encontraron incidentes que coincidan con la búsqueda.</p>
+                        <button class="reset-filters-btn" @click="resetFilters">Restablecer filtros</button>
+                    </div>
                 </div>
 
                 <!-- Contenedor del mapa Leaflet -->
@@ -68,13 +137,19 @@
 <script setup>
 import Sidebar from "./Sidebar.vue";
 import TopHeader from "./TopHeader.vue";
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, computed, watch } from "vue";
+import { useRoute } from "vue-router";
 import axios from "axios";
 
 // Estados reactivos
+const route = useRoute();
 const incidentes = ref([]);
 const isLoading = ref(true);
 const mapError = ref(null);
+
+const searchQuery = ref("");
+const selectedGravedad = ref("");
+const searchInputRef = ref(null);
 
 let map = null;
 let resizeObserver = null;
@@ -153,20 +228,56 @@ const geocodeAddress = async (direccion, municipio) => {
     return null;
 };
 
-// Consultar incidentes de la BD y renderizarlos en el mapa Leaflet
+// Filtrar incidentes según texto de búsqueda y gravedad seleccionada
+const incidentesFiltrados = computed(() => {
+    return incidentes.value.filter((incidente) => {
+        const query = searchQuery.value.trim().toLowerCase();
+        
+        // Filtro por texto
+        const matchesQuery = !query || 
+            (incidente.id_caso && incidente.id_caso.toLowerCase().includes(query)) ||
+            (incidente.direccion && incidente.direccion.toLowerCase().includes(query)) ||
+            (incidente.municipio && incidente.municipio.toLowerCase().includes(query)) ||
+            (incidente.descripcion && incidente.descripcion.toLowerCase().includes(query)) ||
+            (incidente.tipo_accidente && (incidente.tipo_accidente === "victimas" ? "con víctimas con victimas" : "daños materiales daños").includes(query));
+            
+        // Filtro por gravedad
+        const g = (incidente.gravedad || "").toLowerCase();
+        const matchesGravedad = !selectedGravedad.value || 
+            (selectedGravedad.value === "bajo" && (g === "bajo" || g === "seguro" || g === "bajo riesgo")) ||
+            (selectedGravedad.value === "crítico" && (g === "crítico" || g === "critico")) ||
+            (g === selectedGravedad.value.toLowerCase());
+            
+        return matchesQuery && matchesGravedad;
+    });
+});
+
+// Limpiar la barra de búsqueda
+const clearSearch = () => {
+    searchQuery.value = "";
+    if (searchInputRef.value) {
+        searchInputRef.value.focus();
+    }
+};
+
+// Limpiar todos los filtros y búsqueda
+const resetFilters = () => {
+    searchQuery.value = "";
+    selectedGravedad.value = "";
+};
+
+// Consultar incidentes de la BD y resolver sus coordenadas una única vez en memoria
 const fetchAndRenderIncidentes = async () => {
     try {
         const response = await axios.get("/accidentes");
-        incidentes.value = response.data;
-        console.log("Incidentes cargados:", incidentes.value);
+        const rawIncidentes = response.data;
+        console.log("Incidentes crudos cargados de BD:", rawIncidentes);
 
-        if (!map) return;
-
-        // Procesar incidentes en paralelo
-        const promises = incidentes.value.map(async (incidente, idx) => {
+        // Procesar incidentes en paralelo para asignarles coordenadas fijas
+        const promises = rawIncidentes.map(async (incidente, idx) => {
             let coords = null;
 
-            // Geocodificar solo los primeros 3 para no saturar ni ser bloqueados por la API pública de Nominatim
+            // Geocodificar solo los primeros 3 para no saturar la API
             if (idx < 3 && incidente.direccion) {
                 coords = await geocodeAddress(
                     incidente.direccion,
@@ -174,77 +285,113 @@ const fetchAndRenderIncidentes = async () => {
                 );
             }
 
-            // Fallback de dispersión simulada alrededor de San Miguel si falla geocodificación o supera el límite
+            // Dispersión simulada si falla
             if (!coords) {
                 coords = getRandomCoordsInSanMiguel();
             }
 
-            // Agregar marcador al mapa con popup informativo estilizado
-            if (coords && window.L) {
-                const marker = window.L.marker(coords, {
-                    icon: getMarkerIcon(incidente.gravedad),
-                }).addTo(map);
-
-                const popupContent = `
-                    <div style="color: #ffffff; font-family: 'Segoe UI', sans-serif; min-width: 220px; padding: 5px; background: transparent;">
-                        <h4 style="margin: 0 0 8px 0; color: #336BFA; font-size: 13px; border-bottom: 1px solid #1D2C52; padding-bottom: 5px; font-weight: 600;">
-                            Caso ID: ${incidente.id_caso || "N/A"}
-                        </h4>
-                        <div style="font-size: 11px; margin-bottom: 5px;">
-                            <strong style="color: #8AABBB;">Tipo:</strong> 
-                            <span style="color: #ffffff;">${incidente.tipo_accidente === "victimas" ? "Con víctimas" : "Daños materiales"}</span>
-                        </div>
-                        <div style="font-size: 11px; margin-bottom: 5px;">
-                            <strong style="color: #8AABBB;">Gravedad:</strong> 
-                            <span style="color: ${
-                                incidente.gravedad === "Crítico" || incidente.gravedad === "critico"
-                                ? "#D32F2F"
-                                : incidente.gravedad === "Alto"
-                                  ? "#FF3333"
-                                  : incidente.gravedad === "Medio"
-                                    ? "#FFB300"
-                                    : "#00E676"
-                            }; font-weight: 600;">
-                                ${incidente.gravedad || "No especificada"}
-                            </span>
-                        </div>
-                        <div style="font-size: 11px; margin-bottom: 5px;">
-                            <strong style="color: #8AABBB;">Fecha:</strong> 
-                            <span style="color: #ffffff;">${incidente.fecha_incidente || "N/A"}</span>
-                        </div>
-                        <div style="font-size: 11px; margin-bottom: 5px;">
-                            <strong style="color: #8AABBB;">Dirección:</strong> 
-                            <span style="color: #ffffff; display: block; margin-top: 2px; line-height: 1.3;">${incidente.direccion || "N/A"}</span>
-                        </div>
-                        ${
-                            incidente.descripcion
-                                ? `
-                        <div style="font-size: 10px; margin-top: 8px; background: #061129; padding: 8px; border-radius: 6px; border: 1px solid #1D2C52; max-height: 70px; overflow-y: auto;">
-                            <strong style="color: #8AABBB; display: block; margin-bottom: 2px;">Descripción:</strong>
-                            <span style="color: #d1d5db; line-height: 1.3;">${incidente.descripcion}</span>
-                        </div>
-                        `
-                                : ""
-                        }
-                    </div>
-                `;
-
-                marker.bindPopup(popupContent, {
-                    className: "dark-theme-popup",
-                    closeButton: false,
-                });
-
-                markers[incidente.id_accidente] = marker;
-            }
+            incidente.coords = coords;
+            return incidente;
         });
 
-        await Promise.all(promises);
+        incidentes.value = await Promise.all(promises);
+        
+        // Dibujar los marcadores en el mapa por primera vez
+        updateMapMarkers();
+        
     } catch (err) {
-        console.error("Error al renderizar incidentes en el mapa:", err);
+        console.error("Error al inicializar y renderizar incidentes:", err);
     } finally {
         isLoading.value = false;
     }
 };
+
+// Actualizar marcadores de forma reactiva según los filtros actuales
+const updateMapMarkers = () => {
+    if (!map || !window.L) return;
+
+    // Eliminar del mapa los marcadores que ya no estén en la lista filtrada
+    Object.keys(markers).forEach((idAccidente) => {
+        const sigueFiltrado = incidentesFiltrados.value.some(
+            (incidente) => String(incidente.id_accidente) === String(idAccidente)
+        );
+        if (!sigueFiltrado) {
+            map.removeLayer(markers[idAccidente]);
+            delete markers[idAccidente];
+        }
+    });
+
+    // Agregar marcadores para los incidentes filtrados que no tengan uno dibujado
+    incidentesFiltrados.value.forEach((incidente) => {
+        const id = incidente.id_accidente;
+        
+        // Si el marcador ya está dibujado en el mapa, omitir
+        if (markers[id]) return;
+
+        const coords = incidente.coords;
+        if (coords) {
+            const marker = window.L.marker(coords, {
+                icon: getMarkerIcon(incidente.gravedad),
+            }).addTo(map);
+
+            const popupContent = `
+                <div style="color: #ffffff; font-family: 'Segoe UI', sans-serif; min-width: 220px; padding: 5px; background: transparent;">
+                    <h4 style="margin: 0 0 8px 0; color: #336BFA; font-size: 13px; border-bottom: 1px solid #1D2C52; padding-bottom: 5px; font-weight: 600;">
+                        Caso ID: ${incidente.id_caso || "N/A"}
+                    </h4>
+                    <div style="font-size: 11px; margin-bottom: 5px;">
+                        <strong style="color: #8AABBB;">Tipo:</strong> 
+                        <span style="color: #ffffff;">${incidente.tipo_accidente === "victimas" ? "Con víctimas" : "Daños materiales"}</span>
+                    </div>
+                    <div style="font-size: 11px; margin-bottom: 5px;">
+                        <strong style="color: #8AABBB;">Gravedad:</strong> 
+                        <span style="color: ${
+                            incidente.gravedad === "Crítico" || incidente.gravedad === "critico"
+                            ? "#D32F2F"
+                            : incidente.gravedad === "Alto"
+                              ? "#FF3333"
+                              : incidente.gravedad === "Medio"
+                                ? "#FFB300"
+                                : "#00E676"
+                        }; font-weight: 600;">
+                            ${incidente.gravedad || "No especificada"}
+                        </span>
+                    </div>
+                    <div style="font-size: 11px; margin-bottom: 5px;">
+                        <strong style="color: #8AABBB;">Fecha:</strong> 
+                        <span style="color: #ffffff;">${incidente.fecha_incidente || "N/A"}</span>
+                    </div>
+                    <div style="font-size: 11px; margin-bottom: 5px;">
+                        <strong style="color: #8AABBB;">Dirección:</strong> 
+                        <span style="color: #ffffff; display: block; margin-top: 2px; line-height: 1.3;">${incidente.direccion || "N/A"}</span>
+                    </div>
+                    ${
+                        incidente.descripcion
+                            ? `
+                    <div style="font-size: 10px; margin-top: 8px; background: #061129; padding: 8px; border-radius: 6px; border: 1px solid #1D2C52; max-height: 70px; overflow-y: auto;">
+                        <strong style="color: #8AABBB; display: block; margin-bottom: 2px;">Descripción:</strong>
+                        <span style="color: #d1d5db; line-height: 1.3;">${incidente.descripcion}</span>
+                    </div>
+                    `
+                            : ""
+                    }
+                </div>
+            `;
+
+            marker.bindPopup(popupContent, {
+                className: "dark-theme-popup",
+                closeButton: false,
+            });
+
+            markers[id] = marker;
+        }
+    });
+};
+
+// Observar cambios en los incidentes filtrados para redibujar marcadores
+watch(incidentesFiltrados, () => {
+    updateMapMarkers();
+});
 
 // Inicializar el mapa
 const initMap = () => {
@@ -291,6 +438,15 @@ onMounted(() => {
     // Retraso para garantizar que el DOM esté montado
     setTimeout(() => {
         initMap();
+
+        // Si se viene del Dashboard para buscar, enfocar el input de búsqueda
+        if (route.query.buscar === "true" || route.query.buscar === true) {
+            setTimeout(() => {
+                if (searchInputRef.value) {
+                    searchInputRef.value.focus();
+                }
+            }, 400);
+        }
     }, 150);
 });
 
@@ -350,6 +506,184 @@ onUnmounted(() => {
     margin-top: 25px;
     height: calc(100vh - 150px);
     overflow: hidden;
+}
+
+/* --- BARRA DE BÚSQUEDA Y NAVEGACIÓN COMPACTA (MINI) --- */
+.search-nav-bar-mini {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: rgba(10, 29, 71, 0.4);
+    border: 1px solid rgba(29, 44, 82, 0.7);
+    border-radius: 30px;
+    padding: 6px 14px;
+    max-width: 620px;
+    margin: 0 auto;
+    z-index: 10;
+}
+
+.search-input-wrapper-mini {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 260px;
+}
+
+.search-icon-mini {
+    position: absolute;
+    left: 10px;
+    color: var(--text-muted);
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.search-input-mini {
+    width: 100%;
+    background-color: rgba(6, 17, 41, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 6px 30px 6px 30px;
+    color: var(--text-main);
+    font-size: 12px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.search-input-mini:focus {
+    border-color: var(--accent-blue);
+    background-color: rgba(6, 17, 41, 0.8);
+    box-shadow: 0 0 0 2px rgba(51, 107, 250, 0.15);
+}
+
+.clear-search-btn-mini {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.clear-search-btn-mini:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-main);
+}
+
+.filter-badges-mini {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-badge-mini {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.filter-badge-mini:hover {
+    border-color: var(--text-muted);
+    color: var(--text-main);
+    transform: translateY(-1px);
+}
+
+.filter-badge-mini.active {
+    background-color: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(51, 107, 250, 0.25);
+}
+
+.filter-badge-mini.severity-badge-critico.active {
+    background-color: var(--critical);
+    border-color: var(--critical);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(255, 23, 68, 0.25);
+}
+
+.filter-badge-mini.severity-badge-alto.active {
+    background-color: #FF3333;
+    border-color: #FF3333;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(255, 51, 51, 0.25);
+}
+
+.filter-badge-mini.severity-badge-medio.active {
+    background-color: var(--warning);
+    border-color: var(--warning);
+    color: #061129;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(255, 179, 0, 0.25);
+}
+
+.filter-badge-mini.severity-badge-bajo.active {
+    background-color: var(--safe);
+    border-color: var(--safe);
+    color: #061129;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 230, 118, 0.25);
+}
+
+.results-count-mini {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+/* --- ESTADO VACÍO DE BÚSQUEDA --- */
+.empty-search-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    gap: 15px;
+    color: var(--text-muted);
+    flex: 1;
+}
+
+.empty-search-state i {
+    font-size: 44px;
+    color: var(--border-color);
+}
+
+.empty-search-state p {
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.reset-filters-btn {
+    background-color: rgba(51, 107, 250, 0.1);
+    border: 1px solid var(--accent-blue);
+    color: var(--text-main);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reset-filters-btn:hover {
+    background-color: var(--accent-blue);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(51, 107, 250, 0.2);
 }
 
 /* Barra lateral de alertas */

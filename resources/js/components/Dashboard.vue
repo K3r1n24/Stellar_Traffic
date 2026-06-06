@@ -42,7 +42,7 @@
                             </div>
                             <i class="ph ph-caret-right arrow"></i>
                         </div>
-                        <div class="card card-action" @click="goTo('/buscar')">
+                        <div class="card card-action" @click="goTo('/mapa?buscar=true')">
                             <div class="icon-box icon-blue">
                                 <i class="ph ph-magnifying-glass"></i>
                             </div>

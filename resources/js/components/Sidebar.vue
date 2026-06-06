@@ -37,16 +37,6 @@
                     <span class="nav-text">Registrar incidente</span>
                 </li>
                 <li
-                    :class="[
-                        'nav-item',
-                        { active: currentRoute === '/buscar' },
-                    ]"
-                    @click="goTo('/buscar')"
-                >
-                    <i class="ph ph-magnifying-glass"></i>
-                    <span class="nav-text">Buscar casos</span>
-                </li>
-                <li
                     :class="['nav-item', { active: currentRoute === '/mapa' }]"
                     @click="goTo('/mapa')"
                 >

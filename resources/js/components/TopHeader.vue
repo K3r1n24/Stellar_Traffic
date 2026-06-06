@@ -4,6 +4,7 @@
             <h1>{{ title }}</h1>
             <p>{{ subtitle }}</p>
         </div>
+        <slot name="center"></slot>
         <div class="header-actions">
             <div class="datetime-pill" @click="showCalendarAlert" style="cursor: pointer;">
                 <i class="ph ph-calendar-blank"></i>
