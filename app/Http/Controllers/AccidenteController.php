@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Accidente;
-<<<<<<< HEAD
-=======
 use App\Models\VehiculoInvolucrado;
 use App\Models\PersonaInvolucrada;
->>>>>>> origin/main
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,8 +31,6 @@ class AccidenteController extends Controller
             'direccion' => 'nullable|string',
             'municipio' => 'nullable|string',
             'id_caso' => 'required|string|unique:accidentes,id_caso',
-<<<<<<< HEAD
-=======
             'descripcion' => 'nullable|string|max:500',
             'condicion_climatica' => 'nullable|string',
             'tipo_via' => 'nullable|string',
@@ -45,15 +40,12 @@ class AccidenteController extends Controller
             'vehiculos.*' => 'string',
             'personas' => 'nullable|array',
             'personas.*' => 'string',
->>>>>>> origin/main
         ]);
 
         $data['id_usuario'] = Auth::id() ?? 1;
         
         $accidente = Accidente::create($data);
 
-<<<<<<< HEAD
-=======
         // Guardar vehículos involucrados
         if (!empty($request->vehiculos)) {
             foreach ($request->vehiculos as $vehiculo) {
@@ -75,8 +67,6 @@ class AccidenteController extends Controller
                 ]);
             }
         }
-
->>>>>>> origin/main
         return response()->json(['message' => 'Accidente registrado con éxito', 'data' => $accidente]);
     }
 }

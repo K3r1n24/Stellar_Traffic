@@ -8,15 +8,20 @@
                     <h4>Luis Zelaya</h4>
                     <span>PANEL DE CONTROL PNC</span>
                 </div>
-                <div class="toast-content">
-                    <span class="toast-title">Ubicación Seleccionada</span>
-                    <p class="toast-text">{{ notificationMessage }}</p>
-                </div>
-                <button class="toast-close" type="button" @click="showNotification = false">
-                    <i class="ph ph-x"></i>
-                </button>
             </div>
-        </transition>
+
+            <transition name="fade">
+                <div v-if="showNotification" class="toast-notification">
+                    <div class="toast-content">
+                        <span class="toast-title">Ubicación Seleccionada</span>
+                        <p class="toast-text">{{ notificationMessage }}</p>
+                    </div>
+                    <button class="toast-close" type="button" @click="showNotification = false">
+                        <i class="ph ph-x"></i>
+                    </button>
+                </div>
+            </transition>
+        </aside>
 
         <main class="main-content">
             

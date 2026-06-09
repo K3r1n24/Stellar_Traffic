@@ -16,7 +16,6 @@
                 <ul class="nav-list" id="main-nav">
                     <li class="nav-item" @click="goTo('/dashboard')"><i class="ph ph-house"></i> Inicio</li>
                     <li class="nav-item active"><i class="ph ph-plus-square"></i> Registrar incidente</li>
-                    <li class="nav-item"><i class="ph ph-magnifying-glass"></i> Buscar casos</li>
                     <li class="nav-item" @click="goTo('/ver-mapa')"><i class="ph ph-map-pin"></i> Ver mapa</li>
                 </ul>
             </div>
@@ -24,10 +23,10 @@
             <div class="nav-section">
                 <p class="nav-title">SISTEMA</p>
                 <ul class="nav-list">
-                    <li class="nav-item"><i class="ph ph-file-text"></i> Reportes</li>
-                    <li class="nav-item"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
-                    <li class="nav-item"><i class="ph ph-gear"></i> Configuración</li>
-                    <li class="nav-item"><i class="ph ph-question"></i> Ayuda</li>
+                    <li class="nav-item" @click="goTo('/reportes')"><i class="ph ph-file-text"></i> Reportes</li>
+                    <li class="nav-item" @click="goTo('/historial')"><i class="ph ph-clock-counter-clockwise"></i> Historial</li>
+                    <li class="nav-item" @click="goTo('/configuracion')"><i class="ph ph-gear"></i> Configuración</li>
+                    <li class="nav-item" @click="goTo('/ayuda')"><i class="ph ph-question"></i> Ayuda</li>
                 </ul>
             </div>
 
@@ -166,6 +165,20 @@ const aiError = ref(null);
 
 // Estado reactivo para almacenar el tipo de incidente seleccionado
 const selectedType = ref(null);
+
+const goTo = (path) => {
+    router.push(path);
+};
+
+const handleLogout = async () => {
+    try {
+        await axios.post("/logout");
+        window.location.href = "/login";
+    } catch (error) {
+        console.error("Error al cerrar sesión:", error);
+        window.location.href = "/login";
+    }
+};
 
 const processWithAi = async () => {
     if (!aiText.value.trim()) return;
@@ -675,9 +688,10 @@ const handleCancel = () => {
         opacity: 0.5;
         cursor: not-allowed;
     }
+}
 
-    /* --- COPILOTO IA --- */
-    .ai-copilot-container {
+/* --- COPILOTO IA --- */
+.ai-copilot-container {
         max-width: 900px;
         margin: 0 auto 30px auto;
         width: 100%;
@@ -803,5 +817,4 @@ const handleCancel = () => {
         .cards-grid { grid-template-columns: 1fr; }
         .option-card { padding: 20px; }
     }
-}
 </style>
