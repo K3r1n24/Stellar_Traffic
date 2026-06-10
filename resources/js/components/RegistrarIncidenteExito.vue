@@ -109,18 +109,18 @@ const handleLogout = async () => {
 </script>
 
 <style scoped>
-    .dashboard {
-        --bg-dark: #061129;
-        --bg-sidebar: #081738;
-        --bg-card: #0A1D47;
-        --border-color: #1D2C52;
-        --text-main: #ffffff;
-        --text-muted: #8AABBB;
+.dashboard {
+    --bg-dark: #061129;
+    --bg-sidebar: #081738;
+    --bg-card: #0a1d47;
+    --border-color: #1d2c52;
+    --text-main: #ffffff;
+    --text-muted: #8aabbb;
 
-        --primary-blue: #2563eb;
-        --accent-blue: #336BFA;
-        --safe: #00E676;
-        --critical: #FF1744;
+    --primary-blue: #2563eb;
+    --accent-blue: #336bfa;
+    --safe: #00e676;
+    --critical: #ff1744;
 
     background-color: var(--bg-dark);
     color: var(--text-main);
