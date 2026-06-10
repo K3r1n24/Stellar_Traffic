@@ -133,7 +133,7 @@ import { useIncidenteStore } from "../composables/useIncidenteStore.js";
 const { state: incidenteState } = useIncidenteStore();
 const router = useRouter();
 
-// Usar el estado compartido directamente como formData
+// Estado reactivo para los datos del formulario
 const formData = reactive({
     fecha: incidenteState.fecha_incidente,
     hora: incidenteState.hora_aproximada,

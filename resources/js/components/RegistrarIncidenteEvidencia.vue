@@ -21,6 +21,7 @@
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
                     <div class="step-dot active"></div>
+                    <div class="step-dot"></div> 
                 </div>
 
                 <div class="evidence-grid">

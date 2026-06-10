@@ -31,6 +31,21 @@ class User extends Authenticatable
         return $this->contrasena;
     }
 
+    public function getEmailForPasswordReset()
+    {
+        return $this->correo;
+    }
+
+    /**
+     * Route notifications for the mail channel.
+     *
+     * @return string
+     */
+    public function routeNotificationForMail()
+    {
+        return $this->correo;
+    }
+
     public function getRememberTokenName()
     {
         return null;
@@ -39,5 +54,13 @@ class User extends Authenticatable
     public function rol()
     {
         return $this->belongsTo(Rol::class, 'id_rol');
+    }
+    
+    /**
+     * Envía la notificación de reset de contraseña.
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token));
     }
 }

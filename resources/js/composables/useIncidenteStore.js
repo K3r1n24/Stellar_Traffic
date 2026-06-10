@@ -4,16 +4,30 @@ const generateIdCaso = () => {
     return 'AUTO-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
 };
 
+<<<<<<< HEAD
+const state = reactive({
+    tipo_accidente: 'victimas',
+=======
 // Estado global compartido entre todos los pasos del registro
 const state = reactive({
     // Paso 0: Selección de tipo
     tipo_accidente: '',
 
     // Paso 1: Detalle
+>>>>>>> origin/main
     fecha_incidente: new Date().toISOString().split('T')[0],
     hora_aproximada: new Date().toTimeString().split(' ')[0].substring(0, 5),
     id_caso: generateIdCaso(),
     gravedad: '',
+<<<<<<< HEAD
+    direccion: '',
+    municipio: ''
+});
+
+export function useIncidenteStore() {
+    return { state, reset: () => {
+        state.tipo_accidente = 'victimas';
+=======
 
     // Paso 2: Ubicación
     direccion: '',
@@ -36,12 +50,16 @@ const state = reactive({
 export function useIncidenteStore() {
     const reset = () => {
         state.tipo_accidente = '';
+>>>>>>> origin/main
         state.fecha_incidente = new Date().toISOString().split('T')[0];
         state.hora_aproximada = new Date().toTimeString().split(' ')[0].substring(0, 5);
         state.id_caso = generateIdCaso();
         state.gravedad = '';
         state.direccion = '';
         state.municipio = '';
+<<<<<<< HEAD
+    } };
+=======
         state.declaracion = '';
         state.condicion_climatica = '';
         state.tipo_via = '';
@@ -52,4 +70,5 @@ export function useIncidenteStore() {
     };
 
     return { state, reset };
+>>>>>>> origin/main
 }
