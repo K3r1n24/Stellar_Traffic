@@ -220,6 +220,7 @@
 import Sidebar from "./Sidebar.vue";
 import TopHeader from "./TopHeader.vue";
 import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import axios from "axios";
 
 // Variables de estado
@@ -301,8 +302,21 @@ const filteredAccidentes = computed(() => {
     return list;
 });
 
-onMounted(() => {
-    fetchAccidentes();
+const route = useRoute();
+
+onMounted(async () => {
+    await fetchAccidentes();
+
+    // Si viene redirigido con un ID de caso específico, buscarlo y expandirlo
+    if (route.query.caso) {
+        searchQuery.value = route.query.caso;
+        const encontrado = accidentes.value.find(
+            (a) => a.id_caso === route.query.caso
+        );
+        if (encontrado) {
+            expandedId.value = encontrado.id_accidente;
+        }
+    }
 });
 </script>
 

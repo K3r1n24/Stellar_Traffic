@@ -11,50 +11,61 @@
                     <!-- Barra de Navegación/Búsqueda Unificada Compacta -->
                     <div class="search-nav-bar-mini">
                         <div class="search-input-wrapper-mini">
-                            <i class="ph ph-magnifying-glass search-icon-mini"></i>
-                            <input 
+                            <i
+                                class="ph ph-magnifying-glass search-icon-mini"
+                            ></i>
+                            <input
                                 v-model="searchQuery"
-                                type="text" 
-                                placeholder="Buscar por ID, dirección o descripción..." 
+                                type="text"
+                                placeholder="Buscar por ID, dirección o descripción..."
                                 class="search-input-mini"
                                 ref="searchInputRef"
                             />
-                            <button v-if="searchQuery" @click="clearSearch" class="clear-search-btn-mini" title="Limpiar búsqueda">
+                            <button
+                                v-if="searchQuery"
+                                @click="clearSearch"
+                                class="clear-search-btn-mini"
+                                title="Limpiar búsqueda"
+                            >
                                 <i class="ph ph-x"></i>
                             </button>
                         </div>
 
                         <div class="filter-badges-mini">
-                            <span 
-                                class="filter-badge-mini" 
+                            <span
+                                class="filter-badge-mini"
                                 :class="{ active: selectedGravedad === '' }"
                                 @click="selectedGravedad = ''"
                             >
                                 Todos
                             </span>
-                            <span 
-                                class="filter-badge-mini severity-badge-critico" 
-                                :class="{ active: selectedGravedad === 'crítico' }"
+                            <span
+                                class="filter-badge-mini severity-badge-critico"
+                                :class="{
+                                    active: selectedGravedad === 'crítico',
+                                }"
                                 @click="selectedGravedad = 'crítico'"
                             >
                                 Crítico
                             </span>
-                            <span 
-                                class="filter-badge-mini severity-badge-alto" 
+                            <span
+                                class="filter-badge-mini severity-badge-alto"
                                 :class="{ active: selectedGravedad === 'alto' }"
                                 @click="selectedGravedad = 'alto'"
                             >
                                 Alto
                             </span>
-                            <span 
-                                class="filter-badge-mini severity-badge-medio" 
-                                :class="{ active: selectedGravedad === 'medio' }"
+                            <span
+                                class="filter-badge-mini severity-badge-medio"
+                                :class="{
+                                    active: selectedGravedad === 'medio',
+                                }"
                                 @click="selectedGravedad = 'medio'"
                             >
                                 Medio
                             </span>
-                            <span 
-                                class="filter-badge-mini severity-badge-bajo" 
+                            <span
+                                class="filter-badge-mini severity-badge-bajo"
                                 :class="{ active: selectedGravedad === 'bajo' }"
                                 @click="selectedGravedad = 'bajo'"
                             >
@@ -63,7 +74,8 @@
                         </div>
 
                         <div class="results-count-mini">
-                            Encontrados: <strong>{{ incidentesFiltrados.length }}</strong>
+                            Encontrados:
+                            <strong>{{ incidentesFiltrados.length }}</strong>
                         </div>
                     </div>
                 </template>
@@ -76,8 +88,11 @@
                         <i class="ph ph-warning-circle"></i>
                         <h3>Reportes Activos</h3>
                     </div>
-                    
-                    <div class="incidents-list" v-if="incidentesFiltrados.length > 0">
+
+                    <div
+                        class="incidents-list"
+                        v-if="incidentesFiltrados.length > 0"
+                    >
                         <div
                             v-for="incidente in incidentesFiltrados"
                             :key="incidente.id_accidente"
@@ -112,8 +127,13 @@
                     <!-- Estado de búsqueda vacía -->
                     <div class="empty-search-state" v-else>
                         <i class="ph ph-magnifying-glass"></i>
-                        <p>No se encontraron incidentes que coincidan con la búsqueda.</p>
-                        <button class="reset-filters-btn" @click="resetFilters">Restablecer filtros</button>
+                        <p>
+                            No se encontraron incidentes que coincidan con la
+                            búsqueda.
+                        </p>
+                        <button class="reset-filters-btn" @click="resetFilters">
+                            Restablecer filtros
+                        </button>
                     </div>
                 </div>
 
@@ -175,7 +195,8 @@ const getMarkerIcon = (gravedad) => {
         color = "#FF3333"; // Naranja/Rojo alto
     else if (g === "medio")
         color = "#FFB300"; // Amarillo medio
-    else if (g === "bajo" || g === "seguro" || g === "bajo riesgo") color = "#00E676"; // Verde bajo
+    else if (g === "bajo" || g === "seguro" || g === "bajo riesgo")
+        color = "#00E676"; // Verde bajo
 
     return window.L.divIcon({
         className: "custom-map-marker",
@@ -232,22 +253,34 @@ const geocodeAddress = async (direccion, municipio) => {
 const incidentesFiltrados = computed(() => {
     return incidentes.value.filter((incidente) => {
         const query = searchQuery.value.trim().toLowerCase();
-        
+
         // Filtro por texto
-        const matchesQuery = !query || 
-            (incidente.id_caso && incidente.id_caso.toLowerCase().includes(query)) ||
-            (incidente.direccion && incidente.direccion.toLowerCase().includes(query)) ||
-            (incidente.municipio && incidente.municipio.toLowerCase().includes(query)) ||
-            (incidente.descripcion && incidente.descripcion.toLowerCase().includes(query)) ||
-            (incidente.tipo_accidente && (incidente.tipo_accidente === "victimas" ? "con víctimas con victimas" : "daños materiales daños").includes(query));
-            
+        const matchesQuery =
+            !query ||
+            (incidente.id_caso &&
+                incidente.id_caso.toLowerCase().includes(query)) ||
+            (incidente.direccion &&
+                incidente.direccion.toLowerCase().includes(query)) ||
+            (incidente.municipio &&
+                incidente.municipio.toLowerCase().includes(query)) ||
+            (incidente.descripcion &&
+                incidente.descripcion.toLowerCase().includes(query)) ||
+            (incidente.tipo_accidente &&
+                (incidente.tipo_accidente === "victimas"
+                    ? "con víctimas con victimas"
+                    : "daños materiales daños"
+                ).includes(query));
+
         // Filtro por gravedad
         const g = (incidente.gravedad || "").toLowerCase();
-        const matchesGravedad = !selectedGravedad.value || 
-            (selectedGravedad.value === "bajo" && (g === "bajo" || g === "seguro" || g === "bajo riesgo")) ||
-            (selectedGravedad.value === "crítico" && (g === "crítico" || g === "critico")) ||
-            (g === selectedGravedad.value.toLowerCase());
-            
+        const matchesGravedad =
+            !selectedGravedad.value ||
+            (selectedGravedad.value === "bajo" &&
+                (g === "bajo" || g === "seguro" || g === "bajo riesgo")) ||
+            (selectedGravedad.value === "crítico" &&
+                (g === "crítico" || g === "critico")) ||
+            g === selectedGravedad.value.toLowerCase();
+
         return matchesQuery && matchesGravedad;
     });
 });
@@ -295,10 +328,9 @@ const fetchAndRenderIncidentes = async () => {
         });
 
         incidentes.value = await Promise.all(promises);
-        
+
         // Dibujar los marcadores en el mapa por primera vez
         updateMapMarkers();
-        
     } catch (err) {
         console.error("Error al inicializar y renderizar incidentes:", err);
     } finally {
@@ -313,7 +345,8 @@ const updateMapMarkers = () => {
     // Eliminar del mapa los marcadores que ya no estén en la lista filtrada
     Object.keys(markers).forEach((idAccidente) => {
         const sigueFiltrado = incidentesFiltrados.value.some(
-            (incidente) => String(incidente.id_accidente) === String(idAccidente)
+            (incidente) =>
+                String(incidente.id_accidente) === String(idAccidente),
         );
         if (!sigueFiltrado) {
             map.removeLayer(markers[idAccidente]);
@@ -324,7 +357,7 @@ const updateMapMarkers = () => {
     // Agregar marcadores para los incidentes filtrados que no tengan uno dibujado
     incidentesFiltrados.value.forEach((incidente) => {
         const id = incidente.id_accidente;
-        
+
         // Si el marcador ya está dibujado en el mapa, omitir
         if (markers[id]) return;
 
@@ -346,13 +379,14 @@ const updateMapMarkers = () => {
                     <div style="font-size: 11px; margin-bottom: 5px;">
                         <strong style="color: #8AABBB;">Gravedad:</strong> 
                         <span style="color: ${
-                            incidente.gravedad === "Crítico" || incidente.gravedad === "critico"
-                            ? "#D32F2F"
-                            : incidente.gravedad === "Alto"
-                              ? "#FF3333"
-                              : incidente.gravedad === "Medio"
-                                ? "#FFB300"
-                                : "#00E676"
+                            incidente.gravedad === "Crítico" ||
+                            incidente.gravedad === "critico"
+                                ? "#D32F2F"
+                                : incidente.gravedad === "Alto"
+                                  ? "#FF3333"
+                                  : incidente.gravedad === "Medio"
+                                    ? "#FFB300"
+                                    : "#00E676"
                         }; font-weight: 600;">
                             ${incidente.gravedad || "No especificada"}
                         </span>
@@ -464,16 +498,16 @@ onUnmounted(() => {
 .dashboard {
     --bg-dark: #061129;
     --bg-sidebar: #081738;
-    --bg-card: #0A1D47;
-    --border-color: #1D2C52;
+    --bg-card: #0a1d47;
+    --border-color: #1d2c52;
     --text-main: #ffffff;
-    --text-muted: #8AABBB;
+    --text-muted: #8aabbb;
 
     --primary-blue: #2563eb;
-    --accent-blue: #336BFA;
-    --safe: #00E676;
-    --warning: #FFB300;
-    --critical: #FF1744;
+    --accent-blue: #336bfa;
+    --safe: #00e676;
+    --warning: #ffb300;
+    --critical: #ff1744;
 
     background-color: var(--bg-dark);
     color: var(--text-main);
@@ -616,8 +650,8 @@ onUnmounted(() => {
 }
 
 .filter-badge-mini.severity-badge-alto.active {
-    background-color: #FF3333;
-    border-color: #FF3333;
+    background-color: #ff3333;
+    border-color: #ff3333;
     color: #ffffff;
     box-shadow: 0 2px 6px rgba(255, 51, 51, 0.25);
 }

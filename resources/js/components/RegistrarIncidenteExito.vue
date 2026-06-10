@@ -73,7 +73,9 @@ const viewReport = () => {
     console.log(
         `Abriendo vista de detalles para el reporte: ${reportId.value}`,
     );
-    alert(`Redirigiendo al detalle del reporte ${reportId.value}`);
+    localStorage.removeItem("currentCaseId");
+    resetStore();
+    router.push({ path: "/historial", query: { caso: reportId.value } });
 };
 
 const goHome = () => {

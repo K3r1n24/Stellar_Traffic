@@ -11,6 +11,7 @@ import RegistrarIncidenteConfirmacion from './components/RegistrarIncidenteConfi
 import RegistrarIncidenteExito from './components/RegistrarIncidenteExito.vue';
 import BuscarCasos from './components/BuscarCasos.vue';
 import VerMapa from './components/VerMapa.vue';
+import Ayuda from './components/Ayuda.vue';
 import Reportes from './components/Reportes.vue';
 import Historial from './components/Historial.vue';
 
@@ -70,7 +71,7 @@ const routes = [
     { path: '/reportes', name: 'reportes', component: Reportes },
     { path: '/historial', name: 'historial', component: Historial },
     { path: '/configuracion', name: 'configuracion', component: BuscarCasos }, // Reutilizando para evitar crear más
-    { path: '/ayuda', name: 'ayuda', component: BuscarCasos }
+    { path: '/ayuda', name: 'ayuda', component: Ayuda }
 ];
 
 const router = createRouter({
