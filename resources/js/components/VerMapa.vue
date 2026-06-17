@@ -368,7 +368,7 @@ const updateMapMarkers = () => {
                     ${
                         incidente.descripcion
                             ? `
-                    <div style="font-size: 10px; margin-top: 8px; background: #061129; padding: 8px; border-radius: 6px; border: 1px solid #1D2C52; max-height: 70px; overflow-y: auto;">
+                    <div style="font-size: 10px; margin-top: 8px; background: #081020; padding: 8px; border-radius: 6px; border: 1px solid #1D2C52; max-height: 70px; overflow-y: auto;">
                         <strong style="color: #8AABBB; display: block; margin-bottom: 2px;">Descripción:</strong>
                         <span style="color: #d1d5db; line-height: 1.3;">${incidente.descripcion}</span>
                     </div>
@@ -462,9 +462,9 @@ onUnmounted(() => {
 
 <style scoped>
 .dashboard {
-    --bg-dark: #061129;
-    --bg-sidebar: #081738;
-    --bg-card: #0A1D47;
+    --bg-dark: #081020;
+    --bg-sidebar: #091738;
+    --bg-card: #081633;
     --border-color: #1D2C52;
     --text-main: #ffffff;
     --text-muted: #8AABBB;
@@ -625,7 +625,7 @@ onUnmounted(() => {
 .filter-badge-mini.severity-badge-medio.active {
     background-color: var(--warning);
     border-color: var(--warning);
-    color: #061129;
+    color: #081020;
     font-weight: 600;
     box-shadow: 0 2px 6px rgba(255, 179, 0, 0.25);
 }
@@ -633,7 +633,7 @@ onUnmounted(() => {
 .filter-badge-mini.severity-badge-bajo.active {
     background-color: var(--safe);
     border-color: var(--safe);
-    color: #061129;
+    color: #081020;
     font-weight: 600;
     box-shadow: 0 2px 6px rgba(0, 230, 118, 0.25);
 }

@@ -246,9 +246,9 @@ onMounted(() => {
 
 <style scoped>
 .dashboard {
-    --bg-dark: #061129;
-    --bg-sidebar: #081738;
-    --bg-card: #0a1d47;
+    --bg-dark: #081020;
+    --bg-sidebar: #091738;
+    --bg-card: #081633;
     --border-color: #1d2c52;
     --text-main: #ffffff;
     --text-muted: #8aabbb;

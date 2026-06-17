@@ -132,7 +132,7 @@ const handleLogout = async () => {
 <style scoped>
 .sidebar {
     width: 260px !important;
-    background-color: var(--bg-sidebar, #081738);
+    background-color: var(--bg-sidebar, #091738);
     border-right: 1px solid var(--border-color, #1D2C52);
     display: flex;
     flex-direction: column;
